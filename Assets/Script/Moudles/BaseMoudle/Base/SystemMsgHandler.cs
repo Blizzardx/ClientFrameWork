@@ -1,0 +1,37 @@
+﻿using System;
+using NetFramework.Auto;
+using Thrift.Protocol;
+using UnityEngine;
+using System.Collections;
+
+public class SystemMsgHandler:Singleton<SystemMsgHandler>
+{
+    #region public interface
+
+    public void RegisterSystemMsg()
+    {
+        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_CLOSE, SocketClosed);
+        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_TIMEOUT, SocketConnetTimeOut);
+        MessageManager.Instance.RegistMessage(MessageTypeConstants.SC_SYSTEM_INFO, SocketConnetTimeOut);
+    }
+    #endregion
+
+    #region system message
+
+    private void SocketClosed(MessageObject msg)
+    {
+        Debug.Log("Socket closed");
+        CollectionManager.Instance.SocketClosed();
+    }
+    private void SocketConnetTimeOut(MessageObject msg)
+    {
+        Debug.Log("connet time out");
+        CollectionManager.Instance.TimeOut();
+    }
+    private Void SystemInfo(MessageObject msg)
+    {
+        TBase msgBody = (TBase) (msg.msgValue);
+        Debug.Log(msgBody.ToString());
+    }
+    #endregion
+}
