@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 public class UIWindowTest1 : WindowBase
 {
-    private UIList      m_ListTest;
+    private UIList      m_UIListTest;
     private List<int>   m_TestData;
 
     public override void OnInit()
     {
         base.OnInit();
-        m_ListTest = FindChildComponent<UIList>("UIList");
-        m_ListTest.InitUIList<TestListItem>();
+        InitUIComponent(ref m_UIListTest, "m_UIListTest");
+        m_UIListTest.InitUIList<TestListItem>();
         m_TestData = new List<int>();
         for (int i = 0; i < 20; ++i)
         {
@@ -21,7 +21,7 @@ public class UIWindowTest1 : WindowBase
     public override void OnOpen(object param)
     {
         base.OnOpen(param);
-        m_ListTest.SetData(m_TestData);
+        m_UIListTest.SetData(m_TestData);
     }
 }
 

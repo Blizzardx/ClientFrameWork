@@ -3,6 +3,34 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 
+public class WindowComponentKey
+{
+    public const string m_strLabel      = "Label";
+    public const string m_strTexture    = "Texture";
+    public const string m_strSprite     = "Sprite";
+    public const string m_strUIList     = "UIList";
+
+    public Type GetTypeByKey(string key)
+    {
+        if (key == m_strLabel)
+        {
+            return typeof (UILabel);
+        }
+        if (key == m_strTexture)
+        {
+            return typeof(UITexture);
+        }
+        if (key == m_strSprite)
+        {
+            return typeof(UISprite);
+        }
+        if (key == m_strUIList)
+        {
+            return typeof(UIList);
+        }
+        return null;
+    }
+}
 public class PanelStruct
 {
     public UIPanel m_Panel;
@@ -110,6 +138,11 @@ public class WindowBase
         {
             UIEventListener.Get(ComponentTool.FindChild(childName, FindChild(rootName))).onClick = handler;
         }
+    }
+    protected void InitUIComponent<T>(ref T component,string name)where T : Component
+    {
+        string realName = name.Substring(2);
+        component = FindChildComponent<T>(realName);
     }
     #endregion
 }
