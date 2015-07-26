@@ -32,11 +32,13 @@ public class UIList:MonoBehaviour
     private GameObject          m_ObjectListRoot;
     private GameObject          m_ObjectGridRoot;
     private GameObject          m_ObjectTableRoot;
+    private GameObject          m_ObjectPanelRoot;
 
     private const string        m_strElementName        = "Element";
     private const string        m_strGridRoot           = "GridRoot";
     private const string        m_strTableRoot          = "TableRoot";
-    private const string        m_strOtherRoot          = "Other";
+    private const string        m_strOtherRoot          = "OtherRoot";
+    private const string        m_strPanelRoot          = "PanelRoot";
 
     public void InitUIList<T>() where T : UIListItemBase
     {
@@ -46,16 +48,17 @@ public class UIList:MonoBehaviour
         }
 
         m_ObjectListRoot = gameObject;
-        m_ObjectGridRoot = ComponentTool.FindChild(m_strGridRoot, m_ObjectListRoot);
-        m_ObjectTableRoot = ComponentTool.FindChild(m_strTableRoot, m_ObjectListRoot);
-        m_ChildElementTemplate = ComponentTool.FindChild(m_strElementName, m_ObjectListRoot);
+        m_ObjectPanelRoot = ComponentTool.FindChild(m_strPanelRoot, m_ObjectListRoot);
+        m_ObjectGridRoot = ComponentTool.FindChild(m_strGridRoot, m_ObjectPanelRoot);
+        m_ObjectTableRoot = ComponentTool.FindChild(m_strTableRoot, m_ObjectPanelRoot);
+        m_ChildElementTemplate = ComponentTool.FindChild(m_strElementName, m_ObjectPanelRoot);
 
         m_HandlerType = typeof(T);
         m_ChildElementList = new List<ListData>();
         m_Grid = m_ObjectGridRoot == null ? null : m_ObjectGridRoot.GetComponent<UIGrid>();
         m_Table = m_ObjectTableRoot == null ? null : m_ObjectTableRoot.GetComponent<UITable>();
-        m_UIPanel = m_ObjectListRoot.GetComponent<UIPanel>();
-        m_ScrollView = m_ObjectListRoot.GetComponent<UIScrollView>();
+        m_UIPanel = m_ObjectPanelRoot.GetComponent<UIPanel>();
+        m_ScrollView = m_ObjectPanelRoot.GetComponent<UIScrollView>();
         m_ChildElementList.Add(new ListData(m_ChildElementTemplate, Activator.CreateInstance(m_HandlerType) as UIListItemBase,this));
         m_ChildElementList[0].m_Handler.OnInit();
         m_ChildElementTemplate.gameObject.SetActive(false);
@@ -66,7 +69,7 @@ public class UIList:MonoBehaviour
     public void SetData<T>(List<T> content)
     {
         //reset position
-        transform.localPosition = m_InitPos;
+        m_ObjectPanelRoot.transform.localPosition = m_InitPos;
         m_UIPanel.clipOffset = m_InitPanelOffset;
 
         int index = 0;
@@ -137,7 +140,7 @@ public class UIList:MonoBehaviour
         GameObject tmpchild = GameObject.Instantiate(m_ChildElementTemplate) as GameObject;
         ListData result = new ListData(tmpchild, Activator.CreateInstance(m_HandlerType) as UIListItemBase,this);
         result.m_Handler.OnInit();
-        ComponentTool.Attach(m_ScrollView.transform,tmpchild.transform);
+        ComponentTool.Attach(m_ObjectGridRoot.transform,tmpchild.transform);
         return result;
     }
 }
