@@ -23,4 +23,8 @@ public class AppManager : SingletonTemplateMon<AppManager>
     {
         
     }
+    void OnApplicationQuit()
+    {
+        GameManager.Instance.OnAppQuit();
+    }
 }

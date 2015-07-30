@@ -39,6 +39,10 @@ public class GameManager : Singleton<GameManager>
 
         Test();
     }
+    public void OnAppQuit()
+    {
+        Debuger.OnQuit();
+    }
     public void RegisterToUpdateList(Action element)
     {
         for (int i = 0; i < m_UpdateList.Count; ++i)
@@ -162,6 +166,11 @@ public class GameManager : Singleton<GameManager>
 		{
 			Debuger.Log ("test" + i++);
 		}
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            List<int> a = null;
+            a.Add(0);
+        }
 		 
     }
     #endregion

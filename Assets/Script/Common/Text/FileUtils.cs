@@ -9,7 +9,6 @@ namespace Assets.Scripts.Core.Utils
     public class FileUtils
     {
         private static MD5CryptoServiceProvider md5Generator = new MD5CryptoServiceProvider();
-
         public static string GetMD5HashFromFile(string fileName)
         {
             try
@@ -30,7 +29,6 @@ namespace Assets.Scripts.Core.Utils
                 throw new Exception("GetMD5HashFromFile() fail,error:" + ex.Message);
             }
         }
-
         public static string GetMD5Str(string str)
         {
             byte[] encryptedBytes = md5Generator.ComputeHash(Encoding.ASCII.GetBytes(str));
@@ -41,7 +39,6 @@ namespace Assets.Scripts.Core.Utils
             }
             return sb.ToString();
         }
-
         public static string LoadStringFile(string path, bool isEncrypt = false)
         {
             string content = "";
@@ -65,7 +62,6 @@ namespace Assets.Scripts.Core.Utils
            
             return content;
         }
-
         public static void ensureFolder(string path)
         {
             string folder = Path.GetDirectoryName(path);
@@ -74,7 +70,6 @@ namespace Assets.Scripts.Core.Utils
                 Directory.CreateDirectory(folder);
             }
         }
-
         public static void SaveStringFile(string path, string content, bool isEncrypt = false)
         {
             ensureFolder(path);
@@ -89,7 +84,7 @@ namespace Assets.Scripts.Core.Utils
 		{
 			ensureFolder(path);
 			FileStream fs = File.OpenWrite(path);
-			fs.SetLength(fs.Length);
+		    fs.Seek(fs.Length, 0);
 			var sw = new StreamWriter(fs);
 			foreach (string line in contentList) 
 			{
