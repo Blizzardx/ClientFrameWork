@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.Core.Utils
 {
@@ -84,6 +85,19 @@ namespace Assets.Scripts.Core.Utils
             sw.Dispose();
             fs.Dispose();
         }
+		public static void SaveStringFile(string path,List<string> contentList,bool isEncrypt = false)
+		{
+			ensureFolder(path);
+			FileStream fs = File.OpenWrite(path);
+			fs.SetLength(fs.Length);
+			var sw = new StreamWriter(fs);
+			foreach (string line in contentList) 
+			{
+				sw.WriteLine(line);
+			}
+			sw.Dispose();
+			fs.Dispose();
+		}
         public static void SaveFileByteArray(string path, byte[] bytes)
         {
             ensureFolder(path);

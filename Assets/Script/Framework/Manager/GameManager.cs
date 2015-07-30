@@ -18,6 +18,7 @@ public class GameManager : Singleton<GameManager>
         m_bIsUpdateListBusy             = false;
 
         TimeManager.Instance.Initialize();
+		Debuger.Initialize ();
         ResourceManager.Instance.Initialize();
         TickTaskManager.Instance.InitializeTickTaskSystem();
         StageManager.Instance.Initialize();
@@ -25,6 +26,8 @@ public class GameManager : Singleton<GameManager>
         MessageManager.Instance.Initialize();
         WindowManager.Instance.Initialize();
         SystemMsgHandler.Instance.RegisterSystemMsg();
+
+		Debuger.Log (Debuger.m_strSavePath);
     }
     public void Update()
     {
@@ -93,7 +96,7 @@ public class GameManager : Singleton<GameManager>
     #endregion
 
     #region test
-
+	private int i=0;
     private void Test()
     {
         if (Input.GetKeyDown(KeyCode.F1))
@@ -155,6 +158,11 @@ public class GameManager : Singleton<GameManager>
         {
             WindowManager.Instance.CloseWindow(WindowID.WindowTest3);
         }
+		if (Input.GetKeyDown (KeyCode.L)) 
+		{
+			Debuger.Log ("test" + i++);
+		}
+		 
     }
     #endregion
 }
