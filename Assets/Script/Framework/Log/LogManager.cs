@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class LogManager : Singleton<LogManager>
+public class LogManager
 {
 	public  bool 			    IsEnableLog { get; set; }
 	public  bool 			    IsEnalbeRecord { get; set; }
@@ -9,16 +9,30 @@ public class LogManager : Singleton<LogManager>
 	private  List<string> 	    m_LogStore;
 	public  string 		        SavePath{ get; set; }
     private long                m_lLastTriggerTime;
+	private static LogManager   m_Instance;
 
-    #region public interface
+
+
+	#region public interface
+	public static LogManager Instance
+	{
+		get
+		{
+			if( null == Instance )
+			{
+				m_Instance = new LogManager();
+			}
+			return m_Instance;
+		}
+	}
     public void Initialize(bool isEnalbeLog=true,bool isEnableRecord=true,float writeRate = 30.0f)
 	{
 		m_LogStore          = new List<string> ();
-		SavePath       = Application.persistentDataPath + "/log.txt";
-		IsEnableLog      = isEnalbeLog;
-		IsEnalbeRecord   = isEnableRecord;
+		SavePath       		= Application.persistentDataPath + "/log.txt";
+		IsEnableLog      	= isEnalbeLog;
+		IsEnalbeRecord   	= isEnableRecord;
 	    m_lLastTriggerTime  = TimeManager.Instance.Now;
-	    WriteRate        = (long)(writeRate*1000.0f);
+	    WriteRate        	= (long)(writeRate*1000.0f);
         Application.RegisterLogCallback(HandleLog);
 	}
     public void Log(object message)
@@ -106,5 +120,6 @@ public class LogManager : Singleton<LogManager>
 	{
         //FileUtils.SaveStringFile(SavePath, m_LogStore);
     }
+	private LogManager(){}
     #endregion
 }
