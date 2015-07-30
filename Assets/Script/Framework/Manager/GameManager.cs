@@ -27,7 +27,7 @@ public class GameManager : Singleton<GameManager>
         WindowManager.Instance.Initialize();
         SystemMsgHandler.Instance.RegisterSystemMsg();
 
-		LogManager.Instance.Log (LogManager.Instance.SavePath);
+		//LogManager.Instance.Log (LogManager.Instance.SavePath);
     }
     public void Update()
     {
@@ -164,7 +164,7 @@ public class GameManager : Singleton<GameManager>
         }
 		if (Input.GetKeyDown (KeyCode.L)) 
 		{
-			LogManager.Instance.Log ("test" + i++);
+			Debuger.Log ("test" + i++);
 		}
         if (Input.GetKeyDown(KeyCode.M))
         {
