@@ -18,7 +18,7 @@ public class GameManager : Singleton<GameManager>
         m_bIsUpdateListBusy             = false;
 
         TimeManager.Instance.Initialize();
-		Debuger.Initialize ();
+		LogManager.Instance.Initialize ();
         ResourceManager.Instance.Initialize();
         TickTaskManager.Instance.InitializeTickTaskSystem();
         StageManager.Instance.Initialize();
@@ -27,7 +27,7 @@ public class GameManager : Singleton<GameManager>
         WindowManager.Instance.Initialize();
         SystemMsgHandler.Instance.RegisterSystemMsg();
 
-		Debuger.Log (Debuger.m_strSavePath);
+		LogManager.Instance.Log (LogManager.Instance.SavePath);
     }
     public void Update()
     {
@@ -41,7 +41,7 @@ public class GameManager : Singleton<GameManager>
     }
     public void OnAppQuit()
     {
-        Debuger.OnQuit();
+        LogManager.Instance.OnQuit();
     }
     public void RegisterToUpdateList(Action element)
     {
@@ -164,7 +164,7 @@ public class GameManager : Singleton<GameManager>
         }
 		if (Input.GetKeyDown (KeyCode.L)) 
 		{
-			Debuger.Log ("test" + i++);
+			LogManager.Instance.Log ("test" + i++);
 		}
         if (Input.GetKeyDown(KeyCode.M))
         {
