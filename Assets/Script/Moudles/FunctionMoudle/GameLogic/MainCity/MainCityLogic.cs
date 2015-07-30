@@ -6,12 +6,12 @@ public class MainCityLogic : LogicBase<MainCityLogic>
 
     public override void StartLogic()
     {
-        Debug.Log("StartLogic maincity logic");
+        Debuger.Log("StartLogic maincity logic");
 
     }
     public override void EndLogic()
     {
-        Debug.Log("EndLogic maincity logic");
+        Debuger.Log("EndLogic maincity logic");
 
     }
 }

@@ -57,7 +57,7 @@ namespace Assets.Scripts.Core.Utils
             }
             else
             {
-                UnityEngine.Debug.LogWarning("LoadStringFile. Path Inexistent: " + path);
+                Debuger.LogWarning("LoadStringFile. Path Inexistent: " + path);
             }
            
             return content;

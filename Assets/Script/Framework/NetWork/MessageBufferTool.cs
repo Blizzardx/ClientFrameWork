@@ -71,7 +71,7 @@ public class MessageBufferTool
         int messageId = 0;
         if (!m_MessageMapTypeToId.TryGetValue(messageBody.GetType(), out messageId))
         {
-            Debug.LogError("Can't encode message " + messageId);
+            Debuger.LogError("Can't encode message " + messageId);
             return;
         }
 
@@ -97,7 +97,7 @@ public class MessageBufferTool
 
         if (AppManager.Instance.m_bIsShowDebugMsg)
         {
-            Debug.Log("Send msg:" + messageBody.GetType().ToString());
+            Debuger.Log("Send msg:" + messageBody.GetType().ToString());
         }
     }
     public void RecieveMsg(int size)
@@ -139,7 +139,7 @@ public class MessageBufferTool
         }
         else
         {
-            Debug.LogError("register message error: " + id.ToString());
+            Debuger.LogError("register message error: " + id.ToString());
         }
     }
     public void RegisterMessage()
@@ -215,7 +215,7 @@ public class MessageBufferTool
         Type tmpType;
         if (!m_MessageMapIdToType.TryGetValue(messageId, out tmpType))
         {
-            Debug.LogError("Can't decode message " + messageId);
+            Debuger.LogError("Can't decode message " + messageId);
             return -1;
         }
         message = Activator.CreateInstance(tmpType) as TBase;
@@ -226,7 +226,7 @@ public class MessageBufferTool
 
         if (AppManager.Instance.m_bIsShowDebugMsg)
         {
-            Debug.Log("Rec msg:" + message.GetType().Name);
+            Debuger.Log("Rec msg:" + message.GetType().Name);
         }
 
         return index;

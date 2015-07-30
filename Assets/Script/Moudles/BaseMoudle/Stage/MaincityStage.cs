@@ -9,12 +9,12 @@ public class MaincityStage : StageBase
     }
     public override void StartStage()
     {
-        Debug.Log("StartStage maincity stage");
+        Debuger.Log("StartStage maincity stage");
         MainCityLogic.Instance.StartLogic();
     }
     public override void EndStage()
     {
-        Debug.Log("EndStage maincity stage");
+        Debuger.Log("EndStage maincity stage");
         MainCityLogic.Instance.EndLogic();
     }
 }

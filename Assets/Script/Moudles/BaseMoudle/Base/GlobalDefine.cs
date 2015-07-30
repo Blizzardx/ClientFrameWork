@@ -66,7 +66,7 @@ public class Definer
             case GameStateType.ReConnect:
                 return new BattleStage(type);
         }
-        Debug.LogError("unkunow game stage type : " + type);
+        Debuger.LogError("unkunow game stage type : " + type);
         return null;
     }
     public static  void DoCollection()

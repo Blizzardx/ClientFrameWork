@@ -24,7 +24,7 @@ public class StageManager : Singleton<StageManager>
     {
         if (SceneManager.Instance.IsSceneLoadiing())
         {
-            Debug.Log("System busy");
+            Debuger.Log("System busy");
             return;
         }
         if (null != m_CurrentStage)

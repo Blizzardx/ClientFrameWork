@@ -37,7 +37,7 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     public T LoadBuildInResource<T>(string path,AssetType type ) where T : UnityEngine.Object
     {
         string realPath = GetRealPath(path, type);
-        Debug.Log(realPath);
+        Debuger.Log(realPath);
         UnityEngine.Object res = null;
         m_AssetStore.TryGetValue(realPath, out res);
         if (null != res)

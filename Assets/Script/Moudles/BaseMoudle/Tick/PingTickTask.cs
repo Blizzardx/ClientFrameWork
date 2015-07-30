@@ -31,7 +31,7 @@ public class PingTickTask : AbstractTickTask
 	        if (m_nCurrentTimeout > m_nTimeOut)
 	        {
 	            // time out
-                Debug.LogError("Time Out");
+                Debuger.LogError("Time Out");
                 MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_SOCKET_TIMEOUT, null));
 	        }
 	    }
@@ -40,7 +40,7 @@ public class PingTickTask : AbstractTickTask
             if (m_bIsConnect)
             {
                 // disconnect 
-                Debug.LogError("Disconnect");
+                Debuger.LogError("Disconnect");
                 MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
                 m_bIsConnect = false;
 

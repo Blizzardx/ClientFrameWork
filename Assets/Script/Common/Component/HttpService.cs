@@ -83,7 +83,7 @@ namespace Assets.Scripts.Framework.Network
         {
             if (String.IsNullOrEmpty(url))
             {
-                Debug.LogError("[Http Service] URL is NULL");
+                Debuger.LogError("[Http Service] URL is NULL");
                 return;
             }
             if (callback == null)
@@ -109,12 +109,12 @@ namespace Assets.Scripts.Framework.Network
         {
             if (String.IsNullOrEmpty(url))
             {
-                Debug.LogError("[Http Service] URL is NULL");
+                Debuger.LogError("[Http Service] URL is NULL");
                 return;
             }
             else
             {
-                Debug.Log("[Http Service] " + url);
+                Debuger.Log("[Http Service] " + url);
             }
             if (callback == null)
                 callback = (WWW www, object arg) => { };
@@ -144,7 +144,7 @@ namespace Assets.Scripts.Framework.Network
         {
             if (String.IsNullOrEmpty(url))
             {
-                Debug.LogError("[Http Service] URL is NULL");
+                Debuger.LogError("[Http Service] URL is NULL");
                 return;
             }
             if (callback == null)
@@ -175,7 +175,7 @@ namespace Assets.Scripts.Framework.Network
         {
             if (String.IsNullOrEmpty(url))
             {
-                Debug.LogError("[Http Service] URL is NULL");
+                Debuger.LogError("[Http Service] URL is NULL");
                 return;
             }
             if (callback == null)
@@ -224,7 +224,7 @@ namespace Assets.Scripts.Framework.Network
                         Action<WWW, object> callback = (Action<WWW, object>)callbacks.GetInvocationList()[0];
                         if (wwwReq.wwwObject.error != null)
                         {
-                            Debug.LogWarning(this.name + " : " + wwwReq.wwwObject.error + " , " + wwwReq.Url);
+                            Debuger.LogWarning(this.name + " : " + wwwReq.wwwObject.error + " , " + wwwReq.Url);
                         }
                         try
                         {
@@ -235,7 +235,7 @@ namespace Assets.Scripts.Framework.Network
                         }
                         catch (Exception e)
                         {
-                            Debug.LogWarning(e);
+                            Debuger.LogWarning(e);
                         }
 
                         if (wwwReq.callbackParmas.Count > 0)
@@ -260,7 +260,7 @@ namespace Assets.Scripts.Framework.Network
                             if (Time.realtimeSinceStartup - wwwReq.startTime > wwwReq.Timeout)
                             {
                                 //超时处理
-                                Debug.LogWarning("[Http Service]" + wwwReq.Url + ", TIMEOUT");
+                                Debuger.LogWarning("[Http Service]" + wwwReq.Url + ", TIMEOUT");
 
                                 //下载完成
                                 Action<WWW, object> callbacks = (Action<WWW, object>)wwwReq.callbacks;
@@ -269,7 +269,7 @@ namespace Assets.Scripts.Framework.Network
                                     Action<WWW, object> callback = (Action<WWW, object>)callbacks.GetInvocationList()[0];
                                     if (wwwReq.wwwObject.error != null)
                                     {
-                                        Debug.LogWarning(wwwReq.wwwObject.error);
+                                        Debuger.LogWarning(wwwReq.wwwObject.error);
                                     }
                                     try
                                     {
@@ -280,7 +280,7 @@ namespace Assets.Scripts.Framework.Network
                                     }
                                     catch (Exception e)
                                     {
-                                        Debug.LogError(e);
+                                        Debuger.LogError(e);
                                     }
 
                                     if (wwwReq.callbackParmas.Count > 0)
@@ -304,7 +304,7 @@ namespace Assets.Scripts.Framework.Network
                         }
                         catch (Exception e)
                         {
-                            Debug.LogError(e);
+                            Debuger.LogError(e);
                         }
                     }
                 }

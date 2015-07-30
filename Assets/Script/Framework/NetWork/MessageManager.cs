@@ -66,20 +66,20 @@ public class MessageManager : Singleton<MessageManager>
                             else
                             {
                                 //log error                        
-                                Debug.LogError("null of call back fun" + elem.msgId.ToString());
+                                Debuger.LogError("null of call back fun" + elem.msgId.ToString());
                             }
                         }
                     }
                     else
                     {
                         //empty msg list                    
-                        Debug.LogError("empty msg list  " + elem.msgId.ToString());
+                        Debuger.LogError("empty msg list  " + elem.msgId.ToString());
                     }
                 }
                 catch (Exception e)
                 {
                     //log error
-                    Debug.LogError("Wrong msg callback" + elem.msgId.ToString() + "error log: " + e.Message);
+                    Debuger.LogError("Wrong msg callback" + elem.msgId.ToString() + "error log: " + e.Message);
                 }
             }
             m_MsgList.Clear();
@@ -109,7 +109,7 @@ public class MessageManager : Singleton<MessageManager>
             }
             catch
             {
-                Debug.LogError("Don't exit msg id " + msgBody.msgId.ToString());
+                Debuger.LogError("Don't exit msg id " + msgBody.msgId.ToString());
             }
         }
     }
@@ -117,7 +117,7 @@ public class MessageManager : Singleton<MessageManager>
     {
         if (null == msgCallback)
         {
-            Debug.LogError("msg call back can't be null !!!" + msgId.ToString());
+            Debuger.LogError("msg call back can't be null !!!" + msgId.ToString());
         }
         if (!m_MsgCallbackStore.ContainsKey(msgId))
         {

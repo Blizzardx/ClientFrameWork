@@ -9,13 +9,13 @@ public class LoginStage : StageBase
 
     public override void StartStage()
     {
-        Debug.Log("StartStage LoginStage");
+        Debuger.Log("StartStage LoginStage");
         LoginLogic.Instance.StartLogic();
     }
 
     public override void EndStage()
     {
-        Debug.Log("EndStage LoginStage");
+        Debuger.Log("EndStage LoginStage");
         LoginLogic.Instance.EndLogic();
     }
 }

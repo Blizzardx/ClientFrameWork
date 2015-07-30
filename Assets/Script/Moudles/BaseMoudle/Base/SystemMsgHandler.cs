@@ -20,18 +20,18 @@ public class SystemMsgHandler:Singleton<SystemMsgHandler>
 
     private void SocketClosed(MessageObject msg)
     {
-        Debug.Log("Socket closed");
+        Debuger.Log("Socket closed");
         CollectionManager.Instance.SocketClosed();
     }
     private void SocketConnetTimeOut(MessageObject msg)
     {
-        Debug.Log("connet time out");
+        Debuger.Log("connet time out");
         CollectionManager.Instance.TimeOut();
     }
     private Void SystemInfo(MessageObject msg)
     {
         TBase msgBody = (TBase) (msg.msgValue);
-        Debug.Log(msgBody.ToString());
+        Debuger.Log(msgBody.ToString());
     }
     #endregion
 }

@@ -100,7 +100,7 @@ public class WindowManager : Singleton<WindowManager>
             m_WindowIndexStore.TryGetValue(windowId, out element);
             if (null == element)
             {
-                Debug.LogError("can't load window : " + windowId.ToString());
+                Debuger.LogError("can't load window : " + windowId.ToString());
             }
             else
             {
@@ -258,7 +258,7 @@ public class WindowManager : Singleton<WindowManager>
         }
         if (currentLayerDeepth > m_LayerIndexStore[layer].m_iMax )
         {
-            Debug.LogError("panel deepth out of range");
+            Debuger.LogError("panel deepth out of range");
         }
         return currentLayerDeepth;
     }

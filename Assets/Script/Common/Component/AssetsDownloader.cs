@@ -106,7 +106,7 @@ namespace Assets.Scripts.Framework.Network
         {
             if (IsBusy)
             {
-                Debug.Log("Queue is in downloading ,pls wiat it done ");
+                Debuger.Log("Queue is in downloading ,pls wiat it done ");
                 return;
             }
             IsBusy = true;
@@ -179,7 +179,7 @@ namespace Assets.Scripts.Framework.Network
             }
             else
             {
-                Debug.LogWarning("HttpService:Skiped the not exist file: index" + index + " url:" + currentAsset.Url);
+                Debuger.LogWarning("HttpService:Skiped the not exist file: index" + index + " url:" + currentAsset.Url);
                 DList.Clear();
                 IsBusy = false;
                 onCompleteCallback(false);

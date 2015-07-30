@@ -21,7 +21,7 @@ public abstract class AbstractTickTask : ITickTask
                 {
                     this.Beat();
                 }catch(Exception e){
-					Debug.LogException( e );
+                    Debuger.LogError(e);
                 }
             }
 			lastTickTime = TimeManager.Instance.Now;
@@ -36,7 +36,7 @@ public abstract class AbstractTickTask : ITickTask
         }
         catch (Exception e)
         {
-			Debug.LogException( e );
+			Debuger.LogError( e );
         }
 		if(lastTickTime < TimeManager.Instance.Now)
 		{

@@ -273,7 +273,7 @@ public class AudioManager:Singleton<AudioManager>
                 {
                     // can't load audio resource
                     CallBack(null);
-                    Debug.LogError("Can't load audio clip named: " + type.ToString());
+                    Debuger.LogError("Can't load audio clip named: " + type.ToString());
                 }
             });
             
@@ -299,7 +299,7 @@ public class AudioManager:Singleton<AudioManager>
                 {
                     // can't load audio resource
                     CallBack(null);
-                    Debug.LogError("Can't load audio clip named: " + type.ToString());
+                    Debuger.LogError("Can't load audio clip named: " + type.ToString());
                 }
             });            
         }
@@ -324,7 +324,7 @@ public class AudioManager:Singleton<AudioManager>
                 {
                     // can't load audio resource
                     CallBack(null);
-                    Debug.LogError("Can't load audio clip named: " + type.ToString());
+                    Debuger.LogError("Can't load audio clip named: " + type.ToString());
                 }
             });
             

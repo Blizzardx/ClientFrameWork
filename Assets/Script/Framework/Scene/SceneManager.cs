@@ -24,7 +24,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
     {
         if (m_bIsBusy)
         {
-            Debug.Log("Is busy !!! " + sceneName);
+            Debuger.Log("Is busy !!! " + sceneName);
             return;
         }
 
@@ -70,7 +70,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         yield return m_SceneAsync;
 
         //log
-        Debug.Log("load scene " + m_strTargetLoadingSceneName);
+        Debuger.Log("load scene " + m_strTargetLoadingSceneName);
 
         //end loading
         EndLoadCheck();
@@ -108,7 +108,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         m_nLoadingTotalTime = (int) (Time.time*1000.0f) - m_nBeginLoadingTime;
         if (m_nLoadingTotalTime >= m_TimeOut)
         {
-            Debug.Log("Load scene time out");
+            Debuger.Log("Load scene time out");
             m_bIsBusy = false;
             LoadScene(m_strDefaultScene, m_LoadFinishedCallBack);
         }

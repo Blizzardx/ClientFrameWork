@@ -25,7 +25,7 @@ public class TickTaskManager : Singleton<TickTaskManager>
             AbstractTickTask elem = TickTaskFactory((TickTaskType)(i));
             if (null == elem)
             {
-                Debug.LogError("tick task is null " + (TickTaskType)(i));
+                Debuger.LogError("tick task is null " + (TickTaskType)(i));
             }
             m_TickTaskStore.Add((TickTaskType)(i),elem);
         }
