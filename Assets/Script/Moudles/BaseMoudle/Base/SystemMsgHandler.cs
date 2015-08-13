@@ -12,7 +12,7 @@ public class SystemMsgHandler:Singleton<SystemMsgHandler>
     {
         MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_CLOSE, SocketClosed);
         MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_TIMEOUT, SocketConnetTimeOut);
-        MessageManager.Instance.RegistMessage(MessageTypeConstants.SC_SYSTEM_INFO, SocketConnetTimeOut);
+        MessageManager.Instance.RegistMessage(MessageTypeConstants.SC_SYSTEM_INFO, SystemInfo);
     }
     #endregion
 
@@ -28,7 +28,7 @@ public class SystemMsgHandler:Singleton<SystemMsgHandler>
         Debuger.Log("connet time out");
         CollectionManager.Instance.TimeOut();
     }
-    private Void SystemInfo(MessageObject msg)
+    private void SystemInfo(MessageObject msg)
     {
         TBase msgBody = (TBase) (msg.msgValue);
         Debuger.Log(msgBody.ToString());
