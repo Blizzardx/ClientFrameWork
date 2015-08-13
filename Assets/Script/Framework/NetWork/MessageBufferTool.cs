@@ -3,7 +3,6 @@ using System.ComponentModel;
 using Communication;
 using NetFramework;
 using Thrift.Protocol;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using System.Collections.Generic;
 
