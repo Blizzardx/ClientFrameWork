@@ -26,8 +26,8 @@ public class GameManager : Singleton<GameManager>
         MessageManager.Instance.Initialize();
         WindowManager.Instance.Initialize();
         SystemMsgHandler.Instance.RegisterSystemMsg();
+        DataBindManager.Instance.Initialize();
 
-		//LogManager.Instance.Log (LogManager.Instance.SavePath);
     }
     public void Update()
     {

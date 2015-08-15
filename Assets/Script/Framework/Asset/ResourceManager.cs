@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using Thrift.Protocol;
+using Thrift.Transport;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -103,6 +105,14 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             UnRegisterFromLoadingStore(realPath);
             DoResourceCallBack(realPath,res);
         }
+    }
+    public T DecodeTemplate<T>(string path) where T : TBase, new()
+    {
+        var membuffer = new TMemoryBuffer(Resources.Load<TextAsset>(path).bytes);
+        TProtocol protocol = (new TCompactProtocol(membuffer));
+        var temp = new T();
+        temp.Read(protocol);
+        return temp;
     }
     private void RegisterToCallBackStore(string realPath,Action<UnityEngine.Object> callBack)
     {

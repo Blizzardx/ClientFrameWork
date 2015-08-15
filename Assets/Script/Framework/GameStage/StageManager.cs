@@ -1,24 +1,28 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 
 public class StageManager : Singleton<StageManager>
 {
-    private StageBase                           m_CurrentStage;
-    private Dictionary<GameStateType, string>   m_StageSceneMap;
-    private Dictionary<GameStateType, StageBase> m_StageHandlerMap;
- 
+    private StageBase                               m_CurrentStage;
+    private Dictionary<GameStateType, string>       m_StageSceneStore;
+    private Dictionary<GameStateType, StageBase>    m_StageHandlerStore;
+    private Dictionary<GameStateType, Type>         m_StageHandlerFactoryStore;
+
  
     public void Initialize()
     {
-        m_StageSceneMap = new Dictionary<GameStateType, string>();
-        m_StageHandlerMap = new Dictionary<GameStateType, StageBase>();
+        m_StageSceneStore = new Dictionary<GameStateType, string>();
+        m_StageHandlerStore = new Dictionary<GameStateType, StageBase>();
+        m_StageHandlerFactoryStore = new Dictionary<GameStateType, Type>();
 
         Definer.RegisterStage();
     }
-    public void RegisterStage(GameStateType type, string sceneName)
+    public void RegisterStage(GameStateType type, string sceneName,Type logicHandlerType)
     {
-        m_StageSceneMap.Add(type, sceneName);
+        m_StageSceneStore.Add(type, sceneName);
+        m_StageHandlerFactoryStore.Add(type, logicHandlerType);
     }
     public void ChangeState(GameStateType pState)
     {
@@ -32,14 +36,14 @@ public class StageManager : Singleton<StageManager>
             m_CurrentStage.EndStage();
         }
         m_CurrentStage = null;
-        if (!m_StageHandlerMap.TryGetValue(pState, out m_CurrentStage))
+        if (!m_StageHandlerStore.TryGetValue(pState, out m_CurrentStage))
         {
-            m_CurrentStage = Definer.StageHandlerFactory(pState);
-            m_StageHandlerMap.Add(pState, m_CurrentStage);
+            m_CurrentStage = Activator.CreateInstance(m_StageHandlerFactoryStore[pState]) as StageBase;
+            m_StageHandlerStore.Add(pState, m_CurrentStage);
         }
 
         //load scene
-        SceneManager.Instance.LoadScene(m_StageSceneMap[pState], m_CurrentStage.StartStage);
+        SceneManager.Instance.LoadScene(m_StageSceneStore[pState], m_CurrentStage.StartStage);
     }
     public GameStateType GetCurrentGameStage()
     {

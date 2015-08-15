@@ -21,7 +21,9 @@ public class MessageManager : Singleton<MessageManager>
     private Dictionary<int, List<Action<MessageObject>>>        m_MsgCallbackStore;
     private List<MessageObject>                                 m_MsgList;
     private List<MessageObject>                                 m_DelayMsgList;
-    private List<KeyValuePair<int, Action<MessageObject>>>      m_UnRegisterList; 
+    private Dictionary<int, List<Action<MessageObject>>>        m_UnRegisterList;
+    private List<Action<MessageObject>>                         m_AllMessageListenerList; 
+    private List<Action<MessageObject>>                         m_AllRemovingMessageListenorList; 
     private bool                                                m_bIsProcessingMsgList;
 
     public void Initialize()
@@ -29,7 +31,9 @@ public class MessageManager : Singleton<MessageManager>
         m_MsgCallbackStore      = new Dictionary<int, List<Action<MessageObject>>>();
         m_MsgList               = new List<MessageObject>();
         m_DelayMsgList          = new List<MessageObject>();
-        m_UnRegisterList        = new List<KeyValuePair<int,Action<MessageObject>>>();
+        m_UnRegisterList        = new Dictionary<int, List<Action<MessageObject>>>();
+        m_AllMessageListenerList = new List<Action<MessageObject>>();
+        m_AllRemovingMessageListenorList = new List<Action<MessageObject>>();
         m_bIsProcessingMsgList  = false;
 
         //register message
@@ -55,6 +59,11 @@ public class MessageManager : Singleton<MessageManager>
             {
                 try
                 {
+                    for (int i = 0; i < m_AllMessageListenerList.Count; ++i)
+                    {
+                        m_AllMessageListenerList[i](elem);
+                    }
+
                     if (m_MsgCallbackStore.ContainsKey(elem.msgId))
                     {
                         foreach (Action<MessageObject> fun in m_MsgCallbackStore[elem.msgId])
@@ -113,6 +122,35 @@ public class MessageManager : Singleton<MessageManager>
             }
         }
     }
+    public void RegisterAllMessageListener(Action<MessageObject> msgCallBack)
+    {
+        for (int i = 0; i < m_AllMessageListenerList.Count; ++i)
+        {
+            if (msgCallBack == m_AllMessageListenerList[i])
+            {
+                return;
+            }
+        }
+        m_AllMessageListenerList.Add(msgCallBack);
+    }
+    public void UnRegisterAllMesssageListener(Action<MessageObject> msgCallBack)
+    {
+        if (!m_bIsProcessingMsgList)
+        {
+            m_AllMessageListenerList.Remove(msgCallBack);
+        }
+        else
+        {
+            for (int i = 0; i < m_AllMessageListenerList.Count; ++i)
+            {
+                if (msgCallBack == m_AllMessageListenerList[i])
+                {
+                    m_AllRemovingMessageListenorList.Add(m_AllMessageListenerList[i]);
+                    return;
+                }
+            }
+        }
+    }
     public void RegistMessage(int msgId, Action<MessageObject> msgCallback)
     {
         if (null == msgCallback)
@@ -146,14 +184,28 @@ public class MessageManager : Singleton<MessageManager>
             }
             else
             {
-                for (int i = 0; i < m_UnRegisterList.Count; ++i)
+                bool hasKey = false;
+                foreach (var elem in m_UnRegisterList)
                 {
-                    if (m_UnRegisterList[i].Key == msgId && m_UnRegisterList[i].Value == msgCallback)
+                    if (elem.Key == msgId)
                     {
-                        return;
+                        hasKey = true;
+                        var tmpList = elem.Value;
+                        for (int i = 0; i < tmpList.Count; ++i)
+                        {
+                            if (tmpList[i] == msgCallback)
+                            {
+                                return;
+                            }
+                        }
                     }
                 }
-                m_UnRegisterList.Add(new KeyValuePair<int, Action<MessageObject>>(msgId, msgCallback));
+                // add to remove store
+                if (!hasKey)
+                {
+                    m_UnRegisterList.Add(msgId, new List<Action<MessageObject>>());
+                }
+                m_UnRegisterList[msgId].Add(msgCallback);
             }
         }
     }
@@ -166,17 +218,27 @@ public class MessageManager : Singleton<MessageManager>
     }
     private void DoUnregister()
     {
-        if (m_UnRegisterList.Count == 0)
+        if (m_UnRegisterList.Count != 0)
         {
-            return;
-        }
-        for (int i = 0; i < m_UnRegisterList.Count; ++i)
-        {
-            List<Action<MessageObject>> callback = null;
-            if (m_MsgCallbackStore.TryGetValue(m_UnRegisterList[i].Key,out callback))
+            foreach (var elem in m_UnRegisterList)
             {
-                callback.Remove(m_UnRegisterList[i].Value);
+                var tmpList = elem.Value;
+                var msgList = m_MsgCallbackStore[elem.Key];
+
+                for (int i = 0; i < tmpList.Count; ++i)
+                {
+                    msgList.Remove(tmpList[i]);
+                }
             }
+            m_UnRegisterList.Clear();
+        }
+        if (m_AllRemovingMessageListenorList.Count != 0)
+        {
+            for (int i = 0; i < m_AllRemovingMessageListenorList.Count; ++i)
+            {
+                m_AllMessageListenerList.Remove(m_AllRemovingMessageListenorList[i]);
+            }
+            m_AllRemovingMessageListenorList.Clear();
         }
     }
 }

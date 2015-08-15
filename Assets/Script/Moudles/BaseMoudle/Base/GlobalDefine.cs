@@ -28,14 +28,12 @@ public enum WindowID
     WindowTest3,
     Max,
 }
-
 public enum WindowLayer
 {
     Window,
     Tip ,
     Max,
 }
-
 public class Definer
 {
     public static void RegisterWindow()
@@ -45,29 +43,12 @@ public class Definer
         WindowManager.Instance.RegisterWindow(WindowID.WindowTest2, "Loading/UIWindow_test2", WindowLayer.Window, typeof(UIWindowTest2));
         WindowManager.Instance.RegisterWindow(WindowID.WindowTest3, "Loading/UIWindow_test3", WindowLayer.Window, typeof(UIWindowTest3));
     }
-
     public static void RegisterStage()
     {
-        StageManager.Instance.RegisterStage(GameStateType.LoginState, "Login");
-        StageManager.Instance.RegisterStage(GameStateType.MainCityState, "MainCity");
-        StageManager.Instance.RegisterStage(GameStateType.BattleState, "Battle");
-        StageManager.Instance.RegisterStage(GameStateType.ReConnect, "Login");
-    }
-    public static StageBase StageHandlerFactory(GameStateType type)
-    {
-        switch (type)
-        {
-            case GameStateType.LoginState:
-                return new LoginStage(type);
-            case GameStateType.MainCityState:
-                return new MaincityStage(type);
-            case GameStateType.BattleState:
-                return new BattleStage(type);
-            case GameStateType.ReConnect:
-                return new BattleStage(type);
-        }
-        Debuger.LogError("unkunow game stage type : " + type);
-        return null;
+        StageManager.Instance.RegisterStage(GameStateType.LoginState, "Login",typeof(LoginLogic));
+        StageManager.Instance.RegisterStage(GameStateType.MainCityState, "MainCity", typeof(MaincityStage));
+        StageManager.Instance.RegisterStage(GameStateType.BattleState, "Battle", typeof(BattleStage));
+        StageManager.Instance.RegisterStage(GameStateType.ReConnect, "Login", typeof(BattleStage));
     }
     public static  void DoCollection()
     {
