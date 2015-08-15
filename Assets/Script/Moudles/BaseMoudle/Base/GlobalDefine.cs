@@ -45,7 +45,7 @@ public class Definer
     }
     public static void RegisterStage()
     {
-        StageManager.Instance.RegisterStage(GameStateType.LoginState, "Login",typeof(LoginLogic));
+        StageManager.Instance.RegisterStage(GameStateType.LoginState, "Login", typeof(LoginStage));
         StageManager.Instance.RegisterStage(GameStateType.MainCityState, "MainCity", typeof(MaincityStage));
         StageManager.Instance.RegisterStage(GameStateType.BattleState, "Battle", typeof(BattleStage));
         StageManager.Instance.RegisterStage(GameStateType.ReConnect, "Login", typeof(BattleStage));

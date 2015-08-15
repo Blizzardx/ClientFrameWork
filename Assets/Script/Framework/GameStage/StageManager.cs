@@ -38,7 +38,7 @@ public class StageManager : Singleton<StageManager>
         m_CurrentStage = null;
         if (!m_StageHandlerStore.TryGetValue(pState, out m_CurrentStage))
         {
-            m_CurrentStage = Activator.CreateInstance(m_StageHandlerFactoryStore[pState]) as StageBase;
+            m_CurrentStage = Activator.CreateInstance(m_StageHandlerFactoryStore[pState],pState) as StageBase;
             m_StageHandlerStore.Add(pState, m_CurrentStage);
         }
 
