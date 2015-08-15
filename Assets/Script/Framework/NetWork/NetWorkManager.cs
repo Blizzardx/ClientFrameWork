@@ -117,6 +117,10 @@ public class NetWorkManager : Singleton<NetWorkManager>
     }
     private void Close()
     {
+        if (null == m_Socket)
+        {
+            return;
+        }
         m_Socket.Close();
         m_Status = SocketStatus.Idle;
     }
@@ -141,6 +145,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         {
             int size = m_Socket.EndReceive(ar);
             m_BufferTool.RecieveMsg(size);
+            Debuger.Log("size = " + size);
 
             if (CheckSocketStatus())
             {

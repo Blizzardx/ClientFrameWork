@@ -42,6 +42,7 @@ public class GameManager : Singleton<GameManager>
     public void OnAppQuit()
     {
         LogManager.Instance.OnQuit();
+        NetWorkManager.Instance.Disconnect();
     }
     public void RegisterToUpdateList(Action element)
     {
