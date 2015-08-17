@@ -8,6 +8,7 @@ namespace Assets.Scripts.Core.Utils
 {
     public class FileUtils
     {
+        #region md5 option
         private static MD5CryptoServiceProvider md5Generator = new MD5CryptoServiceProvider();
         public static string GetMD5HashFromFile(string fileName)
         {
@@ -39,7 +40,48 @@ namespace Assets.Scripts.Core.Utils
             }
             return sb.ToString();
         }
-        public static string LoadStringFile(string path, bool isEncrypt = false)
+        public static string GetByteMD5(byte[] fileContent)
+        {
+            try
+            {
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(fileContent);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
+                {
+                    sb.Append(retVal[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("GetMD5HashFromFile() fail,error:" + ex.Message);
+            }
+        }
+        #endregion
+
+        #region file option
+        public static void DeleteFile(string filePath)
+        {
+            Console.WriteLine("########   " + filePath);
+            if (!File.Exists(filePath))
+            {
+                return;
+            }
+            File.Delete(filePath);
+        }
+        public static void EnsureFolder(string path)
+        {
+            string folder = Path.GetDirectoryName(path);
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+        }
+        #endregion
+
+        #region read
+        public static string ReadStringFile(string path, bool isEncrypt = false)
         {
             string content = "";
             if (File.Exists(path))
@@ -59,20 +101,39 @@ namespace Assets.Scripts.Core.Utils
             {
                 Debuger.LogWarning("LoadStringFile. Path Inexistent: " + path);
             }
-           
+
             return content;
         }
-        public static void ensureFolder(string path)
+        public static byte[] ReadByteFile(string path)
         {
-            string folder = Path.GetDirectoryName(path);
-            if (!Directory.Exists(folder))
+            byte[] res = null;
+            if (File.Exists(path))
             {
-                Directory.CreateDirectory(folder);
+                try
+                {
+                    FileStream sr = File.OpenRead(path);
+                    res = new byte[sr.Length];
+                    sr.Read(res, 0, res.Length);
+                    sr.Dispose();
+                }
+                catch (Exception e)
+                {
+                    res = null;
+                }
             }
+            else
+            {
+                Debuger.LogWarning("LoadStringFile. Path Inexistent: " + path);
+            }
+
+            return res;
         }
-        public static void SaveStringFile(string path, string content, bool isEncrypt = false)
+        #endregion
+
+        #region write
+        public static void WriteStringFile(string path, string content, bool isEncrypt = false)
         {
-            ensureFolder(path);
+            EnsureFolder(path);
             FileStream fs = File.OpenWrite(path);
             fs.SetLength(0);
             var sw = new StreamWriter(fs);
@@ -80,9 +141,9 @@ namespace Assets.Scripts.Core.Utils
             sw.Dispose();
             fs.Dispose();
         }
-		public static void SaveStringFile(string path,List<string> contentList,bool isEncrypt = false)
+		public static void WriteStringFile(string path,List<string> contentList,bool isEncrypt = false)
 		{
-			ensureFolder(path);
+			EnsureFolder(path);
 			FileStream fs = File.OpenWrite(path);
 		    fs.Seek(fs.Length, 0);
 			var sw = new StreamWriter(fs);
@@ -93,13 +154,14 @@ namespace Assets.Scripts.Core.Utils
 			sw.Dispose();
 			fs.Dispose();
 		}
-        public static void SaveFileByteArray(string path, byte[] bytes)
+        public static void WriteByteFile(string path, byte[] bytes)
         {
-            ensureFolder(path);
+            EnsureFolder(path);
             FileStream fs = File.OpenWrite(path);
             fs.Write(bytes, 0, bytes.Length);
             fs.Close();
             fs.Dispose();
         }
+        #endregion
     }
 }

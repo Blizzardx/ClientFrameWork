@@ -24,14 +24,20 @@ public class TipManager : Singleton<TipManager>
     #endregion
 
 
-    #region common text tip
-    public void Tip(string content)
+    #region text tip
+    public void Tip(string content,LabelFontSizeDefine fontSize = LabelFontSizeDefine.LABEL_SIZE_25,CSS.Styles fontStyle = CSS.Styles.Style_Green_LineBlack)
+    {
+        
+    }
+    #endregion
+
+    #region roll tip
+    public void RollTip(string content)
     {
         
     }
     #endregion
 
     #region tip
-
     #endregion
 }

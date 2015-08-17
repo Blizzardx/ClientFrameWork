@@ -30,7 +30,7 @@ public class LogManager :Singleton<LogManager>
     #region sytem function 
 	private void SaveToFileSystem()
 	{
-        FileUtils.SaveStringFile(m_strSavePath, m_LogStore);
+        FileUtils.WriteStringFile(m_strSavePath, m_LogStore);
         m_LogStore.Clear();
     }
     private void OnLogTrigger(string message)

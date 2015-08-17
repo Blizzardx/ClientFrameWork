@@ -213,14 +213,14 @@ namespace Assets.Scripts.Framework.Network
                 {
                     if (www.bytes.Length > 0)
                     {
-                        FileUtils.SaveFileByteArray(currentAsset.LocalPath, www.bytes);
+                        FileUtils.WriteByteFile(currentAsset.LocalPath, www.bytes);
                     }
                 }
                 if (Type == AssetFile.TEXT)
                 {
                     if (www.bytes.Length > 0)
                     {
-                        FileUtils.SaveStringFile(currentAsset.LocalPath, www.text);
+                        FileUtils.WriteStringFile(currentAsset.LocalPath, www.text);
                     }
                 }
             }
