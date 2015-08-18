@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.IO;
 using Thrift.Protocol;
 using Thrift.Transport;
 using UnityEngine;
@@ -39,6 +40,10 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     public T LoadBuildInResource<T>(string path,AssetType type ) where T : UnityEngine.Object
     {
         string realPath = GetRealPath(path, type);
+        
+        //add build in tag
+        realPath = "BuildIn/" +  realPath;
+
         Debuger.Log(realPath);
         UnityEngine.Object res = null;
         m_AssetStore.TryGetValue(realPath, out res);

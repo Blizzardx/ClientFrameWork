@@ -1,4 +1,4 @@
-//----------------------------------------------
+﻿//----------------------------------------------
 //            NGUI: Next-Gen UI kit
 // Copyright © 2011-2014 Tasharen Entertainment
 //----------------------------------------------
@@ -53,7 +53,7 @@ public class UIDrawCall : MonoBehaviour
 	[HideInInspector][System.NonSerialized] public BetterList<Color32> cols = new BetterList<Color32>();
 
 	Material		mMaterial;		// Material used by this screen
-	Texture			mTexture;		// Main texture used by the material
+	Texture			mTexture;		// scriptMain texture used by the material
 	Shader			mShader;		// Shader used by the dynamically created material
 	int				mClipCount = 0;	// Number of times the draw call's content is getting clipped
 	Transform		mTrans;			// Cached transform

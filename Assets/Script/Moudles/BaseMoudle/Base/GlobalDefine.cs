@@ -20,13 +20,13 @@ public enum GameStateType
     /// </summary>
     ReConnect,
 }
-public enum WindowID
+public class WindowID
 {
-    Loading,
-    WindowTest1,
-    WindowTest2,
-    WindowTest3,
-    Max,
+    public const int Loading = 0;
+    public const int WindowTest1 = 1;
+    public const int WindowTest2 = 2;
+    public const int WindowTest3 = 3;
+    public const int Max = 4;
 }
 public enum WindowLayer
 {
@@ -39,9 +39,9 @@ public class Definer
     public static void RegisterWindow()
     {
         WindowManager.Instance.RegisterWindow(WindowID.Loading, "Loading/UIWindow_Loading", WindowLayer.Window, typeof(UIWindowLoading));
-        WindowManager.Instance.RegisterWindow(WindowID.WindowTest1, "Loading/UIWindow_test1", WindowLayer.Window, typeof(UIWindowTest1));
-        WindowManager.Instance.RegisterWindow(WindowID.WindowTest2, "Loading/UIWindow_test2", WindowLayer.Window, typeof(UIWindowTest2));
-        WindowManager.Instance.RegisterWindow(WindowID.WindowTest3, "Loading/UIWindow_test3", WindowLayer.Window, typeof(UIWindowTest3));
+        WindowManager.Instance.RegisterWindow(WindowID.WindowTest1, "Window/UIWindow_test1", WindowLayer.Window, typeof(UIWindowTest1));
+        WindowManager.Instance.RegisterWindow(WindowID.WindowTest2, "Window/UIWindow_test2", WindowLayer.Window, typeof(UIWindowTest2));
+        WindowManager.Instance.RegisterWindow(WindowID.WindowTest3, "Window/UIWindow_test3", WindowLayer.Window, typeof(UIWindowTest3));
     }
     public static void RegisterStage()
     {

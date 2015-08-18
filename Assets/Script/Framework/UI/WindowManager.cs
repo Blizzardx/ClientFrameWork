@@ -20,17 +20,21 @@ public class LayerInfo
 }
 public class WindowIndexStruct
 {
-    public WindowIndexStruct(WindowID id, string path, WindowLayer layer,Type type)
+    public WindowIndexStruct(int id, string path, WindowLayer layer, Type type,bool isBuildWindow = true)
     {
         m_ID = id;
         m_strPath = path;
         m_Layer = layer;
         m_Type = type;
+        m_bIsBuildInWindow = isBuildWindow;
     }
-    public WindowID     m_ID;
+    public int          m_ID;
     public string       m_strPath;
     public WindowLayer  m_Layer;
     public Type         m_Type;
+    public bool         m_bIsBuildInWindow;
+    public string       m_strClassName;
+
 }
 public class WindowManager : Singleton<WindowManager>
 {
@@ -40,8 +44,8 @@ public class WindowManager : Singleton<WindowManager>
     private List<Action>                                m_UpdateStore;
     private List<Action>                                m_RemoveingUpdateList;
     private bool                                        m_bIsUpdateListBusy;
-    private Dictionary<WindowID, WindowBase>            m_WindowStore;
-    private Dictionary<WindowID, WindowIndexStruct>     m_WindowIndexStore;
+    private Dictionary<int, WindowBase>                 m_WindowStore;
+    private Dictionary<int, WindowIndexStruct>          m_WindowIndexStore;
     private Dictionary<WindowLayer, LayerInfo>          m_LayerIndexStore;
     private Dictionary<WindowLayer, List<WindowBase>>   m_ActivedWindowQueue;
  
@@ -55,8 +59,8 @@ public class WindowManager : Singleton<WindowManager>
         m_UpdateStore           = new List<Action>();
         m_RemoveingUpdateList   = new List<Action>();
         m_bIsUpdateListBusy     = false;
-        m_WindowStore           = new Dictionary<WindowID, WindowBase>();
-        m_WindowIndexStore      = new Dictionary<WindowID, WindowIndexStruct>();
+        m_WindowStore           = new Dictionary<int, WindowBase>();
+        m_WindowIndexStore      = new Dictionary<int, WindowIndexStruct>();
         m_LayerIndexStore       = new Dictionary<WindowLayer, LayerInfo>();
         m_ActivedWindowQueue    = new Dictionary<WindowLayer, List<WindowBase>>();
 
@@ -70,7 +74,7 @@ public class WindowManager : Singleton<WindowManager>
     {
         ExcutionUpdate();
     }
-    public void OpenWindow(WindowID windowId,object param = null)
+    public void OpenWindow(int windowId, object param = null)
     {
         if (m_WindowStore.ContainsKey(windowId))
         {
@@ -104,28 +108,55 @@ public class WindowManager : Singleton<WindowManager>
             }
             else
             {
-                GameObject root = GameObject.Instantiate(ResourceManager.Instance.LoadBuildInResource<GameObject>(element.m_strPath, AssetType.UI));
-                WindowBase res = Activator.CreateInstance(currentWindowIndexStruct.m_Type) as WindowBase;
-                ComponentTool.Attach(m_LayerIndexStore[currentWindowIndexStruct.m_Layer].m_Root.transform, root.transform);
+                if (element.m_bIsBuildInWindow)
+                {
+                    GameObject root = GameObject.Instantiate(ResourceManager.Instance.LoadBuildInResource<GameObject>(element.m_strPath, AssetType.UI));
+                    WindowBase res = Activator.CreateInstance(currentWindowIndexStruct.m_Type) as WindowBase;
+                    ComponentTool.Attach(m_LayerIndexStore[currentWindowIndexStruct.m_Layer].m_Root.transform, root.transform);
 
-                // initialize (include set position,set root ,set deepth ...)
-                res.Initialize(windowId, root);
-                // on init
-                res.OnInit();
-                // set deepth ,do it befor add to actived window queue
-                res.ResetDeepth(GetCurrentWindowDeepth(currentWindowIndexStruct.m_Layer));
-                //reset current layer deepth
-                m_LayerIndexStore[currentWindowIndexStruct.m_Layer].m_iCurrent = res.GetMaxDeepthValue();
-                // on open
-                res.OnOpen(param);
-                //add to actived window queue
-                AddToActivedWindowQueue(currentWindowIndexStruct.m_Layer, res);
-                // save to window store
-                m_WindowStore.Add(windowId, res);
+                    // initialize (include set position,set root ,set deepth ...)
+                    res.Initialize(windowId, root);
+                    // on init
+                    res.OnInit();
+                    // set deepth ,do it befor add to actived window queue
+                    res.ResetDeepth(GetCurrentWindowDeepth(currentWindowIndexStruct.m_Layer));
+                    //reset current layer deepth
+                    m_LayerIndexStore[currentWindowIndexStruct.m_Layer].m_iCurrent = res.GetMaxDeepthValue();
+                    // on open
+                    res.OnOpen(param);
+                    //add to actived window queue
+                    AddToActivedWindowQueue(currentWindowIndexStruct.m_Layer, res);
+                    // save to window store
+                    m_WindowStore.Add(windowId, res);
+                }
+                else
+                {
+                    ResourceManager.Instance.LoadAssetsAsync(element.m_strPath, AssetType.UI, (origin) =>
+                    {
+                        GameObject root = GameObject.Instantiate(origin) as GameObject;
+                        WindowBase res = Activator.CreateInstance(currentWindowIndexStruct.m_Type) as WindowBase;
+                        ComponentTool.Attach(m_LayerIndexStore[currentWindowIndexStruct.m_Layer].m_Root.transform, root.transform);
+
+                        // initialize (include set position,set root ,set deepth ...)
+                        res.Initialize(windowId, root);
+                        // on init
+                        res.OnInit();
+                        // set deepth ,do it befor add to actived window queue
+                        res.ResetDeepth(GetCurrentWindowDeepth(currentWindowIndexStruct.m_Layer));
+                        //reset current layer deepth
+                        m_LayerIndexStore[currentWindowIndexStruct.m_Layer].m_iCurrent = res.GetMaxDeepthValue();
+                        // on open
+                        res.OnOpen(param);
+                        //add to actived window queue
+                        AddToActivedWindowQueue(currentWindowIndexStruct.m_Layer, res);
+                        // save to window store
+                        m_WindowStore.Add(windowId, res);
+                    });
+                }
             }
         }
     }
-    public void CloseWindow(WindowID windowId,bool isRemoveFromWindowStore = true)
+    public void CloseWindow(int windowId, bool isRemoveFromWindowStore = true)
     {
         if (!m_WindowStore.ContainsKey(windowId))
         {
@@ -144,7 +175,7 @@ public class WindowManager : Singleton<WindowManager>
             m_WindowStore.Remove(windowId);
         }
     }
-    public void HideWindow(WindowID windowId)
+    public void HideWindow(int windowId)
     {
         if (!m_WindowStore.ContainsKey(windowId))
         {
@@ -157,7 +188,7 @@ public class WindowManager : Singleton<WindowManager>
         //hide
         m_WindowStore[windowId].m_ObjectRoot.SetActive(false);
     }
-    public WindowBase GetWindow(WindowID windowId)
+    public WindowBase GetWindow(int windowId)
     {
         WindowBase targetWindow = null;
         m_WindowStore.TryGetValue(windowId, out targetWindow);
@@ -165,14 +196,14 @@ public class WindowManager : Singleton<WindowManager>
     }
     public void HideAllWindow()
     {
-        foreach (KeyValuePair<WindowID, WindowBase> elem in m_WindowStore)
+        foreach (KeyValuePair<int, WindowBase> elem in m_WindowStore)
         {
             HideWindow(elem.Key);
         }
     }
     public void CloseAllWindow()
     {
-        foreach (KeyValuePair<WindowID, WindowBase> elem in m_WindowStore)
+        foreach (KeyValuePair<int, WindowBase> elem in m_WindowStore)
         {
             CloseWindow(elem.Key,false);
         }
@@ -215,7 +246,7 @@ public class WindowManager : Singleton<WindowManager>
             m_UpdateStore.Remove(element);
         }
     }
-    public void RegisterWindow(WindowID id, string path, WindowLayer layer,Type type)
+    public void RegisterWindow(int id, string path, WindowLayer layer, Type type)
     {
         if (m_WindowIndexStore.ContainsKey(id))
         {

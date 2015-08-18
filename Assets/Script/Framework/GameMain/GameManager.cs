@@ -1,6 +1,6 @@
 ﻿using System;
+using Assets.Scripts.Core.Utils;
 using NetFramework.Auto;
-using Thrift.Protocol;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -26,15 +26,13 @@ public class GameManager : Singleton<GameManager>
         MessageManager.Instance.Initialize();
         WindowManager.Instance.Initialize();
         SystemMsgHandler.Instance.RegisterSystemMsg();
-        DataBindManager.Instance.Initialize();
-
+        ScriptManager.Instance.Initialize();
     }
     public void Update()
     {
         TimeManager.Instance.Update();
         MessageManager.Instance.Update();
         TickTaskManager.Instance.Update();
-
         ExcutionUpdateList();
 
         Test();
@@ -172,7 +170,14 @@ public class GameManager : Singleton<GameManager>
             List<int> a = null;
             a.Add(0);
         }
-		 
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            string content = FileUtils.ReadStringFile("test");
+            byte[] tmp = System.Text.Encoding.UTF8.GetBytes(content );
+            FileUtils.WriteByteFile(Application.persistentDataPath + "/byte.jpg", tmp);
+            Debuger.Log(Application.persistentDataPath);
+            
+        }
     }
     #endregion
 }

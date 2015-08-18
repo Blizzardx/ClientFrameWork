@@ -38,14 +38,14 @@ public class PanelStruct
 }
 public class WindowBase
 {
-    public WindowID             m_ID { get; private set; }
+    public int                  m_ID { get; private set; }
     public GameObject           m_ObjectRoot { get; private set; }
     private int                 m_iDeepth;
     private List<PanelStruct>   m_AllPanelsUnderWindow;
     private int                 m_iMaxDeepth;
 
     #region public interface
-    public void Initialize(WindowID id, GameObject root)
+    public void Initialize(int id, GameObject root)
     {
         m_ID = id;
         m_ObjectRoot = root;

@@ -1,4 +1,4 @@
-//----------------------------------------------
+﻿//----------------------------------------------
 //            NGUI: Next-Gen UI kit
 // Copyright © 2011-2014 Tasharen Entertainment
 //----------------------------------------------
@@ -336,7 +336,7 @@ public abstract class UITweener : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Main Bounce logic to simplify the Sample function
+	/// scriptMain Bounce logic to simplify the Sample function
 	/// </summary>
 	
 	float BounceLogic (float val)
