@@ -30,7 +30,7 @@ public class ScriptManager : Singleton<ScriptManager>
         m_ProjectScript.env.RegType(new CSLE.RegHelper_Type(typeof (ScriptManager)));
         m_ProjectScript.env.RegType(new CSLE.RegHelper_Type(typeof (WindowBase)));
 
-        LoadProjectAndRun(Application.streamingAssetsPath + "/Project1");
+        //LoadProjectAndRun(Application.streamingAssetsPath + "/Project1");
     }
     public void LoadProjectAndRun(string path)
     {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.IO;
+using Assets.Scripts.Core.Utils;
 using Thrift.Protocol;
 using Thrift.Transport;
 using UnityEngine;
@@ -113,7 +114,8 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     }
     public T DecodeTemplate<T>(string path) where T : TBase, new()
     {
-        var membuffer = new TMemoryBuffer(Resources.Load<TextAsset>(path).bytes);
+        byte[] data = FileUtils.ReadByteFile(path);
+        var membuffer = new TMemoryBuffer(data);
         TProtocol protocol = (new TCompactProtocol(membuffer));
         var temp = new T();
         temp.Read(protocol);
