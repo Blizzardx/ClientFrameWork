@@ -13,6 +13,7 @@ public enum AssetType
     UI,
     Animation,
     Audio,
+    Map,
 }
 public class LoadResourceElement
 {
@@ -42,9 +43,6 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     {
         string realPath = GetRealPath(path, type);
         
-        //add build in tag
-        realPath = "BuildIn/" +  realPath;
-
         Debuger.Log(realPath);
         UnityEngine.Object res = null;
         m_AssetStore.TryGetValue(realPath, out res);
@@ -68,7 +66,8 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     }
     public void LoadAssetsAsync(string path, AssetType type, Action<UnityEngine.Object> CallBack)
     {
-        StartLoadResource(path, type, CallBack);
+        //StartLoadResource(path, type, CallBack);
+        StartCoroutine(StartLoadResource(path, type, CallBack));
     }
     public IEnumerator StartLoadResource(string path, AssetType type, Action<UnityEngine.Object> CallBack) 
     {
@@ -90,11 +89,11 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         }
         else
         {
-            //start load
-            ResourceRequest result = Resources.LoadAsync(realPath);
-
             //add to download list
             RegisterToLoadingStore(realPath);
+
+            //start load
+            ResourceRequest result = Resources.LoadAsync(realPath);
 
             yield return result;
 
@@ -172,13 +171,16 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         switch (type)
         {
            case AssetType.UI:
-                path = "UI/Prefab/" + path;
+                path = "BuildIn/UI/Prefab/" + path;
                 break;
             case AssetType.Animation:
-                path = "Animation/" + path;
+                path = "BuildIn/Animation/" + path;
                 break;
             case AssetType.Audio:
-                path = "Audio/" + path;
+                path = "BuildIn/Audio/" + path;
+                break;
+            case AssetType.Map:
+                path = "BuildIn/Map/" + path;
                 break;
             default:
             {

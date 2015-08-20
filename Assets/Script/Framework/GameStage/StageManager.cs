@@ -19,6 +19,14 @@ public class StageManager : Singleton<StageManager>
 
         Definer.RegisterStage();
     }
+
+    public void Destructor()
+    {
+        foreach (var elem in m_StageHandlerStore)
+        {
+            //elem.Value.EndStage();
+        }
+    }
     public void RegisterStage(GameStateType type, string sceneName,Type logicHandlerType)
     {
         m_StageSceneStore.Add(type, sceneName);

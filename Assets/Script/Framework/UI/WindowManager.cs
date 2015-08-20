@@ -38,7 +38,7 @@ public class WindowIndexStruct
 }
 public class WindowManager : Singleton<WindowManager>
 {
-    private GameObject                                  m_UIWindowRoot;
+	public GameObject                                  UIWindowCameraRoot{get;private set;}
     private Camera                                      m_UICamera;
     private WindowBase                                  m_CurrentWindow;
     private List<Action>                                m_UpdateStore;
@@ -54,8 +54,8 @@ public class WindowManager : Singleton<WindowManager>
 
     public void Initialize()
     {
-        m_UIWindowRoot          = ComponentTool.FindChild("UI_Root", null);
-        m_UICamera              = ComponentTool.FindChildComponent<Camera>("UI Root", m_UIWindowRoot);
+        UIWindowCameraRoot          = ComponentTool.FindChild("UI_Root", null);
+        m_UICamera              = ComponentTool.FindChildComponent<Camera>("UI Root", UIWindowCameraRoot);
         m_UpdateStore           = new List<Action>();
         m_RemoveingUpdateList   = new List<Action>();
         m_bIsUpdateListBusy     = false;
@@ -64,8 +64,8 @@ public class WindowManager : Singleton<WindowManager>
         m_LayerIndexStore       = new Dictionary<WindowLayer, LayerInfo>();
         m_ActivedWindowQueue    = new Dictionary<WindowLayer, List<WindowBase>>();
 
-        m_LayerIndexStore.Add(WindowLayer.Window, new LayerInfo(0, 20, ComponentTool.FindChild("LayerWindow", m_UIWindowRoot)));
-        m_LayerIndexStore.Add(WindowLayer.Tip, new LayerInfo(21, 40, ComponentTool.FindChild("LayerTip", m_UIWindowRoot)));
+        m_LayerIndexStore.Add(WindowLayer.Window, new LayerInfo(0, 20, ComponentTool.FindChild("LayerWindow", UIWindowCameraRoot)));
+        m_LayerIndexStore.Add(WindowLayer.Tip, new LayerInfo(21, 40, ComponentTool.FindChild("LayerTip", UIWindowCameraRoot)));
 
         //register window
         Definer.RegisterWindow();

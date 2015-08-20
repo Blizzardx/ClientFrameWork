@@ -1,34 +1,36 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using System;
 
-    /// <summary>
-    /// Audio manager
-    /// </summary>
-public class AudioManager:Singleton<AudioManager>
+/// <summary>
+/// Audio manager
+/// </summary>
+public class AudioIndexStruct
+{
+    public AudioIndexStruct(string path)
     {
+        m_strPath = path;
+    }
+    public string m_strPath;
+}
+public class AudioManager:Singleton<AudioManager>
+{
     //private members
-    private GameObject                                                                  m_AudioSourceRoot;
-    private Dictionary<UISoundAudioDefine.AudioUISoundType, AudioClip>                  m_UISoundClipStore;
-    private Dictionary<EffectAudioDefine.AudioEffectSoundType, AudioClip>               m_EffectSoundClipStore;
-    private Dictionary<BackgroundAudioDefine.AudioBackgroundSoundType, AudioClip>       m_BackgroundSoundClipStore;
-    private List<AudioSource>                                                           m_EffectAudioSourceStore;
-    private List<AudioSource>                                                           m_UIAudioSourceStore;
-    private List<BackgroundAudioDefine.AudioBackgroundSoundType>                        m_BattleBgMusicStore; //use for loop play when fighting
-    private AudioSource                                                                 m_BgAudioSource;
-    private float                                                                       m_fUIVolume;
-    private float                                                                       m_fEffectVolume;
-    private float                                                                       m_fBgVolume;
-    private bool                                                                        m_bIsMuteEffect;
-    private bool                                                                        m_bIsMuteUI;
-    private bool                                                                        m_bIsMuteBg;
-    private int                                                                         m_StoreSizeMax      = 5;
-    private string                                                                      m_strUIMuteTag      = "UIMute";     // 0-mute 1-don't mute
-    private string                                                                      m_strBgMuteTag      = "BgMute";     // 0-mute 1-don't mute
-    private string                                                                      m_strEffectMuteTag  = "EffectMute"; // 0-mute 1-don't mute
-    private bool                                                                        m_bIsRandoming      = false;
-    private bool                                                                        m_bIsLoadingNextBgMusic;
+    private GameObject                              m_AudioSourceRoot;
+    private Dictionary<AudioId, AudioIndexStruct>   m_AudioResourceMap; 
+    private Dictionary<AudioId, AudioClip>          m_UISoundClipStore;
+    private Dictionary<AudioId, AudioClip>          m_EffectSoundClipStore;
+    private Dictionary<AudioId, AudioClip>          m_BackgroundSoundClipStore;
+    private List<AudioSource>                       m_EffectAudioSourceStore;
+    private List<AudioSource>                       m_UIAudioSourceStore;
+    private AudioSource                             m_BgAudioSource;
+    private float                                   m_fUIVolume;
+    private float                                   m_fEffectVolume;
+    private float                                   m_fBgVolume;
+    private bool                                    m_bIsMuteEffect;
+    private bool                                    m_bIsMuteUI;
+    private bool                                    m_bIsMuteBg;
+    private int                                     m_StoreSizeMax      = 5;
 
     #region public interface
     public void Initialize()
@@ -37,20 +39,13 @@ public class AudioManager:Singleton<AudioManager>
         m_fEffectVolume = 1.0f; //default volume 100%
         m_fBgVolume     = 0.6f; //default volume 60%
 
-        m_AudioSourceRoot           = GameObject.FindGameObjectWithTag("AudioPlayer");
-        m_UISoundClipStore          = new Dictionary<UISoundAudioDefine.AudioUISoundType, AudioClip>();
-        m_EffectSoundClipStore      = new Dictionary<EffectAudioDefine.AudioEffectSoundType, AudioClip>();
-        m_BackgroundSoundClipStore  = new Dictionary<BackgroundAudioDefine.AudioBackgroundSoundType, AudioClip>();
+        m_AudioSourceRoot           = ComponentTool.FindChild("AudioPlayer",AppManager.Instance.gameObject);
+        m_UISoundClipStore          = new Dictionary<AudioId, AudioClip>();
+        m_EffectSoundClipStore      = new Dictionary<AudioId, AudioClip>();
+        m_BackgroundSoundClipStore  = new Dictionary<AudioId, AudioClip>();
         m_UIAudioSourceStore        = new List<AudioSource>();
         m_EffectAudioSourceStore    = new List<AudioSource>();
-        m_BattleBgMusicStore        = new List<BackgroundAudioDefine.AudioBackgroundSoundType>();
-
-        //set battle bg music
-        m_BattleBgMusicStore.Add(BackgroundAudioDefine.AudioBackgroundSoundType.Battle_0);
-        m_BattleBgMusicStore.Add(BackgroundAudioDefine.AudioBackgroundSoundType.Battle_1);
-        m_BattleBgMusicStore.Add(BackgroundAudioDefine.AudioBackgroundSoundType.Battle_2);
-        m_BattleBgMusicStore.Add(BackgroundAudioDefine.AudioBackgroundSoundType.Battle_3);
-        m_BattleBgMusicStore.Add(BackgroundAudioDefine.AudioBackgroundSoundType.Battle_4);
+        m_AudioResourceMap          = new Dictionary<AudioId, AudioIndexStruct>();
 
         //add background audio source
         GameObject tmp              = new GameObject();
@@ -60,17 +55,12 @@ public class AudioManager:Singleton<AudioManager>
         m_BgAudioSource             = tmp.AddComponent<AudioSource>();
         m_BgAudioSource.volume      = m_fBgVolume;
 
-        bool tmpIsMuteUI        = PlayerPrefs.GetInt(m_strUIMuteTag, 1) == 0;
-        bool tmpIsMuteBg        = PlayerPrefs.GetInt(m_strBgMuteTag, 1) == 0;
-        bool tmpIsMuteEffect    = PlayerPrefs.GetInt(m_strEffectMuteTag, 1) == 0;
-
         //execution sound setting
-        MuteUISound(tmpIsMuteUI);
-        MuteEffectSound(tmpIsMuteEffect);
-        MuteBackgroundSound(tmpIsMuteBg);
+        MuteUISound(false);
+        MuteEffectSound(false);
+        MuteBackgroundSound(false);
 
-        m_bIsRandoming          = false;
-        m_bIsLoadingNextBgMusic = false;
+        AudioDefiner.RegisterAudio();
     }
     public void Destructor()
     {
@@ -123,7 +113,7 @@ public class AudioManager:Singleton<AudioManager>
         {
             elem.mute = status;
         }
-        PlayerPrefs.SetInt(m_strEffectMuteTag, m_bIsMuteEffect ? 2 : 1);
+        //PlayerPrefs.SetInt(m_strEffectMuteTag, m_bIsMuteEffect ? 2 : 1);
     }
     public void MuteUISound(bool status)
     {
@@ -133,22 +123,22 @@ public class AudioManager:Singleton<AudioManager>
         {
             elem.mute = status;
         }
-        PlayerPrefs.SetInt(m_strUIMuteTag, m_bIsMuteUI ? 2 : 1);
+        //PlayerPrefs.SetInt(m_strUIMuteTag, m_bIsMuteUI ? 2 : 1);
     }
     public void MuteBackgroundSound(bool status)
     {
         m_bIsMuteBg = status;
         m_BgAudioSource.mute = status;
-        PlayerPrefs.SetInt(m_strBgMuteTag, m_bIsMuteBg ? 2 : 1);
+        //PlayerPrefs.SetInt(m_strBgMuteTag, m_bIsMuteBg ? 2 : 1);
     }
-    public void PlayUISound(UISoundAudioDefine.AudioUISoundType type)
+    public void PlayUISound(AudioId type)
     {
         if (m_bIsMuteUI)
         {
             return;
         }
 
-        GetAudioClipByType(type, (AudioClip tmpClip) => 
+        GetUIAudioClip(type, (AudioClip tmpClip) => 
         {
             if (null != tmpClip)
             {
@@ -157,14 +147,14 @@ public class AudioManager:Singleton<AudioManager>
         });
         
     }
-    public void PlayEffectSound(EffectAudioDefine.AudioEffectSoundType type,Vector3 targetRoot)
+    public void PlayEffectSound(AudioId type, Vector3 targetRoot)
     {
         if (m_bIsMuteEffect)
         {
             return;
         }
 
-        GetAudioClipByType(type, (AudioClip clip) =>
+        GetEffectAudioClip(type, (AudioClip clip) =>
         {
             if (null != clip)
             {
@@ -173,29 +163,13 @@ public class AudioManager:Singleton<AudioManager>
         });
         
     }
-    public void PlayBackgroundSound(BackgroundAudioDefine.AudioBackgroundSoundType type)
+    public void PlayBackgroundSound(AudioId type,bool isLoop  = true)
     {
-        m_bIsLoadingNextBgMusic = true;
-
-        GetAudioClipByType(type, (AudioClip tmpClip) =>
+        GetBgAudioClip(type, (AudioClip tmpClip) =>
         {
-            if (type == BackgroundAudioDefine.AudioBackgroundSoundType.Battle_0 ||
-                type == BackgroundAudioDefine.AudioBackgroundSoundType.Battle_1 ||
-                type == BackgroundAudioDefine.AudioBackgroundSoundType.Battle_2 ||
-                type == BackgroundAudioDefine.AudioBackgroundSoundType.Battle_3 ||
-                type == BackgroundAudioDefine.AudioBackgroundSoundType.Battle_4
-                )
-            {
-                m_bIsRandoming = true;
-            }
-            else
-            {
-                m_bIsRandoming = false;
-            }
-            m_bIsLoadingNextBgMusic = false;
             if (null != tmpClip)
             {
-                AudioPlayBg(tmpClip);
+                AudioPlayBg(tmpClip, isLoop);
             }
         });
         
@@ -241,19 +215,14 @@ public class AudioManager:Singleton<AudioManager>
             }
         }
     }
-    public void BasicUpdate()
+    public void RegisterAudio(AudioId id, AudioIndexStruct info)
     {
-        if (m_bIsRandoming && m_BgAudioSource != null && !m_BgAudioSource.isPlaying && !m_bIsLoadingNextBgMusic)
-        {
-            //random play
-            BackgroundAudioDefine.AudioBackgroundSoundType newBg = m_BattleBgMusicStore[UnityEngine.Random.Range(0, m_BattleBgMusicStore.Count)];
-            PlayBackgroundSound(newBg);
-        }
+        m_AudioResourceMap.Add(id, info);
     }
     #endregion
 
     #region system property
-    private void GetAudioClipByType(UISoundAudioDefine.AudioUISoundType type,Action<AudioClip> CallBack)
+    private void GetUIAudioClip(AudioId type, Action<AudioClip> CallBack)
     {
         if (m_UISoundClipStore.ContainsKey(type))
         {
@@ -261,7 +230,7 @@ public class AudioManager:Singleton<AudioManager>
         }
         else
         {
-            LoadClip(GetAssetsNameByType(type), (UnityEngine.Object clip) =>
+            LoadClip(type, (UnityEngine.Object clip) =>
             {
                 AudioClip tmpElem = clip as AudioClip;
                 if (null != tmpElem)
@@ -276,10 +245,9 @@ public class AudioManager:Singleton<AudioManager>
                     Debuger.LogError("Can't load audio clip named: " + type.ToString());
                 }
             });
-            
         }
     }
-    private void GetAudioClipByType(BackgroundAudioDefine.AudioBackgroundSoundType type, Action<AudioClip> CallBack)
+    private void GetBgAudioClip(AudioId type, Action<AudioClip> CallBack)
     {
         if (m_BackgroundSoundClipStore.ContainsKey(type))
         {
@@ -287,7 +255,7 @@ public class AudioManager:Singleton<AudioManager>
         }
         else
         {
-            LoadClip(GetAssetsIdByType(type), (UnityEngine.Object clip) => 
+            LoadClip(type, (UnityEngine.Object clip) => 
             {
                 AudioClip tmpElem = clip as AudioClip; 
                 if (null != tmpElem)
@@ -304,7 +272,7 @@ public class AudioManager:Singleton<AudioManager>
             });            
         }
     }
-    private void GetAudioClipByType(EffectAudioDefine.AudioEffectSoundType type, Action<AudioClip> CallBack)
+    private void GetEffectAudioClip(AudioId type, Action<AudioClip> CallBack)
     {
         if (m_EffectSoundClipStore.ContainsKey(type))
         {
@@ -312,7 +280,7 @@ public class AudioManager:Singleton<AudioManager>
         }
         else
         {
-            LoadClip(GetAssetsIdByType(type),(UnityEngine.Object clip)=>
+            LoadClip(type, (UnityEngine.Object clip) =>
             {
                 AudioClip tmpElem = clip as AudioClip;
                 if (null != tmpElem)
@@ -327,19 +295,29 @@ public class AudioManager:Singleton<AudioManager>
                     Debuger.LogError("Can't load audio clip named: " + type.ToString());
                 }
             });
-            
         }
     }
-    private void LoadClip(string path,Action<UnityEngine.Object> callBack)
+    private void LoadClip(AudioId type,Action<UnityEngine.Object> callBack)
     {
-        ResourceManager.Instance.LoadAssetsAsync(path,AssetType.Audio, callBack);
+        AudioIndexStruct tmp = null;
+        if (m_AudioResourceMap.TryGetValue(type, out tmp))
+        {
+            ResourceManager.Instance.LoadAssetsAsync(tmp.m_strPath, AssetType.Audio, callBack);
+            return;
+        }
+        else
+        {
+            Debuger.Log("can't load audio : " + type);
+            callBack(null);
+        }
+
     }
-    private void AudioPlayBg(AudioClip clip)
+    private void AudioPlayBg(AudioClip clip,bool isLoop)
     {
         if (m_BgAudioSource.clip != clip)
         {
             m_BgAudioSource.clip = clip;
-            m_BgAudioSource.loop = !m_bIsRandoming;
+            m_BgAudioSource.loop = isLoop;
             m_BgAudioSource.Play();
         }
     }
@@ -374,23 +352,9 @@ public class AudioManager:Singleton<AudioManager>
         tmpSource.Play();
         m_EffectAudioSourceStore.Add(tmpSource);
     }
-    private string GetAssetsIdByType(BackgroundAudioDefine.AudioBackgroundSoundType type)
+    private string GetAssetsIdByType(AudioId id)
     {
-        FieldInfo myFields = BackgroundAudioDefine.Singleton.GetType()
-            .GetField(type.ToString(), BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance);
-        return (string)myFields.GetValue(BackgroundAudioDefine.Singleton);
-    }
-    private string GetAssetsIdByType(EffectAudioDefine.AudioEffectSoundType type)
-    {
-        FieldInfo myFields = EffectAudioDefine.Singleton.GetType()
-            .GetField(type.ToString(), BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance);
-        return (string)myFields.GetValue(EffectAudioDefine.Singleton);
-    }
-    private string GetAssetsNameByType(UISoundAudioDefine.AudioUISoundType type)
-    {
-        FieldInfo myFields = UISoundAudioDefine.Singleton.GetType()
-            .GetField(type.ToString(), BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance);
-        return (string)myFields.GetValue(UISoundAudioDefine.Singleton);
+        return "";
     }
     #endregion
 }

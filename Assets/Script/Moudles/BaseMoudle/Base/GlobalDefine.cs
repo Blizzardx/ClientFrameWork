@@ -18,6 +18,8 @@ public enum GameStateType
     /// <summary>
     /// 游戏重连状态
     /// </summary>
+    TestProject1,
+    TestProject2,
     ReConnect,
 }
 public class WindowID
@@ -48,7 +50,9 @@ public class Definer
         StageManager.Instance.RegisterStage(GameStateType.LoginState, "Login", typeof(LoginStage));
         StageManager.Instance.RegisterStage(GameStateType.MainCityState, "MainCity", typeof(MaincityStage));
         StageManager.Instance.RegisterStage(GameStateType.BattleState, "Battle", typeof(BattleStage));
-        StageManager.Instance.RegisterStage(GameStateType.ReConnect, "Login", typeof(BattleStage));
+        StageManager.Instance.RegisterStage(GameStateType.ReConnect, "Login", typeof(ReconnectStage));
+        StageManager.Instance.RegisterStage(GameStateType.TestProject1, "Main", typeof(TestProject1Stage));
+        StageManager.Instance.RegisterStage(GameStateType.TestProject2, "Main", typeof(TestProject2Stage));
     }
     public static  void DoCollection()
     {
@@ -57,17 +61,9 @@ public class Definer
             return;
             // do nothing
         }
-
         
-
-        //clear network layer
-        NetWorkManager.Instance.RestSocketStatus();
-
-        // clear common logic
-        WindowManager.Instance.CloseAllWindow();
-
-        //release assets
-        Resources.UnloadUnusedAssets();
-        System.GC.Collect();
+        //release logic 
+        
+        
     }
 }

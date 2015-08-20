@@ -27,6 +27,10 @@ public class GameManager : Singleton<GameManager>
         WindowManager.Instance.Initialize();
         SystemMsgHandler.Instance.RegisterSystemMsg();
         ScriptManager.Instance.Initialize();
+        AudioManager.Instance.Initialize();
+        MapManager.Instance.Initialize();
+
+        CustomMain.Instance.Initialize();
     }
     public void Update()
     {
@@ -35,10 +39,11 @@ public class GameManager : Singleton<GameManager>
         TickTaskManager.Instance.Update();
         ExcutionUpdateList();
 
-        Test();
+        //Test();
     }
     public void OnAppQuit()
     {
+        CustomMain.Instance.Quit();
         LogManager.Instance.OnQuit();
         NetWorkManager.Instance.Disconnect();
     }

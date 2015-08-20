@@ -7,6 +7,8 @@ public class CollectionManager : Singleton<CollectionManager>
     {
         Definer.DoCollection();
 
+        BasicCollection();
+
         //change to login panel
         StageManager.Instance.ChangeState(GameStateType.LoginState);
 
@@ -16,8 +18,27 @@ public class CollectionManager : Singleton<CollectionManager>
     {
         Definer.DoCollection();
 
+        BasicCollection();
+
         // try to reconnect
         StageManager.Instance.ChangeState(GameStateType.ReConnect);
+        AudioManager.Instance.Destructor();
+    }
 
+    private void BasicCollection()
+    {
+        StageManager.Instance.Destructor();
+
+        //clear network layer
+        NetWorkManager.Instance.RestSocketStatus();
+
+        // clear common logic
+        WindowManager.Instance.CloseAllWindow();
+
+        MapManager.Instance.Destructor();
+
+        //release assets
+        Resources.UnloadUnusedAssets();
+        System.GC.Collect();
     }
 }
