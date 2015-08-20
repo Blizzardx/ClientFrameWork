@@ -12,7 +12,7 @@ public class MapDefiner
 {
     public static void RegisterMap()
     {
-        MapManager.Instance.RegisterMap(MapId.TestProject1Map, new MapIndexStruct("map"));
-		MapManager.Instance.RegisterMap(MapId.TestProject2Map, new MapIndexStruct("map"));
+        MapManager.Instance.RegisterMap(MapId.TestProject1Map, new MapIndexStruct("map", MapType.MapType_2d));
+        MapManager.Instance.RegisterMap(MapId.TestProject2Map, new MapIndexStruct("map", MapType.MapType_2d));
     }
 }

@@ -19,7 +19,6 @@ public class StageManager : Singleton<StageManager>
 
         Definer.RegisterStage();
     }
-
     public void Destructor()
     {
         foreach (var elem in m_StageHandlerStore)
@@ -42,6 +41,8 @@ public class StageManager : Singleton<StageManager>
         if (null != m_CurrentStage)
         {
             m_CurrentStage.EndStage();
+            //clear map instance
+            MapManager.Instance.Destructor();
         }
         m_CurrentStage = null;
         if (!m_StageHandlerStore.TryGetValue(pState, out m_CurrentStage))
