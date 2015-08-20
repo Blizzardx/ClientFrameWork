@@ -28,6 +28,7 @@ public class WindowID
     public const int WindowTest1 = 1;
     public const int WindowTest2 = 2;
     public const int WindowTest3 = 3;
+    public const int WindowProject1 = 4;
     public const int Max = 4;
 }
 public enum WindowLayer
@@ -44,6 +45,7 @@ public class Definer
         WindowManager.Instance.RegisterWindow(WindowID.WindowTest1, "Window/UIWindow_test1", WindowLayer.Window, typeof(UIWindowTest1));
         WindowManager.Instance.RegisterWindow(WindowID.WindowTest2, "Window/UIWindow_test2", WindowLayer.Window, typeof(UIWindowTest2));
         WindowManager.Instance.RegisterWindow(WindowID.WindowTest3, "Window/UIWindow_test3", WindowLayer.Window, typeof(UIWindowTest3));
+        WindowManager.Instance.RegisterWindow(WindowID.WindowProject1, "Project1/UIWindow_Scene1", WindowLayer.Window, typeof(UIWindowProject1));
     }
     public static void RegisterStage()
     {

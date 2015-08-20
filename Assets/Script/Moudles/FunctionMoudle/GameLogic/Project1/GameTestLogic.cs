@@ -5,13 +5,12 @@ public class GameTestLogic: LogicBase<GameTestLogic>
 {
 	
 	public override void StartLogic()
-	{		
-		// load map
-	    MapManager.Instance.LoadMap(MapId.TestProject1Map);
-		AudioManager.Instance.PlayBackgroundSound(AudioId.LogIn);
+	{
+	    WindowManager.Instance.OpenWindow(WindowID.WindowProject1);
 	}
 	public override void EndLogic()
 	{
 		
 	}
+    /// ... to do : 
 }
