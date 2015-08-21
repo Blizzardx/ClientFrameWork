@@ -23,53 +23,18 @@ namespace Common.Config
   #endif
   public partial class VersionConfig : TBase
   {
-    private string _name;
-    private string _sign;
-    private AssetType _type;
+    private List<VersionConfigElement> _versionList;
 
-    /// <summary>
-    /// path + name
-    /// </summary>
-    public string Name
+    public List<VersionConfigElement> VersionList
     {
       get
       {
-        return _name;
+        return _versionList;
       }
       set
       {
-        __isset.name = true;
-        this._name = value;
-      }
-    }
-
-    public string Sign
-    {
-      get
-      {
-        return _sign;
-      }
-      set
-      {
-        __isset.sign = true;
-        this._sign = value;
-      }
-    }
-
-    /// <summary>
-    /// 
-    /// <seealso cref="AssetType"/>
-    /// </summary>
-    public AssetType Type
-    {
-      get
-      {
-        return _type;
-      }
-      set
-      {
-        __isset.type = true;
-        this._type = value;
+        __isset.versionList = true;
+        this._versionList = value;
       }
     }
 
@@ -79,9 +44,7 @@ namespace Common.Config
     [Serializable]
     #endif
     public struct Isset {
-      public bool name;
-      public bool sign;
-      public bool type;
+      public bool versionList;
     }
 
     public VersionConfig() {
@@ -100,22 +63,19 @@ namespace Common.Config
         switch (field.ID)
         {
           case 1:
-            if (field.Type == TType.String) {
-              Name = iprot.ReadString();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
-          case 2:
-            if (field.Type == TType.String) {
-              Sign = iprot.ReadString();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
-          case 3:
-            if (field.Type == TType.I32) {
-              Type = (AssetType)iprot.ReadI32();
+            if (field.Type == TType.List) {
+              {
+                VersionList = new List<VersionConfigElement>();
+                TList _list0 = iprot.ReadListBegin();
+                for( int _i1 = 0; _i1 < _list0.Count; ++_i1)
+                {
+                  VersionConfigElement _elem2 = new VersionConfigElement();
+                  _elem2 = new VersionConfigElement();
+                  _elem2.Read(iprot);
+                  VersionList.Add(_elem2);
+                }
+                iprot.ReadListEnd();
+              }
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -133,28 +93,19 @@ namespace Common.Config
       TStruct struc = new TStruct("VersionConfig");
       oprot.WriteStructBegin(struc);
       TField field = new TField();
-      if (Name != null && __isset.name) {
-        field.Name = "name";
-        field.Type = TType.String;
+      if (VersionList != null && __isset.versionList) {
+        field.Name = "versionList";
+        field.Type = TType.List;
         field.ID = 1;
         oprot.WriteFieldBegin(field);
-        oprot.WriteString(Name);
-        oprot.WriteFieldEnd();
-      }
-      if (Sign != null && __isset.sign) {
-        field.Name = "sign";
-        field.Type = TType.String;
-        field.ID = 2;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteString(Sign);
-        oprot.WriteFieldEnd();
-      }
-      if (__isset.type) {
-        field.Name = "type";
-        field.Type = TType.I32;
-        field.ID = 3;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteI32((int)Type);
+        {
+          oprot.WriteListBegin(new TList(TType.Struct, VersionList.Count));
+          foreach (VersionConfigElement _iter3 in VersionList)
+          {
+            _iter3.Write(oprot);
+          }
+          oprot.WriteListEnd();
+        }
         oprot.WriteFieldEnd();
       }
       oprot.WriteFieldStop();
@@ -163,12 +114,8 @@ namespace Common.Config
 
     public override string ToString() {
       StringBuilder sb = new StringBuilder("VersionConfig(");
-      sb.Append("Name: ");
-      sb.Append(Name);
-      sb.Append(",Sign: ");
-      sb.Append(Sign);
-      sb.Append(",Type: ");
-      sb.Append(Type);
+      sb.Append("VersionList: ");
+      sb.Append(VersionList);
       sb.Append(")");
       return sb.ToString();
     }
