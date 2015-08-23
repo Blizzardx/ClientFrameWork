@@ -13,6 +13,7 @@ public class ConfigGen : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+        ResourceManager.Instance.Initialize();
 	    LogManager.Instance.Initialize();
 
         ArmyInfo tmp = new ArmyInfo();
@@ -36,7 +37,8 @@ public class ConfigGen : MonoBehaviour
     {
 	    if (Input.GetKeyDown(KeyCode.A))
 	    {
-            ArmyInfo tmp = ResourceManager.Instance.DecodeTemplate<ArmyInfo>(Application.streamingAssetsPath + "/armyinfo.byte");
+	        ArmyInfo tmp = null;
+	        ResourceManager.Instance.DecodeDownloadTemplate(Application.streamingAssetsPath + "/armyinfo.byte", ref tmp);
 	        Debuger.Log(tmp.Id);
             for (int i = 0; i < tmp.MemberInfoList.Count; ++i)
             {
@@ -45,6 +47,13 @@ public class ConfigGen : MonoBehaviour
                 Debuger.Log(elem.JoinTime );
                 Debuger.Log(elem.Level);
             }
+	    }
+	    if (Input.GetKeyDown(KeyCode.B))
+	    {
+            ResourceManager.Instance.LoadDownloadAsset("huangjindaoke_dz", AssetType.Animation, (origin) =>
+	        {
+	            GameObject a = GameObject.Instantiate(origin) as GameObject;
+	        });
 	    }
 	}
 }

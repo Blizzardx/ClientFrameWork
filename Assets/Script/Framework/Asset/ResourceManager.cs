@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.IO;
 using Assets.Scripts.Core.Utils;
+using Communication;
 using Thrift.Protocol;
 using Thrift.Transport;
 using UnityEngine;
@@ -14,6 +15,13 @@ public enum AssetType
     Animation,
     Audio,
     Map,
+    Texture,
+}
+
+public enum LoadType
+{
+    BuildIn,
+    Download,
 }
 public class LoadResourceElement
 {
@@ -41,7 +49,7 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     }
     public T LoadBuildInResource<T>(string path,AssetType type ) where T : UnityEngine.Object
     {
-        string realPath = GetRealPath(path, type);
+        string realPath = GetRealPath(path, type,LoadType.BuildIn);
         
         Debuger.Log(realPath);
         UnityEngine.Object res = null;
@@ -64,14 +72,57 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             return res as T;
         }
     }
-    public void LoadAssetsAsync(string path, AssetType type, Action<UnityEngine.Object> CallBack)
+    public void LoadBuildInAssetsAsync(string path, AssetType type, Action<UnityEngine.Object> CallBack)
     {
-        //StartLoadResource(path, type, CallBack);
-        StartCoroutine(StartLoadResource(path, type, CallBack));
+        StartCoroutine(StartLoadBuildInResource(path, type, CallBack));
     }
-    public IEnumerator StartLoadResource(string path, AssetType type, Action<UnityEngine.Object> CallBack) 
+    public void LoadDownloadAsset(string path, AssetType type, Action<Object> CallBack)
     {
-        string realPath = GetRealPath(path, type);
+        StartCoroutine(StartLoadDownloadResource(path, type, CallBack));
+    }
+    public bool DecodeDownloadTemplate<T>(string path,ref T template) where T : TBase, new()
+    {
+        byte[] data = FileUtils.ReadByteFile(path);
+       /* var membuffer = new TMemoryBuffer(data);
+        TProtocol protocol = (new TCompactProtocol(membuffer));
+        var temp = new T();
+        ThriftSerialize.DeSerialize(temp, data);
+        temp.Read(protocol);*/
+
+        if (null != data)
+        {
+            template = new T();
+            ThriftSerialize.DeSerialize(template, data);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public bool DecodeBuildInTemplate<T>(string path, ref T template) where T : TBase, new()
+    {
+        TextAsset textAsset = Resources.Load(path) as TextAsset;
+        if (textAsset != null)
+        {
+            byte[] data = textAsset.bytes;
+
+            if (null != data)
+            {
+                template = new T();
+                ThriftSerialize.DeSerialize(template, data);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+    private IEnumerator StartLoadBuildInResource(string path, AssetType type, Action<UnityEngine.Object> CallBack)
+    {
+        string realPath = GetRealPath(path, type, LoadType.BuildIn);
         UnityEngine.Object res = null;
         m_AssetStore.TryGetValue(realPath, out res);
         if (null != res)
@@ -81,7 +132,7 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         }
 
         //register to call back store
-        RegisterToCallBackStore(realPath,CallBack);
+        RegisterToCallBackStore(realPath, CallBack);
 
         if (IsAssetsOnLoading(realPath))
         {
@@ -108,17 +159,79 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             }
 
             UnRegisterFromLoadingStore(realPath);
-            DoResourceCallBack(realPath,res);
+            DoResourceCallBack(realPath, res);
         }
     }
-    public T DecodeTemplate<T>(string path) where T : TBase, new()
+    private IEnumerator StartLoadDownloadResource(string path, AssetType type, Action<UnityEngine.Object> CallBack)
     {
-        byte[] data = FileUtils.ReadByteFile(path);
-        var membuffer = new TMemoryBuffer(data);
-        TProtocol protocol = (new TCompactProtocol(membuffer));
-        var temp = new T();
-        temp.Read(protocol);
-        return temp;
+        string realPath = GetRealPath(path, type, LoadType.Download);
+        UnityEngine.Object res = null;
+        m_AssetStore.TryGetValue(realPath, out res);
+        if (null != res)
+        {
+            CallBack(res);
+            yield return null;
+        }
+
+        //register to call back store
+        RegisterToCallBackStore(realPath, CallBack);
+
+        if (IsAssetsOnLoading(realPath))
+        {
+            yield return null;
+        }
+        else
+        {
+            //add to download list
+            RegisterToLoadingStore(realPath);
+            object request = null;
+            bool isAssetBundle = true;
+            if (isAssetBundle)
+            {
+                byte[] data = FileUtils.ReadByteFile(realPath);
+                AssetBundleCreateRequest a = AssetBundle.CreateFromMemory(data);
+                request = a;
+            }
+            else
+            {
+                WWW a = new WWW(realPath);
+                request = a;
+            }
+
+            yield return request;
+
+            if (isAssetBundle)
+            {
+                AssetBundleCreateRequest a = request as AssetBundleCreateRequest;
+                res = a.assetBundle.LoadAsset(GetBundleName(realPath));
+            }
+            else
+            {
+                WWW a = request as WWW;
+                switch (type)
+                {
+                    case AssetType.Audio:
+                        res = a.audioClip;
+                        break;
+                        case AssetType.Texture:
+                        res = a.texture;
+                        a.texture.Compress(true);
+                        break;
+                }
+            }
+
+            if (m_AssetStore.ContainsKey(realPath))
+            {
+                m_AssetStore[realPath] = res;
+            }
+            else
+            {
+                m_AssetStore.Add(realPath, res);
+            }
+
+            UnRegisterFromLoadingStore(realPath);
+            DoResourceCallBack(realPath, res);
+        }
     }
     private void RegisterToCallBackStore(string realPath,Action<UnityEngine.Object> callBack)
     {
@@ -166,21 +279,21 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         }
         return false;
     }
-    private string GetRealPath(string path, AssetType type)
+    private string GetRealPath(string path, AssetType type,LoadType loadType)
     {
         switch (type)
         {
            case AssetType.UI:
-                path = "BuildIn/UI/Prefab/" + path;
+                path = "UI/Prefab/" + path;
                 break;
             case AssetType.Animation:
-                path = "BuildIn/Animation/" + path;
+                path = "Animation/" + path;
                 break;
             case AssetType.Audio:
-                path = "BuildIn/Audio/" + path;
+                path = "Audio/" + path;
                 break;
             case AssetType.Map:
-                path = "BuildIn/Map/" + path;
+                path = "Map/" + path;
                 break;
             default:
             {
@@ -188,7 +301,51 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             }
                 break;
         }
+        if (loadType == LoadType.BuildIn)
+        {
+            path = "BuildIn/" + path;
+        }
+        else
+        {
+            path = Application.persistentDataPath + "/Resource/" + path;
+            switch (type)
+            {
+                case AssetType.UI:
+                    path += ".pkg";
+                    break;
+                case AssetType.Animation:
+                    path += ".pkg";
+                    break;
+                case AssetType.Audio:
+                    path += ".mp3";
+                    break;
+                case AssetType.Map:
+                    path += ".pkg";
+                    break;
+                case AssetType.Texture:
+                    path += ".png";
+                    break;
+                default:
+                    {
+                        // do nothing
+                    }
+                    break;
+            }
+        }
+        Debuger.Log(path);
         return path;
+    }
+    private string GetBundleName(string name)
+    {
+        int startIndex = name.LastIndexOf('/');
+        if (startIndex > 0)
+        {
+            startIndex += 1;
+        }
+        int length = name.LastIndexOf('.') - startIndex;
+        string res= name.Substring(startIndex, length);
+        Debuger.Log(res);
+        return res;
     }
     private void Awake()
     {

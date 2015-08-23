@@ -61,7 +61,7 @@ namespace Assets.Scripts.Framework.Network
     {
         Action<bool> onCompleteCallback = null;
         Action<int> onProgressCallback = null;
-        Action<object> onOneDoneCallback = null;
+        Action<WWW> onOneDoneCallback = null;
 
         private List<AssetFile> DList = new List<AssetFile>();
         private int index = 0, len = 0;
@@ -101,7 +101,7 @@ namespace Assets.Scripts.Framework.Network
         /// <param name="onProgressCallback">总进度回调</param>
         /// <param name="onOneDoneCallback">单个任务完成回调</param>
         /// <param name="SaveToLocalOnFinish">完成时是否缓存到本地</param>
-        public void StartDownload(List<AssetFile> dList, Action<bool> onCompleteCallback = null, Action<int> onProgressCallback = null, Action<object> onOneDoneCallback = null, bool SaveToLocalOnFinish = true)
+        public void StartDownload(List<AssetFile> dList, Action<bool> onCompleteCallback = null, Action<int> onProgressCallback = null, Action<WWW> onOneDoneCallback = null, bool SaveToLocalOnFinish = true)
         {
             if (IsBusy)
             {
@@ -127,7 +127,7 @@ namespace Assets.Scripts.Framework.Network
                 this.onProgressCallback = (int n) => { };
             }
 
-            this.onOneDoneCallback = onOneDoneCallback == null ? (object n) => { } : onOneDoneCallback;
+            this.onOneDoneCallback = onOneDoneCallback == null ? (WWW n) => { } : onOneDoneCallback;
 
             this.SaveToLocalOnFinish = SaveToLocalOnFinish;
 

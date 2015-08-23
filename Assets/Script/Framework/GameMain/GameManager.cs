@@ -30,7 +30,11 @@ public class GameManager : Singleton<GameManager>
         AudioManager.Instance.Initialize();
         MapManager.Instance.Initialize();
 
-        CustomMain.Instance.Initialize();
+        // check asset
+        AssetUpdate.Instance.BeginCheck(() =>
+        {
+            CustomMain.Instance.Initialize();
+        });
     }
     public void Update()
     {

@@ -56,7 +56,7 @@ public class MapManager : Singleton<MapManager>
             callBack(null);
             return;
         }
-        ResourceManager.Instance.LoadAssetsAsync(path, AssetType.UI, (origin) =>
+        ResourceManager.Instance.LoadBuildInAssetsAsync(path, AssetType.UI, (origin) =>
         {
             callBack(CreateMapInstance(id, info.m_MapType, origin as GameObject));
         });

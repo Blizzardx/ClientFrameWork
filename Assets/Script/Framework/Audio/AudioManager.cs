@@ -302,7 +302,7 @@ public class AudioManager:Singleton<AudioManager>
         AudioIndexStruct tmp = null;
         if (m_AudioResourceMap.TryGetValue(type, out tmp))
         {
-            ResourceManager.Instance.LoadAssetsAsync(tmp.m_strPath, AssetType.Audio, callBack);
+            ResourceManager.Instance.LoadBuildInAssetsAsync(tmp.m_strPath, AssetType.Audio, callBack);
             return;
         }
         else

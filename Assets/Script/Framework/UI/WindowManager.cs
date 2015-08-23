@@ -131,7 +131,7 @@ public class WindowManager : Singleton<WindowManager>
                 }
                 else
                 {
-                    ResourceManager.Instance.LoadAssetsAsync(element.m_strPath, AssetType.UI, (origin) =>
+                    ResourceManager.Instance.LoadBuildInAssetsAsync(element.m_strPath, AssetType.UI, (origin) =>
                     {
                         GameObject root = GameObject.Instantiate(origin) as GameObject;
                         WindowBase res = Activator.CreateInstance(currentWindowIndexStruct.m_Type) as WindowBase;

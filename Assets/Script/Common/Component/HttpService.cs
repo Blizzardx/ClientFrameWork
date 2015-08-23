@@ -27,9 +27,8 @@ namespace Assets.Scripts.Framework.Network
             {
                 if (sInstance == null)
                 {
-                    GameObject tmpRoot = new GameObject();
-                    tmpRoot.AddComponent<HttpService>();
-                    ComponentTool.Attach(null, tmpRoot.transform);
+                    GameObject tmpRoot = AppManager.Instance.gameObject;
+                    tmpRoot.GetComponent<HttpService>();
                 }
                 return sInstance;
             }

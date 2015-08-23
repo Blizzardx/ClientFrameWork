@@ -78,6 +78,15 @@ namespace Assets.Scripts.Core.Utils
                 Directory.CreateDirectory(folder);
             }
         }
+        public static void ClearFolder(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+                
+            }
+            Directory.CreateDirectory(path);
+        }
         #endregion
 
         #region read
