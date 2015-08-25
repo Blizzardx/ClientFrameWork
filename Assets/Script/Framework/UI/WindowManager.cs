@@ -48,7 +48,8 @@ public class WindowManager : Singleton<WindowManager>
     private Dictionary<int, WindowIndexStruct>          m_WindowIndexStore;
     private Dictionary<WindowLayer, LayerInfo>          m_LayerIndexStore;
     private Dictionary<WindowLayer, List<WindowBase>>   m_ActivedWindowQueue;
- 
+    private bool                                        m_bIsOnUpdateStore;
+
  
     #region public interface
 
@@ -69,6 +70,7 @@ public class WindowManager : Singleton<WindowManager>
 
         //register window
         Definer.RegisterWindow();
+        m_bIsOnUpdateStore = false;
     }
     public void Update()
     {
@@ -227,6 +229,7 @@ public class WindowManager : Singleton<WindowManager>
             }
         }
         m_UpdateStore.Add(element);
+        CheckIsNeedPushToUpdateStore();
     }
     public void UnRegisterFromUpdateStore(Action element)
     {
@@ -244,6 +247,7 @@ public class WindowManager : Singleton<WindowManager>
         else
         {
             m_UpdateStore.Remove(element);
+            CheckIsNeedPushToUpdateStore();
         }
     }
     public void RegisterWindow(int id, string path, WindowLayer layer, Type type)
@@ -279,6 +283,7 @@ public class WindowManager : Singleton<WindowManager>
             m_UpdateStore.Remove(m_RemoveingUpdateList[i]);
         }
         m_RemoveingUpdateList.Clear();
+        CheckIsNeedPushToUpdateStore();
     }
     private int GetCurrentWindowDeepth(WindowLayer layer)
     {
@@ -320,6 +325,18 @@ public class WindowManager : Singleton<WindowManager>
         }
         m_ActivedWindowQueue[layer].Remove(windowHandler);
     }
-
+    private void CheckIsNeedPushToUpdateStore()
+    {
+        if (!m_bIsOnUpdateStore && m_UpdateStore.Count > 0)
+        {
+            GameManager.Instance.RegisterToUpdateList(Update);
+            m_bIsOnUpdateStore = true;
+        }
+        else if (m_bIsOnUpdateStore && m_UpdateStore.Count <= 0)
+        {
+            GameManager.Instance.UnRegisterFromUpdateList(Update);
+            m_bIsOnUpdateStore = false;
+        }
+    }
     #endregion
 }
