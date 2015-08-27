@@ -6,12 +6,10 @@ using System.Collections.Generic;
 
 public class LogManager :Singleton<LogManager>
 {
-
     private List<string>        m_LogStore;
     private bool                m_bIsEnalbeRecord;
     private long                m_lWriteRate;
     private string              m_strSavePath;
-    private string              m_strSaveCsvPath;
     private long                m_lLastTriggerTime;
 
 	#region public interface
@@ -19,7 +17,6 @@ public class LogManager :Singleton<LogManager>
     {
         m_LogStore          = new List<string>();
 		m_strSavePath       = Application.persistentDataPath + "/log.txt";
-		m_strSaveCsvPath    = Application.persistentDataPath + "/log.csv";
 		m_bIsEnalbeRecord   = isEnableRecord;
 	    m_lLastTriggerTime  = TimeManager.Instance.Now;
 	    m_lWriteRate        = (long)(writeRate*1000.0f);
