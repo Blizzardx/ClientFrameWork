@@ -1,15 +1,6 @@
-﻿
-
-using System;
+﻿using System;
 using UnityEngine;
 using System.Collections;
-
-/// <summary>
-/// author:liao.baiyu
-/// timer: 2014.12.1
-/// 单件类，提供需要全局使用单件模版类
-/// </summary>
-/// 
 
 public class Singleton<T> where T : new()  
 {  
