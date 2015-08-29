@@ -94,14 +94,15 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
     }
     private void EndLoad()
     {
-        //close loading panel
-        WindowManager.Instance.CloseWindow(WindowID.Loading);
-        
         //set busy flat
         m_bIsBusy = false;
         
         //call back
         m_LoadFinishedCallBack();
+        
+        //close loading panel
+        WindowManager.Instance.HideWindow(WindowID.Loading);
+        
     }
     private void BasicUpdate()
     {

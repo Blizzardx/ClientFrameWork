@@ -147,7 +147,7 @@ public class AudioManager:Singleton<AudioManager>
         });
         
     }
-    public void PlayEffectSound(AudioId type, Vector3 targetRoot)
+    public void PlayEffectSound(AudioId type, Vector3 targetRoot,bool isLoop = false)
     {
         if (m_bIsMuteEffect)
         {
@@ -158,12 +158,12 @@ public class AudioManager:Singleton<AudioManager>
         {
             if (null != clip)
             {
-                AudioPlayEffectSound(clip, targetRoot);
+                AudioPlayEffectSound(clip, targetRoot,isLoop);
             }
         });
         
     }
-    public void PlayBackgroundSound(AudioId type,bool isLoop  = true)
+    public void PlayBackgroundSound(AudioId type,bool isLoop  = false)
     {
         GetBgAudioClip(type, (AudioClip tmpClip) =>
         {
@@ -218,6 +218,21 @@ public class AudioManager:Singleton<AudioManager>
     public void RegisterAudio(AudioId id, AudioIndexStruct info)
     {
         m_AudioResourceMap.Add(id, info);
+    }
+    public void StopEffectSound(AudioId type)
+    {
+        string targetName = m_AudioResourceMap[type].m_strPath;
+        for (int i = 0; i < m_EffectAudioSourceStore.Count;++i )
+        {
+            if (m_EffectAudioSourceStore[i].clip.name == targetName)
+            {
+                Debuger.Log("Remove effect sound " + targetName);
+                AudioSource tmp = m_EffectAudioSourceStore[i];
+                m_EffectAudioSourceStore.RemoveAt(i);
+                GameObject.Destroy(tmp.gameObject);
+                break;
+            }
+        }
     }
     #endregion
 
@@ -342,7 +357,7 @@ public class AudioManager:Singleton<AudioManager>
         tmpSource.Play();
         m_UIAudioSourceStore.Add(tmpSource);
     }
-    private void AudioPlayEffectSound(AudioClip clip, Vector3 targetRoot)
+    private void AudioPlayEffectSound(AudioClip clip, Vector3 targetRoot,bool isLoop)
     {
         if (m_EffectAudioSourceStore.Count >= m_StoreSizeMax)
         {
@@ -354,6 +369,7 @@ public class AudioManager:Singleton<AudioManager>
         AudioSource tmpSource = tmp.AddComponent<AudioSource>();
         tmpSource.clip = clip;
         tmpSource.volume = m_fEffectVolume;
+        tmpSource.loop = isLoop;
         tmpSource.Play();
         m_EffectAudioSourceStore.Add(tmpSource);
     }
