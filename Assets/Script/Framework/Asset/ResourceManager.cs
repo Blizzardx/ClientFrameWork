@@ -51,7 +51,6 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     {
         string realPath = GetRealPath(path, type,LoadType.BuildIn);
         
-        Debuger.Log(realPath);
         UnityEngine.Object res = null;
         m_AssetStore.TryGetValue(realPath, out res);
         if (null != res)
@@ -102,7 +101,8 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     }
     public bool DecodeBuildInTemplate<T>(string path, ref T template) where T : TBase, new()
     {
-        TextAsset textAsset = Resources.Load(path) as TextAsset;
+        TextAsset textAsset = Resources.Load<TextAsset>(path);
+        
         if (textAsset != null)
         {
             byte[] data = textAsset.bytes;
@@ -117,6 +117,10 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             {
                 return false;
             }
+        }
+        else
+        {
+            Debuger.LogError("error ");
         }
         return false;
     }
@@ -332,7 +336,6 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
                     break;
             }
         }
-        Debuger.Log(path);
         return path;
     }
     private string GetBundleName(string name)

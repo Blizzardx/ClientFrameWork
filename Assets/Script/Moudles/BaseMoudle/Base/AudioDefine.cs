@@ -4,6 +4,8 @@ using System.Collections;
 
 public enum AudioId
 {
+    None,
+
     //background
     LogIn,
     Menu,

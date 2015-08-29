@@ -300,6 +300,11 @@ public class AudioManager:Singleton<AudioManager>
     private void LoadClip(AudioId type,Action<UnityEngine.Object> callBack)
     {
         AudioIndexStruct tmp = null;
+        if (type == AudioId.None)
+        {
+            callBack(null);
+            return;
+        }
         if (m_AudioResourceMap.TryGetValue(type, out tmp))
         {
             ResourceManager.Instance.LoadBuildInAssetsAsync(tmp.m_strPath, AssetType.Audio, callBack);
@@ -351,10 +356,6 @@ public class AudioManager:Singleton<AudioManager>
         tmpSource.volume = m_fEffectVolume;
         tmpSource.Play();
         m_EffectAudioSourceStore.Add(tmpSource);
-    }
-    private string GetAssetsIdByType(AudioId id)
-    {
-        return "";
     }
     #endregion
 }
