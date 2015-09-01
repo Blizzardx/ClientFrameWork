@@ -20,7 +20,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         m_strDefaultScene = "MainCity";
         m_bIsBusy = false;
     }
-    public void LoadScene(string sceneName,Action FinishedCallBack)
+    public void LoadScene(string sceneName,Action FinishedCallBack,Action PreExcution)
     {
         if (m_bIsBusy)
         {
@@ -41,7 +41,8 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         m_LoadFinishedCallBack = FinishedCallBack;
         WindowManager.Instance.CloseAllWindow();
         ClearScene();
-        WindowManager.Instance.OpenWindow(WindowID.Loading);
+
+        PreExcution();
 
         //change scene to empty
         Application.LoadLevel("Empty");
@@ -99,10 +100,6 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         
         //call back
         m_LoadFinishedCallBack();
-        
-        //close loading panel
-        WindowManager.Instance.HideWindow(WindowID.Loading);
-        
     }
     private void BasicUpdate()
     {
@@ -111,7 +108,8 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         {
             Debuger.Log("Load scene time out");
             m_bIsBusy = false;
-            LoadScene(m_strDefaultScene, m_LoadFinishedCallBack);
+            Action defaultExcution = () => { WindowManager.Instance.OpenWindow(WindowID.Loading);};
+            LoadScene(m_strDefaultScene, m_LoadFinishedCallBack, defaultExcution);
         }
     }
     private void Awake()

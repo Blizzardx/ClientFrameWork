@@ -52,7 +52,7 @@ public class StageManager : Singleton<StageManager>
         }
 
         //load scene
-        SceneManager.Instance.LoadScene(m_StageSceneStore[pState], m_CurrentStage.StartStage);
+        SceneManager.Instance.LoadScene(m_StageSceneStore[pState], m_CurrentStage.StartStage,m_CurrentStage.PreLoadScene);
     }
     public GameStateType GetCurrentGameStage()
     {

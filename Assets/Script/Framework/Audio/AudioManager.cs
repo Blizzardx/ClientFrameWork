@@ -186,11 +186,11 @@ public class AudioManager:Singleton<AudioManager>
     {
         return m_bIsMuteBg;
     }
-    public void ClearAudioStore()
+    public void ClearAudioStore(bool isFource = false)
     {
         for (int i = 0; i < m_EffectAudioSourceStore.Count; )
         {
-            if (!m_EffectAudioSourceStore[i].isPlaying)
+            if (isFource || !m_EffectAudioSourceStore[i].isPlaying)
             {
                 AudioSource tmp = m_EffectAudioSourceStore[i];
                 m_EffectAudioSourceStore.RemoveAt(i);
@@ -203,7 +203,7 @@ public class AudioManager:Singleton<AudioManager>
         }
         for (int i = 0; i < m_UIAudioSourceStore.Count; )
         {
-            if (!m_UIAudioSourceStore[i].isPlaying)
+            if (isFource || !m_UIAudioSourceStore[i].isPlaying)
             {
                 AudioSource tmp = m_UIAudioSourceStore[i];
                 m_UIAudioSourceStore.RemoveAt(i);
@@ -221,6 +221,10 @@ public class AudioManager:Singleton<AudioManager>
     }
     public void StopEffectSound(AudioId type)
     {
+        if (!m_AudioResourceMap.ContainsKey(type))
+        {
+            return;
+        }
         string targetName = m_AudioResourceMap[type].m_strPath;
         for (int i = 0; i < m_EffectAudioSourceStore.Count;++i )
         {
@@ -233,6 +237,22 @@ public class AudioManager:Singleton<AudioManager>
                 break;
             }
         }
+    }
+    public bool IsPlayingEffectAudio(AudioId type)
+    {
+        AudioIndexStruct info = null;
+        if (!m_AudioResourceMap.TryGetValue(type, out info))
+        {
+            return false;
+        }
+        foreach (var elem in m_EffectAudioSourceStore)
+        {
+            if (elem.clip.name == info.m_strPath)
+            {
+                return elem.isPlaying;
+            }
+        }
+        return false;
     }
     #endregion
 
@@ -300,14 +320,16 @@ public class AudioManager:Singleton<AudioManager>
                 AudioClip tmpElem = clip as AudioClip;
                 if (null != tmpElem)
                 {
-                    m_EffectSoundClipStore.Add(type, tmpElem);
+                    if (!m_EffectSoundClipStore.ContainsKey(type))
+                    {
+                        m_EffectSoundClipStore.Add(type, tmpElem);
+                    }
                     CallBack(tmpElem);
                 }
                 else
                 {
                     // can't load audio resource
                     CallBack(null);
-                    Debuger.LogError("Can't load audio clip named: " + type.ToString());
                 }
             });
         }

@@ -11,4 +11,8 @@ public abstract class StageBase
     }
     abstract public void StartStage();
     abstract public void EndStage();
+    virtual public void PreLoadScene()
+    {
+        WindowManager.Instance.OpenWindow(WindowID.Loading);
+    }
 }

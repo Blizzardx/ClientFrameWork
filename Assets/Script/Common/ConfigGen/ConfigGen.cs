@@ -38,7 +38,7 @@ public class ConfigGen : MonoBehaviour
 	    if (Input.GetKeyDown(KeyCode.A))
 	    {
 	        ArmyInfo tmp = null;
-	        ResourceManager.Instance.DecodeDownloadTemplate(Application.streamingAssetsPath + "/armyinfo.byte", ref tmp);
+	        //ResourceManager.Instance.DecodeDownloadTemplate(Application.streamingAssetsPath + "/armyinfo.byte", ref tmp);
 	        Debuger.Log(tmp.Id);
             for (int i = 0; i < tmp.MemberInfoList.Count; ++i)
             {

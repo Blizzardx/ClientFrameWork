@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
-using Assets.Scripts.Core.Utils;
+﻿using Assets.Scripts.Core.Utils;
 using UnityEngine;
 using System.Collections.Generic;
 
 public class LogManager :Singleton<LogManager>
 {
+
     private List<string>        m_LogStore;
     private bool                m_bIsEnalbeRecord;
     private long                m_lWriteRate;

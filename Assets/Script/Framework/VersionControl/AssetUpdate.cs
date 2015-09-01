@@ -4,7 +4,6 @@ using Assets.Scripts.Core.Utils;
 using Assets.Scripts.Framework.Network;
 using Common.Config;
 using Communication;
-using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -82,7 +81,7 @@ public class AssetUpdate : Singleton<AssetUpdate>
 
         // load local version config
         string path = Path.Combine(m_strSavePath, m_strRootPathVersionConfigName);
-        bool isExit = ResourceManager.Instance.DecodeDownloadTemplate(path,ref m_LocalRootVersionConfig);
+        bool isExit = ResourceManager.Instance.DecodePersonalDataTemplate(path, ref m_LocalRootVersionConfig);
         if (isExit)
         {
             for (int i = 0; i < m_RemoteRootVersionConfig.VersionList.Count; ++i)
@@ -180,7 +179,7 @@ public class AssetUpdate : Singleton<AssetUpdate>
         string path = Path.Combine(m_strSavePath, m_strTmpFolderName);
         path = Path.Combine(path, m_strRootPathVersionConfigName);
 
-        bool isExit = ResourceManager.Instance.DecodeDownloadTemplate(path, ref m_TmpLocalFolderVersionConfig);
+        bool isExit = ResourceManager.Instance.DecodePersonalDataTemplate(path, ref m_TmpLocalFolderVersionConfig);
         if (isExit)
         {
             for (int i = 0; i < m_TmpRemoteFolderVersionConfig.VersionList.Count; ++i)

@@ -29,12 +29,13 @@ public class GameManager : Singleton<GameManager>
         ScriptManager.Instance.Initialize();
         AudioManager.Instance.Initialize();
         MapManager.Instance.Initialize();
-
-        // check asset
-       // AssetUpdate.Instance.BeginCheck(() =>
-        //{
-         //   CustomMain.Instance.Initialize();
-        //});
+        CustomMain.Instance.Initialize();
+        /*// check asset
+        AssetUpdate.Instance.BeginCheck(() =>
+        {
+            CustomMain.Instance.Initialize();
+        });*/
+        
     }
     public void Update()
     {
@@ -43,7 +44,7 @@ public class GameManager : Singleton<GameManager>
         TickTaskManager.Instance.Update();
         ExcutionUpdateList();
 
-        Test();
+        //Test();
     }
     public void OnAppQuit()
     {
@@ -113,12 +114,7 @@ public class GameManager : Singleton<GameManager>
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            //NetWorkManager.Instance.Connect("123.57.220.33", 8090);
-            Debuger.Log("TestLog");
-            Debuger.LogWarning("TestLog");
-            Debuger.LogError("TestLog");
-            List<int> a = null;
-            a.Add(0);
+            NetWorkManager.Instance.Connect("123.57.220.33", 8090);
         }
         if (Input.GetKeyDown(KeyCode.A))
         {

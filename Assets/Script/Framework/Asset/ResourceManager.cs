@@ -79,14 +79,35 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     {
         StartCoroutine(StartLoadDownloadResource(path, type, CallBack));
     }
-    public bool DecodeDownloadTemplate<T>(string path,ref T template) where T : TBase, new()
+    IEnumerator LoadWWW(string path,Action<WWW> CallBack)
+    {
+        WWW www = new WWW(path);
+        yield return www;
+        CallBack(www);
+    }
+    public void DecodeStreamAssetTemplate<T>(string path, Action<bool, T> callBack) where T : TBase, new()
+    {
+        Action<WWW> callBackdef = (www) =>
+        {
+            byte[] data = www.bytes;
+
+            if (null != data)
+            {
+                T template = new T();
+                ThriftSerialize.DeSerialize(template, data);
+                callBack(true, template);
+            }
+            else
+            {
+                callBack(false,new T());
+            }
+        };
+
+        StartCoroutine(LoadWWW(path, callBackdef));
+    }
+    public bool DecodePersonalDataTemplate<T>(string path, ref T template) where T : TBase, new()
     {
         byte[] data = FileUtils.ReadByteFile(path);
-       /* var membuffer = new TMemoryBuffer(data);
-        TProtocol protocol = (new TCompactProtocol(membuffer));
-        var temp = new T();
-        ThriftSerialize.DeSerialize(temp, data);
-        temp.Read(protocol);*/
 
         if (null != data)
         {
@@ -123,6 +144,36 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             Debuger.LogError("error ");
         }
         return false;
+    }
+
+    public bool IsEditor()
+    {
+        if(Application.platform == RuntimePlatform.WindowsEditor ||  Application.platform == RuntimePlatform.OSXEditor)
+        {
+            return true;
+        }
+        return false;
+    }
+    public string GetStreamAssetPath()
+    {
+        string path = string.Empty;
+        
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            // android
+            path = "jar:file://" + Application.dataPath + "!/assets";
+        }
+        else if (Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            // ios
+            path = Application.dataPath + "/Raw";
+            
+        }
+        else
+        {
+            path = Application.streamingAssetsPath;
+        }
+        return path;
     }
     private IEnumerator StartLoadBuildInResource(string path, AssetType type, Action<UnityEngine.Object> CallBack)
     {
