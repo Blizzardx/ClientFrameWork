@@ -16,6 +16,8 @@ public enum AssetType
     Audio,
     Map,
     Texture,
+    Atlas,
+    Prefab,
 }
 
 public enum LoadType
@@ -85,6 +87,10 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         yield return www;
         CallBack(www);
     }
+    public void LoadStreamingAssetsData(string _path, Action<WWW> _callBack)
+    {
+        StartCoroutine(LoadWWW(_path,_callBack));
+    }
     public void DecodeStreamAssetTemplate<T>(string path, Action<bool, T> callBack) where T : TBase, new()
     {
         Action<WWW> callBackdef = (www) =>
@@ -122,6 +128,7 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     }
     public bool DecodeBuildInTemplate<T>(string path, ref T template) where T : TBase, new()
     {
+        path = "BuildIn/" + path;
         TextAsset textAsset = Resources.Load<TextAsset>(path);
         
         if (textAsset != null)
@@ -161,19 +168,28 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         if (Application.platform == RuntimePlatform.Android)
         {
             // android
-            path = "jar:file://" + Application.dataPath + "!/assets";
+            path = Application.streamingAssetsPath;//"jar:file://" + Application.dataPath + "!/assets";
         }
         else if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
             // ios
-            path = Application.dataPath + "/Raw";
+            path = @"file://" + Application.dataPath + "/Raw";
             
         }
         else
         {
-            path = Application.streamingAssetsPath;
+            path = @"file://" + Application.streamingAssetsPath;
         }
         return path;
+    }
+    public void ExecuteActionNextFrame(Action _action)
+    {
+        StartCoroutine(ExecuteAction(_action));
+    }
+    IEnumerator ExecuteAction(Action _action)
+    { 
+        yield return new  WaitForSeconds(0.1f);
+        _action();
     }
     private IEnumerator StartLoadBuildInResource(string path, AssetType type, Action<UnityEngine.Object> CallBack)
     {
@@ -341,6 +357,9 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
            case AssetType.UI:
                 path = "UI/Prefab/" + path;
                 break;
+           case AssetType.Atlas:
+                path = "UI/Atlas/" + path;
+                break;
             case AssetType.Animation:
                 path = "Animation/" + path;
                 break;
@@ -349,6 +368,9 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
                 break;
             case AssetType.Map:
                 path = "Map/" + path;
+                break;
+            case AssetType.Prefab:
+                path = "Prefab/" + path;
                 break;
             default:
             {

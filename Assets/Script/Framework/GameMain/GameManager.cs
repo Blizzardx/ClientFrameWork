@@ -13,6 +13,8 @@ public class GameManager : Singleton<GameManager>
     #region public interface
     public void Initialize()
     {
+        AdaptiveUI();
+
         m_UpdateList                    = new List<Action>();
         m_UnregisterUpdateListStore     = new List<Action>();
         m_bIsUpdateListBusy             = false;
@@ -40,6 +42,7 @@ public class GameManager : Singleton<GameManager>
     public void Update()
     {
         TimeManager.Instance.Update();
+        TimerCollection.GetInstance().Update();
         MessageManager.Instance.Update();
         TickTaskManager.Instance.Update();
         ExcutionUpdateList();
@@ -190,4 +193,18 @@ public class GameManager : Singleton<GameManager>
         }
     }
     #endregion
+
+    private void AdaptiveUI()
+    {
+        int ManualWidth = 1920;
+        int ManualHeight = 1080;
+        UIRoot uiRoot = GameObject.FindObjectOfType<UIRoot>();
+        if (uiRoot != null)
+        {
+            if (System.Convert.ToSingle(Screen.height) / Screen.width > System.Convert.ToSingle(ManualHeight) / ManualWidth)
+                uiRoot.manualHeight = Mathf.RoundToInt(System.Convert.ToSingle(ManualWidth) / Screen.width * Screen.height);
+            else
+                uiRoot.manualHeight = ManualHeight;
+        }
+    }
 }
