@@ -35,8 +35,9 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
 {
     private Dictionary<string, UnityEngine.Object>                      m_AssetStore;
     private Dictionary<string, List<Action<UnityEngine.Object>>>        m_AssetLoadCallBackStore;
-    private List<string>                                                m_LoadingStore; 
-
+    private List<string>                                                m_LoadingStore;
+    
+    #region public interface
     public void Initialize()
     {
         m_AssetStore                = new Dictionary<string, UnityEngine.Object>();
@@ -152,7 +153,6 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         }
         return false;
     }
-
     public bool IsEditor()
     {
         if(Application.platform == RuntimePlatform.WindowsEditor ||  Application.platform == RuntimePlatform.OSXEditor)
@@ -186,7 +186,10 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     {
         StartCoroutine(ExecuteAction(_action));
     }
-    IEnumerator ExecuteAction(Action _action)
+    #endregion
+
+    #region system function
+    private IEnumerator ExecuteAction(Action _action)
     { 
         yield return new  WaitForSeconds(0.1f);
         _action();
@@ -427,4 +430,5 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     {
         _instance = this;
     }
+    #endregion
 }

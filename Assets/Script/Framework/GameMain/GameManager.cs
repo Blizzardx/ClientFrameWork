@@ -31,6 +31,8 @@ public class GameManager : Singleton<GameManager>
         ScriptManager.Instance.Initialize();
         AudioManager.Instance.Initialize();
         MapManager.Instance.Initialize();
+        FuncMethodDef.InitFuncMethod();
+        LimitMethodDef.InitLimitMethod();
         CustomMain.Instance.Initialize();
         /*// check asset
         AssetUpdate.Instance.BeginCheck(() =>
@@ -108,6 +110,19 @@ public class GameManager : Singleton<GameManager>
             m_UpdateList.Remove(m_UnregisterUpdateListStore[i]);
         }
         m_UnregisterUpdateListStore.Clear();
+    }
+    private void AdaptiveUI()
+    {
+        int ManualWidth = 1920;
+        int ManualHeight = 1080;
+        UIRoot uiRoot = GameObject.FindObjectOfType<UIRoot>();
+        if (uiRoot != null)
+        {
+            if (System.Convert.ToSingle(Screen.height) / Screen.width > System.Convert.ToSingle(ManualHeight) / ManualWidth)
+                uiRoot.manualHeight = Mathf.RoundToInt(System.Convert.ToSingle(ManualWidth) / Screen.width * Screen.height);
+            else
+                uiRoot.manualHeight = ManualHeight;
+        }
     }
     #endregion
 
@@ -194,17 +209,4 @@ public class GameManager : Singleton<GameManager>
     }
     #endregion
 
-    private void AdaptiveUI()
-    {
-        int ManualWidth = 1920;
-        int ManualHeight = 1080;
-        UIRoot uiRoot = GameObject.FindObjectOfType<UIRoot>();
-        if (uiRoot != null)
-        {
-            if (System.Convert.ToSingle(Screen.height) / Screen.width > System.Convert.ToSingle(ManualHeight) / ManualWidth)
-                uiRoot.manualHeight = Mathf.RoundToInt(System.Convert.ToSingle(ManualWidth) / Screen.width * Screen.height);
-            else
-                uiRoot.manualHeight = ManualHeight;
-        }
-    }
 }
