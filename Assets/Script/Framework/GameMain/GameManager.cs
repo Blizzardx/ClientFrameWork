@@ -33,6 +33,7 @@ public class GameManager : Singleton<GameManager>
         MapManager.Instance.Initialize();
         FuncMethodDef.InitFuncMethod();
         LimitMethodDef.InitLimitMethod();
+        TargetMethodDef.InitTargetMethod();
         CustomMain.Instance.Initialize();
         /*// check asset
         AssetUpdate.Instance.BeginCheck(() =>

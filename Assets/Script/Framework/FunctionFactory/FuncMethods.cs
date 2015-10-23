@@ -9,19 +9,16 @@ public enum EFuncRet
     Break,
     Error,
 }
-public class HandleTarget
+public abstract class FuncMethodsBase
 {
-    
+    public  abstract EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata);
 }
 static public class FuncMethods
 {
-	public delegate EFuncRet FuncExecHandler( HandleTarget Target, FuncData funcdata);
-	
-	static Dictionary<int,FuncExecHandler>		FuncExec;
-	static public void InitFuncMethods(Dictionary<int,FuncExecHandler> dataSource)
+    static Dictionary<int, FuncMethodsBase> FuncExec;
+    static public void InitFuncMethods(Dictionary<int, FuncMethodsBase> dataSource)
 	{
 	    FuncExec = dataSource;
-
 	}
 	static public int HandleFuncExec( HandleTarget Target, int iFuncGroupId)
 	{
@@ -42,8 +39,8 @@ static public class FuncMethods
 		    {
 		        continue;
 		    }
-			
-		    FuncExecHandler func = null;
+
+            FuncMethodsBase func = null;
 		    FuncExec.TryGetValue(ExecData.Id, out func);
 			//
 		    if (null == func)
@@ -51,7 +48,7 @@ static public class FuncMethods
 		        continue;
 		    }
 
-            EFuncRet eRet = func(Target, ExecData);
+            EFuncRet eRet = func.FuncExecHandler(Target, ExecData);
 			
 			if (EFuncRet.Break == eRet)
 			{

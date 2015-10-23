@@ -5,11 +5,15 @@ using UnityEngine;
 using Common.Config;
 using System.Collections.Generic;
 
+public abstract class LimitMethodsBase
+{
+    public abstract bool LimitExecHandler(HandleTarget Target, LimitData Limit); 
+}
 static public class LimitMethods
 {
-	static Dictionary<int,LimitExecHandler>	LimitExec;
+    static Dictionary<int, LimitMethodsBase> LimitExec;
 
-	static public void  InitLimitMethods(Dictionary<int,LimitExecHandler> sourceData)
+    static public void InitLimitMethods(Dictionary<int, LimitMethodsBase> sourceData)
 	{
 	    LimitExec = sourceData;
 	}
@@ -38,7 +42,7 @@ static public class LimitMethods
 			if( null == ExecData )
 				continue;
 
-		    LimitExecHandler handler = null;
+            LimitMethodsBase handler = null;
             if( ! LimitExec.TryGetValue(ExecData.Id, out handler) )
 			{
 				Debug.LogError("limitId:" + ExecData.Id + " is not found.");
@@ -48,7 +52,7 @@ static public class LimitMethods
 			if( 0 == limitdataGroup.Logic )
 			{
                 // Or-logic
-                bResult = handler(Target, ExecData);
+                bResult = handler.LimitExecHandler(Target, ExecData);
 			    if (true == bResult)
 			    {
 			        break;
@@ -57,7 +61,7 @@ static public class LimitMethods
 			else if( 1 == limitdataGroup.Logic )
 			{
                 // And-logic
-                bResult = handler(Target, ExecData);
+                bResult = handler.LimitExecHandler(Target, ExecData);
 				if( false == bResult )
 				{
 					break;
@@ -72,6 +76,4 @@ static public class LimitMethods
 		
 		return bResult;
 	}
-	
-	public delegate bool LimitExecHandler( HandleTarget Target, LimitData Limit ); 
 }
