@@ -11,9 +11,9 @@ public class GameTestLogic: LogicBase<GameTestLogic>
 
 	public override void StartLogic()
 	{
-	    GameObject map =
+	   /* GameObject map =
 	        GameObject.Instantiate(ResourceManager.Instance.LoadBuildInResource<GameObject>("Scene", AssetType.Map));
-	    ComponentTool.Attach(null, map.transform);
+	    ComponentTool.Attach(null, map.transform);*/
 
         m_Camera = ComponentTool.FindChild("SceneCamera", null).transform;
         WindowManager.Instance.HideAllWindow();

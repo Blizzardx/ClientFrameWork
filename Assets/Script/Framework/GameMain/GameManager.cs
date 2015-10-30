@@ -26,7 +26,7 @@ public class GameManager : Singleton<GameManager>
         FuncMethodDef.InitFuncMethod();
         LimitMethodDef.InitLimitMethod();
         TargetMethodDef.InitTargetMethod();
-        SdkManager.Instance.InitSdk();
+        //SdkManager.Instance.InitSdk();
         CustomMain.Instance.Initialize();
         /*// check asset
         AssetUpdate.Instance.BeginCheck(() =>
