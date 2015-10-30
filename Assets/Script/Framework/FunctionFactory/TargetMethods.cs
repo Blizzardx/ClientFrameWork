@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.ComponentModel.Design.Serialization;
+using UnityEngine;
 using System.Collections.Generic;
-using Common.Config;
+using Config;
 
 public abstract class TargetMethodBase
 {
@@ -14,28 +15,66 @@ public enum EFuncTarget
 }
 public class HandleTarget
 {
-    // first always user in list.
-    List<Ilife> m_lstUser = new List<Ilife>();
-    List<Ilife> m_lstTarget = new List<Ilife>();
-
-    public HandleTarget(Ilife userTarget, params Ilife[] targetList)
+    #region memory pool
+    private static LinkedList<HandleTarget> m_HandlerTargetCollectionPool   = new LinkedList<HandleTarget>();
+    private static HandleTarget CreateHandlerTarget()
     {
-        m_lstUser.Add(userTarget);
+        HandleTarget instance = null;
+        if (m_HandlerTargetCollectionPool.Count == 0)
+        {
+            // creat buffer
+            for (int i = 0;i<20;++i)
+            {
+                m_HandlerTargetCollectionPool.AddLast(new HandleTarget());
+            }
+
+            instance = new HandleTarget();
+        }
+        else
+        {
+            instance = m_HandlerTargetCollectionPool.Last.Value;
+            m_HandlerTargetCollectionPool.RemoveLast();
+        }
+        return instance;
+    }
+    public static HandleTarget GetHandleTarget(Ilife userTarget, params Ilife[] targetList)
+    {
+        HandleTarget instance = CreateHandlerTarget();
+        instance.m_lstUser.Add(userTarget);
         if (null != targetList)
         {
             foreach (Ilife Child in targetList)
             {
-                m_lstTarget.Add(Child);
+                instance.m_lstTarget.Add(Child);
             }
         }
-    }
 
-    public HandleTarget(Ilife userTarget, List<Ilife> targetList)
+        return instance;
+    }
+    public static  HandleTarget GetHandleTarget(Ilife userTarget, List<Ilife> targetList)
     {
-        m_lstUser.Add(userTarget);
-        m_lstTarget = targetList;
-    }
+        HandleTarget instance = CreateHandlerTarget();
+        instance.m_lstUser.Add(userTarget);
+        instance.m_lstTarget = targetList;
 
+        return instance;
+    }
+    public static void CollectionHandlerTargetInstance(HandleTarget instance)
+    {
+        instance.m_lstTarget.Clear();
+        instance.m_lstUser.Clear();
+
+        m_HandlerTargetCollectionPool.AddLast(instance);
+    }
+    private HandleTarget()
+    {
+    }
+    #endregion
+
+
+    // first always user in list.
+    List<Ilife> m_lstUser = new List<Ilife>();
+    List<Ilife> m_lstTarget = new List<Ilife>();
     //
     public List<Ilife> GetTarget(EFuncTarget eTarget)
     {
@@ -91,13 +130,14 @@ public static class TargetMethods
     }
     public static HandleTarget GetTargetList(Ilife srcLife, int iTargetGroupId)
     {
-        HandleTarget handle = new HandleTarget(srcLife);
+        HandleTarget handle = HandleTarget.GetHandleTarget(srcLife);
+
         if (iTargetGroupId <= 0)
         {
             return handle;
         }
 
-        TargetGroup targetGroup = new TargetGroup();//DataManager.Instance.GetTargetGroup(iTargetGroupId);
+        TargetGroup targetGroup =  ConfigManager.Instance.GetTargetGroup(iTargetGroupId);
         if (null == targetGroup)
         {
             Debug.LogError("target groupId:" + iTargetGroupId + " is not found.");

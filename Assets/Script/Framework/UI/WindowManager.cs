@@ -329,12 +329,12 @@ public class WindowManager : Singleton<WindowManager>
     {
         if (!m_bIsOnUpdateStore && m_UpdateStore.Count > 0)
         {
-            GameManager.Instance.RegisterToUpdateList(Update);
+            UITickTask.Instance.RegisterToUpdateList(Update);
             m_bIsOnUpdateStore = true;
         }
         else if (m_bIsOnUpdateStore && m_UpdateStore.Count <= 0)
         {
-            GameManager.Instance.UnRegisterFromUpdateList(Update);
+            UITickTask.Instance.UnRegisterFromUpdateList(Update);
             m_bIsOnUpdateStore = false;
         }
     }

@@ -130,7 +130,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         if (client.Connected)
         {
             Debug.Log("Connected");
-            TickTaskManager.Instance.SetTickTaskStatus(TickTaskManager.TickTaskType.PingTickTask, true);
+            PingTickTask.Instance.SetPingStatus(true);
         }
         else
         {

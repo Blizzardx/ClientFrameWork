@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using Thrift.Protocol;
 using Thrift.Transport;
 
-namespace Common.Config
+namespace Config
 {
 
   #if !SILVERLIGHT
@@ -88,13 +88,13 @@ namespace Common.Config
             if (field.Type == TType.List) {
               {
                 TargetDataList = new List<TargetData>();
-                TList _list48 = iprot.ReadListBegin();
-                for( int _i49 = 0; _i49 < _list48.Count; ++_i49)
+                TList _list32 = iprot.ReadListBegin();
+                for( int _i33 = 0; _i33 < _list32.Count; ++_i33)
                 {
-                  TargetData _elem50 = new TargetData();
-                  _elem50 = new TargetData();
-                  _elem50.Read(iprot);
-                  TargetDataList.Add(_elem50);
+                  TargetData _elem34 = new TargetData();
+                  _elem34 = new TargetData();
+                  _elem34.Read(iprot);
+                  TargetDataList.Add(_elem34);
                 }
                 iprot.ReadListEnd();
               }
@@ -130,9 +130,9 @@ namespace Common.Config
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.Struct, TargetDataList.Count));
-          foreach (TargetData _iter51 in TargetDataList)
+          foreach (TargetData _iter35 in TargetDataList)
           {
-            _iter51.Write(oprot);
+            _iter35.Write(oprot);
           }
           oprot.WriteListEnd();
         }

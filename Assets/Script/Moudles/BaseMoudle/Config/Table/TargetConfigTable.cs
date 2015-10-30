@@ -15,26 +15,26 @@ using System.Runtime.Serialization;
 using Thrift.Protocol;
 using Thrift.Transport;
 
-namespace Common.Config
+namespace Config.Table
 {
 
   #if !SILVERLIGHT
   [Serializable]
   #endif
-  public partial class VersionConfig : TBase
+  public partial class TargetConfigTable : TBase
   {
-    private List<VersionConfigElement> _versionList;
+    private Dictionary<int, Config.TargetGroup> _targetMap;
 
-    public List<VersionConfigElement> VersionList
+    public Dictionary<int, Config.TargetGroup> TargetMap
     {
       get
       {
-        return _versionList;
+        return _targetMap;
       }
       set
       {
-        __isset.versionList = true;
-        this._versionList = value;
+        __isset.targetMap = true;
+        this._targetMap = value;
       }
     }
 
@@ -44,10 +44,10 @@ namespace Common.Config
     [Serializable]
     #endif
     public struct Isset {
-      public bool versionList;
+      public bool targetMap;
     }
 
-    public VersionConfig() {
+    public TargetConfigTable() {
     }
 
     public void Read (TProtocol iprot)
@@ -63,18 +63,20 @@ namespace Common.Config
         switch (field.ID)
         {
           case 1:
-            if (field.Type == TType.List) {
+            if (field.Type == TType.Map) {
               {
-                VersionList = new List<VersionConfigElement>();
-                TList _list0 = iprot.ReadListBegin();
-                for( int _i1 = 0; _i1 < _list0.Count; ++_i1)
+                TargetMap = new Dictionary<int, Config.TargetGroup>();
+                TMap _map10 = iprot.ReadMapBegin();
+                for( int _i11 = 0; _i11 < _map10.Count; ++_i11)
                 {
-                  VersionConfigElement _elem2 = new VersionConfigElement();
-                  _elem2 = new VersionConfigElement();
-                  _elem2.Read(iprot);
-                  VersionList.Add(_elem2);
+                  int _key12;
+                  Config.TargetGroup _val13;
+                  _key12 = iprot.ReadI32();
+                  _val13 = new Config.TargetGroup();
+                  _val13.Read(iprot);
+                  TargetMap[_key12] = _val13;
                 }
-                iprot.ReadListEnd();
+                iprot.ReadMapEnd();
               }
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
@@ -90,21 +92,22 @@ namespace Common.Config
     }
 
     public void Write(TProtocol oprot) {
-      TStruct struc = new TStruct("VersionConfig");
+      TStruct struc = new TStruct("TargetConfigTable");
       oprot.WriteStructBegin(struc);
       TField field = new TField();
-      if (VersionList != null && __isset.versionList) {
-        field.Name = "versionList";
-        field.Type = TType.List;
+      if (TargetMap != null && __isset.targetMap) {
+        field.Name = "targetMap";
+        field.Type = TType.Map;
         field.ID = 1;
         oprot.WriteFieldBegin(field);
         {
-          oprot.WriteListBegin(new TList(TType.Struct, VersionList.Count));
-          foreach (VersionConfigElement _iter3 in VersionList)
+          oprot.WriteMapBegin(new TMap(TType.I32, TType.Struct, TargetMap.Count));
+          foreach (int _iter14 in TargetMap.Keys)
           {
-            _iter3.Write(oprot);
+            oprot.WriteI32(_iter14);
+            TargetMap[_iter14].Write(oprot);
           }
-          oprot.WriteListEnd();
+          oprot.WriteMapEnd();
         }
         oprot.WriteFieldEnd();
       }
@@ -113,9 +116,9 @@ namespace Common.Config
     }
 
     public override string ToString() {
-      StringBuilder sb = new StringBuilder("VersionConfig(");
-      sb.Append("VersionList: ");
-      sb.Append(VersionList);
+      StringBuilder sb = new StringBuilder("TargetConfigTable(");
+      sb.Append("TargetMap: ");
+      sb.Append(TargetMap);
       sb.Append(")");
       return sb.ToString();
     }

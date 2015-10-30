@@ -2,7 +2,7 @@
 using System.IO;
 using Assets.Scripts.Core.Utils;
 using Assets.Scripts.Framework.Network;
-using Common.Config;
+using Config;
 using Communication;
 using UnityEngine;
 using System.Collections.Generic;

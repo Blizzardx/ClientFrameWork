@@ -8,14 +8,24 @@ public class PingTickTask : AbstractTickTask
     private const int   m_nTimeOut              = 30000;
     private int         m_nCurrentTimeout       = 0;
     private bool        m_bIsConnect;
+    private bool        m_bIsActive;
     static public long  m_iLastSendMsgTime;
 
+    private static PingTickTask m_Instance;
+    public static PingTickTask Instance
+    {
+        get
+        {
+            return m_Instance;
+        }
+    }
 	protected override bool FirstRunExecute ()
 	{
 	    m_bIsConnect = false;
         //register msg
         MessageManager.Instance.RegistMessage(MessageTypeConstants.SC_PING, OnPong);
         m_iLastSendMsgTime = TimeManager.Instance.Now;
+	    m_Instance = this;
 		return false;
 	}
 	protected override int GetTickTime ()
@@ -24,6 +34,10 @@ public class PingTickTask : AbstractTickTask
 	}
 	protected override void Beat ()
 	{
+	    if (!m_bIsActive)
+	    {
+	        return;
+	    }
         if (NetWorkManager.Instance.IsConnected())
 	    {
 	        m_bIsConnect = true;
@@ -44,7 +58,7 @@ public class PingTickTask : AbstractTickTask
                 MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
                 m_bIsConnect = false;
 
-                TickTaskManager.Instance.SetTickTaskStatus(TickTaskManager.TickTaskType.PingTickTask, false);
+                SetPingStatus(false);
             }
 	    }
 	}
@@ -68,5 +82,9 @@ public class PingTickTask : AbstractTickTask
     public static void ResetSendMsgTime()
     {
         m_iLastSendMsgTime = TimeManager.Instance.Now;
+    }
+    public void SetPingStatus(bool isActive)
+    {
+        m_bIsActive = isActive;
     }
 }

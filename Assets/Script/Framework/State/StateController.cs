@@ -1,5 +1,5 @@
 ﻿using System;
-using Common.Config;
+using Config;
 using JetBrains.Annotations;
 using UnityEngine;
 using System.Collections.Generic;
@@ -10,12 +10,14 @@ public class StateController
     private Dictionary<ELifeState, IState>  m_StateUsingStore;
     private Dictionary<ELifeState, Type>    m_StateFactory;
     private int                             m_nCurrentListenId;
+    private StateConflictConfig             m_CurrentCharStateConflictMap;
 
     #region public interface
-    public StateController(int registerClientMsgId)
+    public StateController(int uid,int registerClientMsgId)
     {
         m_nCurrentListenId = registerClientMsgId;
         MessageManager.Instance.RegistMessage(registerClientMsgId, OnTriggerChangeState);
+        m_CurrentCharStateConflictMap = ConfigManager.Instance.GetStateConflicMap(uid);
     }
     public void RegisterState(ELifeState state, Type type)
     {
@@ -46,21 +48,24 @@ public class StateController
         }
         if (!force )
         {
-            List<StateConflictConfigElement> stateClash = ConfigManager.Instance.GetStateConflicList(m_CurrentState.GetState());
-            foreach (StateConflictConfigElement s in stateClash)
+            List<StateConflictConfigElement> stateClash = null;
+            if (m_CurrentCharStateConflictMap.StateConflictMap.TryGetValue((int)(m_CurrentState.GetState()), out stateClash))
             {
-                //与当前状态冲突
-                if (s.StateId == (int)newStateID )
+                foreach (StateConflictConfigElement s in stateClash)
                 {
-                    if (s.IsConflict)
+                    //与当前状态冲突
+                    if (s.StateId == (int)newStateID)
                     {
-                        Debuger.LogWarning(string.Format("current state:{0} can't enter new state:{1}",
-                            m_CurrentState.GetState(), newStateID));
-                        return false;
-                    }
-                    else
-                    {
-                        break;
+                        if (s.IsConflict)
+                        {
+                            Debuger.LogWarning(string.Format("current state:{0} can't enter new state:{1}",
+                                m_CurrentState.GetState(), newStateID));
+                            return false;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }

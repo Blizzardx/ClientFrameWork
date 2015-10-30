@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Common.Config;
+using Config;
 using UnityEngine;
 using System.Collections;
 
@@ -13,6 +13,7 @@ public class LimitMethodDef
         LimitExec = new Dictionary<int, LimitMethodsBase>
 		{
 			{0,new Limit_HANDLE_LIMIT_EXEC_NONE()},
+			{1,new Limit_HANDLE_LIMIT_EXEC_TRUE()},
 		};
 
         LimitMethods.InitLimitMethods(LimitExec);

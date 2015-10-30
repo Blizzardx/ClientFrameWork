@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using Thrift.Protocol;
 using Thrift.Transport;
 
-namespace Common.Config.Table
+namespace Config.Table
 {
 
   #if !SILVERLIGHT
@@ -23,9 +23,9 @@ namespace Common.Config.Table
   #endif
   public partial class StateConflictTable : TBase
   {
-    private Dictionary<int, Common.Config.StateConflictConfig> _stateConflictConfigMap;
+    private Dictionary<int, Config.StateConflictConfig> _stateConflictConfigMap;
 
-    public Dictionary<int, Common.Config.StateConflictConfig> StateConflictConfigMap
+    public Dictionary<int, Config.StateConflictConfig> StateConflictConfigMap
     {
       get
       {
@@ -65,16 +65,16 @@ namespace Common.Config.Table
           case 1:
             if (field.Type == TType.Map) {
               {
-                StateConflictConfigMap = new Dictionary<int, Common.Config.StateConflictConfig>();
-                TMap _map289 = iprot.ReadMapBegin();
-                for( int _i290 = 0; _i290 < _map289.Count; ++_i290)
+                StateConflictConfigMap = new Dictionary<int, Config.StateConflictConfig>();
+                TMap _map15 = iprot.ReadMapBegin();
+                for( int _i16 = 0; _i16 < _map15.Count; ++_i16)
                 {
-                  int _key291;
-                  Common.Config.StateConflictConfig _val292;
-                  _key291 = iprot.ReadI32();
-                  _val292 = new Common.Config.StateConflictConfig();
-                  _val292.Read(iprot);
-                  StateConflictConfigMap[_key291] = _val292;
+                  int _key17;
+                  Config.StateConflictConfig _val18;
+                  _key17 = iprot.ReadI32();
+                  _val18 = new Config.StateConflictConfig();
+                  _val18.Read(iprot);
+                  StateConflictConfigMap[_key17] = _val18;
                 }
                 iprot.ReadMapEnd();
               }
@@ -102,10 +102,10 @@ namespace Common.Config.Table
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteMapBegin(new TMap(TType.I32, TType.Struct, StateConflictConfigMap.Count));
-          foreach (int _iter293 in StateConflictConfigMap.Keys)
+          foreach (int _iter19 in StateConflictConfigMap.Keys)
           {
-            oprot.WriteI32(_iter293);
-            StateConflictConfigMap[_iter293].Write(oprot);
+            oprot.WriteI32(_iter19);
+            StateConflictConfigMap[_iter19].Write(oprot);
           }
           oprot.WriteMapEnd();
         }

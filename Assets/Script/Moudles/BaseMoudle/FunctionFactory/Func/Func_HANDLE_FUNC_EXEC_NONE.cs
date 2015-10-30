@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Common.Config;
+using Config;
 
 public class Func_HANDLE_FUNC_EXEC_NONE : FuncMethodsBase
 {

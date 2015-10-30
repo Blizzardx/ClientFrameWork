@@ -94,10 +94,7 @@ public class MessageBufferTool
         Array.Copy(tmpSendBody, 0, m_SendBuffer, m_SendBufferSize, tmpSendBody.Length);
         m_SendBufferSize += tmpSendBody.Length;
 
-        if (AppManager.Instance.m_bIsShowDebugMsg)
-        {
-            Debuger.Log("Send msg:" + messageBody.GetType().ToString());
-        }
+        Debuger.Log("Send msg:" + messageBody.GetType().ToString());
     }
     public void RecieveMsg(int size)
     {
@@ -224,10 +221,7 @@ public class MessageBufferTool
         //broad cast
         MessageManager.Instance.AddToMessageQueue(new MessageObject(messageId, message));
 
-        if (AppManager.Instance.m_bIsShowDebugMsg)
-        {
-            Debuger.Log("Rec msg:" + message.GetType().Name);
-        }
+        Debuger.Log("Rec msg:" + message.GetType().Name);
 
         return index;
     }

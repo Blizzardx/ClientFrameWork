@@ -11,19 +11,19 @@ public class GameTestLogic: LogicBase<GameTestLogic>
 
 	public override void StartLogic()
 	{
-	    WindowManager.Instance.OpenWindow(WindowID.WindowProject1);
-	   /* GameObject map =
+	    GameObject map =
 	        GameObject.Instantiate(ResourceManager.Instance.LoadBuildInResource<GameObject>("Scene", AssetType.Map));
 	    ComponentTool.Attach(null, map.transform);
 
         m_Camera = ComponentTool.FindChild("SceneCamera", null).transform;
         WindowManager.Instance.HideAllWindow();
-        GameManager.Instance.RegisterToUpdateList(Update);*/
+        WindowManager.Instance.OpenWindow(WindowID.WindowProject1);
+        PlayerTickTask.Instance.RegisterToUpdateList(Update);
 
 	}
 	public override void EndLogic()
 	{
-	    //GameManager.Instance.UnRegisterFromUpdateList(Update);
+        PlayerTickTask.Instance.UnRegisterFromUpdateList(Update);
 	}
 
     private void Update()
@@ -39,7 +39,7 @@ public class GameTestLogic: LogicBase<GameTestLogic>
             else if (Input.touches[0].phase == TouchPhase.Ended)
             {
                 m_bIsTouching = false;
-                
+
             }
             if (m_bIsTouching)
             {
@@ -47,29 +47,30 @@ public class GameTestLogic: LogicBase<GameTestLogic>
                 m_fDeltaDistance = (currentPos - m_vInitPos);
                 m_fDeltaDistance.z = m_fDeltaDistance.y;
                 m_fDeltaDistance.y = 0;
-                m_Camera.position = m_vInitCamPos + m_fDeltaDistance * 0.001f;
+                m_Camera.position = m_vInitCamPos + m_fDeltaDistance*0.001f;
             }
         }
-        
-            /*if (Input.GetMouseButtonDown(0) )
-            {
-                m_bIsTouching = true;
-                m_vInitPos = Input.mousePosition;
-                m_vInitCamPos = m_Camera.position;
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                m_bIsTouching = false;
 
-            }
-            if (m_bIsTouching)
-            {
-                Vector3 currentPos = Input.mousePosition;
-                m_fDeltaDistance = (currentPos - m_vInitPos);
-                m_fDeltaDistance.z = m_fDeltaDistance.y;
-                m_fDeltaDistance.y = 0;
-                m_Camera.position = m_vInitCamPos + m_fDeltaDistance * 0.001f;
-            }*/
+        /*if (Input.GetMouseButtonDown(0))
+        {
+            m_bIsTouching = true;
+            m_vInitPos = Input.mousePosition;
+            m_vInitCamPos = m_Camera.position;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            m_bIsTouching = false;
+
+        }
+        if (m_bIsTouching)
+        {
+            Vector3 currentPos = Input.mousePosition;
+            m_fDeltaDistance = (currentPos - m_vInitPos);
+            m_fDeltaDistance.z = m_fDeltaDistance.y;
+            m_fDeltaDistance.y = 0;
+            m_Camera.position = m_vInitCamPos + m_fDeltaDistance*0.001f;
+        }*/
     }
+
     /// ... to do : 
 }

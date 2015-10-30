@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using Thrift.Protocol;
 using Thrift.Transport;
 
-namespace Common.Config
+namespace Config
 {
 
   #if !SILVERLIGHT
@@ -66,25 +66,25 @@ namespace Common.Config
             if (field.Type == TType.Map) {
               {
                 StateConflictMap = new Dictionary<int, List<StateConflictConfigElement>>();
-                TMap _map180 = iprot.ReadMapBegin();
-                for( int _i181 = 0; _i181 < _map180.Count; ++_i181)
+                TMap _map36 = iprot.ReadMapBegin();
+                for( int _i37 = 0; _i37 < _map36.Count; ++_i37)
                 {
-                  int _key182;
-                  List<StateConflictConfigElement> _val183;
-                  _key182 = iprot.ReadI32();
+                  int _key38;
+                  List<StateConflictConfigElement> _val39;
+                  _key38 = iprot.ReadI32();
                   {
-                    _val183 = new List<StateConflictConfigElement>();
-                    TList _list184 = iprot.ReadListBegin();
-                    for( int _i185 = 0; _i185 < _list184.Count; ++_i185)
+                    _val39 = new List<StateConflictConfigElement>();
+                    TList _list40 = iprot.ReadListBegin();
+                    for( int _i41 = 0; _i41 < _list40.Count; ++_i41)
                     {
-                      StateConflictConfigElement _elem186 = new StateConflictConfigElement();
-                      _elem186 = new StateConflictConfigElement();
-                      _elem186.Read(iprot);
-                      _val183.Add(_elem186);
+                      StateConflictConfigElement _elem42 = new StateConflictConfigElement();
+                      _elem42 = new StateConflictConfigElement();
+                      _elem42.Read(iprot);
+                      _val39.Add(_elem42);
                     }
                     iprot.ReadListEnd();
                   }
-                  StateConflictMap[_key182] = _val183;
+                  StateConflictMap[_key38] = _val39;
                 }
                 iprot.ReadMapEnd();
               }
@@ -112,14 +112,14 @@ namespace Common.Config
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteMapBegin(new TMap(TType.I32, TType.List, StateConflictMap.Count));
-          foreach (int _iter187 in StateConflictMap.Keys)
+          foreach (int _iter43 in StateConflictMap.Keys)
           {
-            oprot.WriteI32(_iter187);
+            oprot.WriteI32(_iter43);
             {
-              oprot.WriteListBegin(new TList(TType.Struct, StateConflictMap[_iter187].Count));
-              foreach (StateConflictConfigElement _iter188 in StateConflictMap[_iter187])
+              oprot.WriteListBegin(new TList(TType.Struct, StateConflictMap[_iter43].Count));
+              foreach (StateConflictConfigElement _iter44 in StateConflictMap[_iter43])
               {
-                _iter188.Write(oprot);
+                _iter44.Write(oprot);
               }
               oprot.WriteListEnd();
             }

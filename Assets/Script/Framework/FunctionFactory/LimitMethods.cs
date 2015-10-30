@@ -2,7 +2,7 @@
  *	条件函数类
  */
 using UnityEngine;
-using Common.Config;
+using Config;
 using System.Collections.Generic;
 
 public abstract class LimitMethodsBase
@@ -27,8 +27,8 @@ static public class LimitMethods
         }
 
         bool bResult = false;
-	    
-	    LimitGroup limitdataGroup = new LimitGroup();//DataManager.Instance.GetLimitGroup( iLimitGroupId );
+
+	    LimitGroup limitdataGroup = ConfigManager.Instance.GetLimitGroup( iLimitGroupId );
 	    if (null == limitdataGroup || null == limitdataGroup.LimitDataList)
 	    {
 	        return bResult;

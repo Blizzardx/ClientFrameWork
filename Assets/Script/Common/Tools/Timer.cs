@@ -1,12 +1,8 @@
-﻿/*
-Author:		pointer3d@gmail.com
-History:	Nov.12.2013 创建
-*/
-
-using UnityEngine;
+﻿using UnityEngine;
 
 // 定时器
-class Timer {
+class Timer 
+{
 	private float time = float.MaxValue;
     private float timeInterval;
     private TimerCollection.Callback func = null;
@@ -53,33 +49,45 @@ class Timer {
 }
 
 // 定时器管理器
-class TimerCollection
+internal class TimerCollection
 {
     private static TimerCollection _this = new TimerCollection();
-    public static TimerCollection GetInstance() { return _this; }
 
-	public delegate void Callback();
+    public static TimerCollection GetInstance()
+    {
+        return _this;
+    }
+
+    public delegate void Callback();
+
     public delegate void CallbackWithTime(float _value);
-	private System.Collections.Generic.LinkedList<Timer> timerList = new System.Collections.Generic.LinkedList<Timer>();
 
-	public Timer Create(Callback func,CallbackWithTime _funcWithTime) {
-		var timer = new Timer(func,_funcWithTime);
-		timerList.AddLast(timer);
-		return timer;
-	}
+    private System.Collections.Generic.LinkedList<Timer> timerList = new System.Collections.Generic.LinkedList<Timer>();
+
+    public Timer Create(Callback func, CallbackWithTime _funcWithTime)
+    {
+        var timer = new Timer(func, _funcWithTime);
+        timerList.AddLast(timer);
+        return timer;
+    }
+
     public Timer Create(Callback func, bool autoRelease, CallbackWithTime _funcWithTime)
     {
-        Timer t = new Timer(func, autoRelease,_funcWithTime);
+        Timer t = new Timer(func, autoRelease, _funcWithTime);
         timerList.AddLast(t);
         return t;
     }
-	public void Destroy(Timer timer) {
-		timerList.Remove(timer);
-	}
 
-	public void Update() {
-		var node = timerList.First;
-		while(node != null) {
+    public void Destroy(Timer timer)
+    {
+        timerList.Remove(timer);
+    }
+
+    public void Update()
+    {
+        var node = timerList.First;
+        while (node != null)
+        {
             if (node.Value.Update())
             {
                 var _tmp = node;
@@ -90,6 +98,6 @@ class TimerCollection
             {
                 node = node.Next;
             }
-		}
-	}
+        }
+    }
 }

@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using Thrift.Protocol;
 using Thrift.Transport;
 
-namespace Common.Config
+namespace Config
 {
 
   #if !SILVERLIGHT
@@ -25,7 +25,7 @@ namespace Common.Config
   {
     private string _name;
     private string _sign;
-    private AssetType _type;
+    private DownloadAssetType _type;
 
     /// <summary>
     /// path + name
@@ -58,9 +58,9 @@ namespace Common.Config
 
     /// <summary>
     /// 
-    /// <seealso cref="AssetType"/>
+    /// <seealso cref="DownloadAssetType"/>
     /// </summary>
-    public AssetType Type
+    public DownloadAssetType Type
     {
       get
       {
@@ -115,7 +115,7 @@ namespace Common.Config
             break;
           case 3:
             if (field.Type == TType.I32) {
-              Type = (AssetType)iprot.ReadI32();
+              Type = (DownloadAssetType)iprot.ReadI32();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }

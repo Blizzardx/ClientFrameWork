@@ -2,7 +2,8 @@
  *	功能函数类
  */
 using System.Collections.Generic;
-using Common.Config;
+using Config;
+
 public enum EFuncRet
 {
     Continue,
@@ -24,7 +25,7 @@ static public class FuncMethods
 	{
 		if( null == Target )
 			return 0;
-		FuncGroup funcdataGroup = new FuncGroup();//.Instance.GetFuncGroup( iFuncGroupId );
+		FuncGroup funcdataGroup = ConfigManager.Instance.GetFuncGroup( iFuncGroupId );
 		if( null == funcdataGroup || null == funcdataGroup.FuncDataList )
 			return 0;
 		

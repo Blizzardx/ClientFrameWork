@@ -6,21 +6,13 @@ using System.Collections.Generic;
 
 public class GameManager : Singleton<GameManager>
 {
-    private List<Action>    m_UpdateList;
-    private List<Action>    m_UnregisterUpdateListStore;
-    private bool            m_bIsUpdateListBusy;
-
     #region public interface
     public void Initialize()
     {
         AdaptiveUI();
 
-        m_UpdateList                    = new List<Action>();
-        m_UnregisterUpdateListStore     = new List<Action>();
-        m_bIsUpdateListBusy             = false;
-
         TimeManager.Instance.Initialize();
-		LogManager.Instance.Initialize ();
+		LogManager.Instance.Initialize (AppManager.Instance.m_bIsShowDebugMsg);
         ResourceManager.Instance.Initialize();
         TickTaskManager.Instance.InitializeTickTaskSystem();
         StageManager.Instance.Initialize();
@@ -34,6 +26,7 @@ public class GameManager : Singleton<GameManager>
         FuncMethodDef.InitFuncMethod();
         LimitMethodDef.InitLimitMethod();
         TargetMethodDef.InitTargetMethod();
+        SdkManager.Instance.InitSdk();
         CustomMain.Instance.Initialize();
         /*// check asset
         AssetUpdate.Instance.BeginCheck(() =>
@@ -44,12 +37,7 @@ public class GameManager : Singleton<GameManager>
     }
     public void Update()
     {
-        TimeManager.Instance.Update();
-        TimerCollection.GetInstance().Update();
-        MessageManager.Instance.Update();
         TickTaskManager.Instance.Update();
-        ExcutionUpdateList();
-
         //Test();
     }
     public void OnAppQuit()
@@ -58,60 +46,10 @@ public class GameManager : Singleton<GameManager>
         LogManager.Instance.OnQuit();
         NetWorkManager.Instance.Disconnect();
     }
-    public void RegisterToUpdateList(Action element)
-    {
-        for (int i = 0; i < m_UpdateList.Count; ++i)
-        {
-            if (element == m_UpdateList[i])
-            {
-                return;
-            }
-        }
-        m_UpdateList.Add(element);
-    }
-    public void UnRegisterFromUpdateList(Action element)
-    {
-        if (!m_bIsUpdateListBusy)
-        {
-            m_UpdateList.Remove(element);
-        }
-        else
-        {
-            for (int i = 0; i < m_UnregisterUpdateListStore.Count; ++i)
-            {
-                if (element == m_UnregisterUpdateListStore[i])
-                {
-                    return;
-                }
-            }
-            m_UnregisterUpdateListStore.Add(element);
-        }
-    }
     #endregion
 
     #region system function
-    private void ExcutionUpdateList()
-    {
-        m_bIsUpdateListBusy = true;
-        foreach (Action elem in m_UpdateList)
-        {
-            elem();
-        }
-        m_bIsUpdateListBusy = false;
-        ExcutionUnregister();
-    }
-    private void ExcutionUnregister()
-    {
-        if (m_UnregisterUpdateListStore.Count == 0)
-        {
-            return;
-        }
-        for (int i = 0; i < m_UnregisterUpdateListStore.Count; ++i)
-        {
-            m_UpdateList.Remove(m_UnregisterUpdateListStore[i]);
-        }
-        m_UnregisterUpdateListStore.Clear();
-    }
+   
     private void AdaptiveUI()
     {
         int ManualWidth = 1920;

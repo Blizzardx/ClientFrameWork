@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using Thrift.Protocol;
 using Thrift.Transport;
 
-namespace Common.Config
+namespace Config
 {
 
   #if !SILVERLIGHT
@@ -147,12 +147,12 @@ namespace Common.Config
             if (field.Type == TType.List) {
               {
                 ParamStringList = new List<string>();
-                TList _list32 = iprot.ReadListBegin();
-                for( int _i33 = 0; _i33 < _list32.Count; ++_i33)
+                TList _list12 = iprot.ReadListBegin();
+                for( int _i13 = 0; _i13 < _list12.Count; ++_i13)
                 {
-                  string _elem34 = null;
-                  _elem34 = iprot.ReadString();
-                  ParamStringList.Add(_elem34);
+                  string _elem14 = null;
+                  _elem14 = iprot.ReadString();
+                  ParamStringList.Add(_elem14);
                 }
                 iprot.ReadListEnd();
               }
@@ -164,12 +164,12 @@ namespace Common.Config
             if (field.Type == TType.List) {
               {
                 ParamIntList = new List<int>();
-                TList _list35 = iprot.ReadListBegin();
-                for( int _i36 = 0; _i36 < _list35.Count; ++_i36)
+                TList _list15 = iprot.ReadListBegin();
+                for( int _i16 = 0; _i16 < _list15.Count; ++_i16)
                 {
-                  int _elem37 = 0;
-                  _elem37 = iprot.ReadI32();
-                  ParamIntList.Add(_elem37);
+                  int _elem17 = 0;
+                  _elem17 = iprot.ReadI32();
+                  ParamIntList.Add(_elem17);
                 }
                 iprot.ReadListEnd();
               }
@@ -221,9 +221,9 @@ namespace Common.Config
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.String, ParamStringList.Count));
-          foreach (string _iter38 in ParamStringList)
+          foreach (string _iter18 in ParamStringList)
           {
-            oprot.WriteString(_iter38);
+            oprot.WriteString(_iter18);
           }
           oprot.WriteListEnd();
         }
@@ -236,9 +236,9 @@ namespace Common.Config
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.I32, ParamIntList.Count));
-          foreach (int _iter39 in ParamIntList)
+          foreach (int _iter19 in ParamIntList)
           {
-            oprot.WriteI32(_iter39);
+            oprot.WriteI32(_iter19);
           }
           oprot.WriteListEnd();
         }
