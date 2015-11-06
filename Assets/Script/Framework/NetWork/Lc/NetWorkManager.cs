@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using NetWork;
 using Thrift.Protocol;
 using UnityEngine;
 using System.Collections;
@@ -64,14 +66,6 @@ public class NetWorkManager : Singleton<NetWorkManager>
             Send();
         }
     }
-    public void RegisterMessage(int id, Type handler)
-    {
-        m_BufferTool.RegisterMessage(id, handler);
-    }
-    public void RegisterMessage()
-    {
-        m_BufferTool.RegisterMessage();
-    }
     public bool IsConnected()
     {
         return m_Socket != null && m_Socket.Connected;
@@ -92,6 +86,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
     {  
         m_BufferTool = new MessageBufferTool();
         m_BufferTool.Initialize();
+        m_BufferTool.RegisterMessage(ThriftMessageHelper.Get_REQ_ID_MSG(), ThriftMessageHelper.Get_REQ_MSG_ID());
     }
     private void Send()
     {

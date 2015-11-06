@@ -128,23 +128,10 @@ public class MessageBufferTool
             m_nCurrentDecodeIndex = 0;
         }
     }
-    public void RegisterMessage(int id, Type handler)
+    public void RegisterMessage(Dictionary<int, Type> MessageMapIdToType, Dictionary<Type, int> MessageMapTypeToId)
     {
-        if (!m_MessageMapIdToType.ContainsKey(id) && handler != null)
-        {
-            m_MessageMapIdToType.Add(id, handler);
-        }
-        else
-        {
-            Debuger.LogError("register message error: " + id.ToString());
-        }
-    }
-    public void RegisterMessage()
-    {
-        foreach (KeyValuePair<int, Type> elem in m_MessageMapIdToType)
-        {
-            m_MessageMapTypeToId.Add(elem.Value, elem.Key);
-        }
+        m_MessageMapIdToType = MessageMapIdToType;
+        m_MessageMapTypeToId = MessageMapTypeToId;
     }
     #endregion
 
