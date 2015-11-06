@@ -38,14 +38,15 @@ public class TerrainTriggerNodeEditorWindow : EditorWindow
     {
         m_NodeInfo = data;
         m_InputBuffer = new List<string>(4);
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < 5; ++i)
         {
             m_InputBuffer.Add(string.Empty);
         }
         m_InputBuffer[0] = m_NodeInfo.TargetMethodId.ToString();
-        m_InputBuffer[1] = m_NodeInfo.LimitMethodId.ToString();
-        m_InputBuffer[2] = m_NodeInfo.EnterFuncMethodId.ToString();
-        m_InputBuffer[3] = m_NodeInfo.ExitFuncMethodId.ToString();
+        m_InputBuffer[1] = m_NodeInfo.EnterLimitMethodId.ToString();
+        m_InputBuffer[2] = m_NodeInfo.ExitLimitMethodId.ToString();
+        m_InputBuffer[3] = m_NodeInfo.EnterFuncMethodId.ToString();
+        m_InputBuffer[4] = m_NodeInfo.ExitFuncMethodId.ToString();
     }
     private void OnGUI()
     {
@@ -58,22 +59,29 @@ public class TerrainTriggerNodeEditorWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         {
-            GUILayout.Label("条件函数ID", GUILayout.Width(120f));
+            GUILayout.Label("进入条件函数ID", GUILayout.Width(120f));
             m_InputBuffer[1] = GUILayout.TextArea(m_InputBuffer[1]);
         }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         {
+            GUILayout.Label("离开条件函数ID", GUILayout.Width(120f));
+            m_InputBuffer[2] = GUILayout.TextArea(m_InputBuffer[1]);
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        {
             GUILayout.Label("进入功能函数ID", GUILayout.Width(120f));
-            m_InputBuffer[2] = GUILayout.TextArea(m_InputBuffer[2]);
+            m_InputBuffer[3] = GUILayout.TextArea(m_InputBuffer[2]);
         }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.Label("离开函数ID", GUILayout.Width(120f));
-            m_InputBuffer[3] = GUILayout.TextArea(m_InputBuffer[3]);
+            m_InputBuffer[4] = GUILayout.TextArea(m_InputBuffer[3]);
         }
         EditorGUILayout.EndHorizontal();
 
@@ -82,18 +90,23 @@ public class TerrainTriggerNodeEditorWindow : EditorWindow
         {
             m_NodeInfo.TargetMethodId = tmpData;
         }
-        tmpData = m_NodeInfo.LimitMethodId;
+        tmpData = m_NodeInfo.EnterLimitMethodId;
         if (int.TryParse(m_InputBuffer[1], out tmpData))
         {
-            m_NodeInfo.LimitMethodId = tmpData;
+            m_NodeInfo.EnterLimitMethodId = tmpData;
+        }
+        tmpData = m_NodeInfo.ExitLimitMethodId;
+        if (int.TryParse(m_InputBuffer[2], out tmpData))
+        {
+            m_NodeInfo.ExitLimitMethodId = tmpData;
         }
         tmpData = m_NodeInfo.EnterFuncMethodId;
-        if (int.TryParse(m_InputBuffer[2], out tmpData))
+        if (int.TryParse(m_InputBuffer[3], out tmpData))
         {
             m_NodeInfo.EnterFuncMethodId = tmpData;
         }
         tmpData = m_NodeInfo.ExitFuncMethodId;
-        if (int.TryParse(m_InputBuffer[3], out tmpData))
+        if (int.TryParse(m_InputBuffer[4], out tmpData))
         {
             m_NodeInfo.ExitFuncMethodId = tmpData;
         }

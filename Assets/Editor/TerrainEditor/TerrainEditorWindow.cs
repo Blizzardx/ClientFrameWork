@@ -193,12 +193,15 @@ public class TerrainEditorWindow : EditorWindow
                 ComponentTool.ConvertThriftVec3ToVec3(elem.Rot),
                 ComponentTool.ConvertThriftVec3ToVec3(elem.Scale),
                 elem.TargetMethodId,
-                elem.LimitMethodId,
+                elem.EnterLimitMethodId,
+                elem.ExitLimitMethodId,
                 elem.EnterFuncMethodId,
                 elem.ExitFuncMethodId
                 );
         }
     }
+
+    #region draw ui
     void DrawTrigger()
     {
         if (NGUIEditorTools.DrawHeader("触发器配置"))
@@ -308,7 +311,10 @@ public class TerrainEditorWindow : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
     }
-    private void AddTrigger(ETriggerAreaType TriggerAreaType, Vector3 position, Vector3 rotation, Vector3 scale, int targetId = 0, int LimitId = 0, int enterFuncId = 0, int exitFuncId = 0)
+    #endregion
+
+    #region data handler
+    private void AddTrigger(ETriggerAreaType TriggerAreaType, Vector3 position, Vector3 rotation, Vector3 scale, int targetId = 0, int enterLimitId = 0, int exitLimitId=0,int enterFuncId = 0, int exitFuncId = 0)
     {
         GameObject sourceObj = m_TriggerTemplateMap[TriggerAreaType];
         if (null == sourceObj)
@@ -336,7 +342,8 @@ public class TerrainEditorWindow : EditorWindow
             }
 
             elem.TriggerData.TargetMethodId = targetId;
-            elem.TriggerData.LimitMethodId = LimitId;
+            elem.TriggerData.EnterLimitMethodId = enterLimitId;
+            elem.TriggerData.ExitLimitMethodId = exitLimitId;
             elem.TriggerData.EnterFuncMethodId = enterFuncId;
             elem.TriggerData.ExitFuncMethodId = exitFuncId;
 
@@ -392,6 +399,7 @@ public class TerrainEditorWindow : EditorWindow
         m_ObjMapInstance = null;
         m_bInitSceneCamera = false;
         m_RemovingTriggerList.Clear();
+        m_TriggerList.Clear();
     }
     private void SetTriggerPos(Vector3 positin)
     {
@@ -420,6 +428,8 @@ public class TerrainEditorWindow : EditorWindow
         m_MainWnd.Close();
         m_MainWnd = null;
         TerrainTriggerNodeEditorWindow.CloseWindow();
+        TerrainTriggerNodeEditorWindow.CloseWindow();
+        TerrainListWindow.CloseWindow();
     }
     private void SaveData()
     {
@@ -473,7 +483,8 @@ public class TerrainEditorWindow : EditorWindow
     public TerrainEditorDataArray GetTerrainEditFileList()
     {
         ResourceManager.Instance.DecodePersonalDataTemplate(m_strDataPath, ref m_DataList);
-
+        
         return m_DataList;
     }
+    #endregion
 }
