@@ -1,27 +1,19 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
-public class PlayerTickTask : AbstractTickTask
+public class RegisterList
 {
-    private List<Action>    m_UpdateList;
+	private List<Action>    m_UpdateList;
     private List<Action>    m_UnregisterUpdateListStore;
     private bool            m_bIsUpdateListBusy;
 
-    public PlayerTickTask()
+    #region public interface
+    public RegisterList()
     {
         m_UpdateList = new List<Action>();
         m_UnregisterUpdateListStore = new List<Action>();
         m_bIsUpdateListBusy = false;
-        m_Instance = this;
-    }
-    private static PlayerTickTask m_Instance;
-    public static PlayerTickTask Instance
-    {
-        get
-        {
-            return m_Instance;
-        }
     }
     public void RegisterToUpdateList(Action element)
     {
@@ -29,6 +21,7 @@ public class PlayerTickTask : AbstractTickTask
         {
             if (element == m_UpdateList[i])
             {
+                CheckRemovingStore(element);
                 return;
             }
         }
@@ -52,20 +45,7 @@ public class PlayerTickTask : AbstractTickTask
             m_UnregisterUpdateListStore.Add(element);
         }
     }
-    protected override bool FirstRunExecute()
-    {
-       
-        return true;
-    }
-    protected override int GetTickTime()
-    {
-        return TickTaskConstant.TICK_PLAYER;
-    }
-    protected override void Beat()
-    {
-        ExcutionUpdateList();
-    }
-    private void ExcutionUpdateList()
+    public void ExcutionUpdateList()
     {
         m_bIsUpdateListBusy = true;
         foreach (Action elem in m_UpdateList)
@@ -74,6 +54,20 @@ public class PlayerTickTask : AbstractTickTask
         }
         m_bIsUpdateListBusy = false;
         ExcutionUnregister();
+    }
+    #endregion
+
+    #region system function
+    private void CheckRemovingStore(Action element)
+    {
+        for (int i = 0; i < m_UnregisterUpdateListStore.Count; ++i)
+        {
+            if (element == m_UnregisterUpdateListStore[i])
+            {
+                m_UnregisterUpdateListStore.RemoveAt(i);
+                return;
+            }
+        }
     }
     private void ExcutionUnregister()
     {
@@ -87,4 +81,5 @@ public class PlayerTickTask : AbstractTickTask
         }
         m_UnregisterUpdateListStore.Clear();
     }
+    #endregion
 }

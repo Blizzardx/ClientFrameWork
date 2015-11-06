@@ -36,7 +36,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         m_nLoadingTotalTime = 0;
 
         //push to update store
-        PlayerTickTask.Instance.RegisterToUpdateList(BasicUpdate);
+        LifeTickTask.Instance.RegisterToUpdateList(BasicUpdate);
 
         m_LoadFinishedCallBack = FinishedCallBack;
         WindowManager.Instance.CloseAllWindow();
@@ -83,7 +83,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
     }
     private void EndLoadCheck()
     {
-        PlayerTickTask.Instance.UnRegisterFromUpdateList(BasicUpdate);
+        LifeTickTask.Instance.UnRegisterFromUpdateList(BasicUpdate);
         if (m_nLoadingTotalTime > m_LoadingSceneMinTime)
         {
             EndLoad();

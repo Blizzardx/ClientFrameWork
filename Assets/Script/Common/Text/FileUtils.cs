@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.Core.Utils
 {
@@ -108,7 +109,7 @@ namespace Assets.Scripts.Core.Utils
             }
             else
             {
-                Debuger.LogWarning("LoadStringFile. Path Inexistent: " + path);
+                Debug.LogWarning("LoadStringFile. Path Inexistent: " + path);
             }
 
             return content;

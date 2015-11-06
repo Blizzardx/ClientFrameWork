@@ -2,7 +2,6 @@
 using System.Text;
 using System.Threading;
 using Assets.Scripts.Framework.Network;
-using NetFramework.Auto;
 using Thrift.Protocol;
 using UnityEngine;
 using System.Collections;
@@ -16,7 +15,7 @@ public class ConfigGen : MonoBehaviour
         ResourceManager.Instance.Initialize();
 	    LogManager.Instance.Initialize();
 
-        ArmyInfo tmp = new ArmyInfo();
+       /* ArmyInfo tmp = new ArmyInfo();
 	    tmp.Id = 10;
 	    tmp.MemberInfoList = new List<ArmyMemberInfo>();
 	    for (int i = 0; i < 200; ++i)
@@ -27,7 +26,7 @@ public class ConfigGen : MonoBehaviour
 	        elem.Level = 52;
             tmp.MemberInfoList.Add(elem);
 	    }
-	    ThriftGen.SaveData(tmp, Application.streamingAssetsPath + "/armyinfo.byte");
+	    ThriftGen.SaveData(tmp, Application.streamingAssetsPath + "/armyinfo.byte");*/
 
         
 	}
@@ -37,7 +36,7 @@ public class ConfigGen : MonoBehaviour
     {
 	    if (Input.GetKeyDown(KeyCode.A))
 	    {
-	        ArmyInfo tmp = null;
+	        /*ArmyInfo tmp = null;
 	        //ResourceManager.Instance.DecodeDownloadTemplate(Application.streamingAssetsPath + "/armyinfo.byte", ref tmp);
 	        Debuger.Log(tmp.Id);
             for (int i = 0; i < tmp.MemberInfoList.Count; ++i)
@@ -45,8 +44,8 @@ public class ConfigGen : MonoBehaviour
                 ArmyMemberInfo elem = tmp.MemberInfoList[i];
                 Debuger.Log(elem.CharId );
                 Debuger.Log(elem.JoinTime );
-                Debuger.Log(elem.Level);
-            }
+                Debuger.Log(elem.Level);*/
+            //}
 	    }
 	    if (Input.GetKeyDown(KeyCode.B))
 	    {

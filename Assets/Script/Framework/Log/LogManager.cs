@@ -10,6 +10,7 @@ public class LogManager :Singleton<LogManager>
     private long                m_lWriteRate;
     private string              m_strSavePath;
     private long                m_lLastTriggerTime;
+    private int                 m_MaxLogSize;
 
 	#region public interface
     public void Initialize(bool isEnalbeLog=true,bool isEnableRecord=true,float writeRate = 30.0f)
@@ -19,8 +20,20 @@ public class LogManager :Singleton<LogManager>
 		m_bIsEnalbeRecord   = isEnableRecord;
 	    m_lLastTriggerTime  = TimeManager.Instance.Now;
 	    m_lWriteRate        = (long)(writeRate*1000.0f);
+        m_MaxLogSize = 3 * 1024 * 1024;// 3m
+
+        //check size
+        if (CheckSize())
+        {
+            FileUtils.DeleteFile(m_strSavePath);
+        }
+
+        //check time
+        m_LogStore.Add(TimeManager.Instance.GetCurrentTime());
+        SaveToFileSystem();
+
         Debuger.Initialize(OnLogTrigger, isEnalbeLog);
-	}
+    }
     public void OnQuit()
     {
         SaveToFileSystem();
@@ -45,6 +58,16 @@ public class LogManager :Singleton<LogManager>
             SaveToFileSystem();
             m_lLastTriggerTime = TimeManager.Instance.Now;
         }
+    }
+
+    private bool CheckSize()
+    {
+        string filecontext =  FileUtils.ReadStringFile(m_strSavePath);
+        if (string.IsNullOrEmpty(filecontext))
+        {
+            return false;
+        }
+        return filecontext.Length*2 > m_MaxLogSize;
     }
     #endregion
 }

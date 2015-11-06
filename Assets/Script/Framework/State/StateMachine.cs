@@ -4,22 +4,24 @@ using JetBrains.Annotations;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class StateController
+public class StateMachine
 {
-    private IState                          m_CurrentState;
-    private Dictionary<ELifeState, IState>  m_StateUsingStore;
-    private Dictionary<ELifeState, Type>    m_StateFactory;
-    private int                             m_nCurrentListenId;
-    private StateConflictConfig             m_CurrentCharStateConflictMap;
+    private IState                                  m_CurrentState;
+    private Dictionary<ELifeState, IState>          m_StateUsingStore;
+    static private Dictionary<ELifeState, Type>     m_StateFactory;
+    private int                                     m_nCurrentListenId;
+    //private StateConflictConfig                     m_CurrentCharStateConflictMap;
+    private Ilife m_lifeInstance;
 
     #region public interface
-    public StateController(int uid,int registerClientMsgId)
+    public StateMachine(int uid,int registerClientMsgId,Ilife lifeInstance )
     {
+        m_lifeInstance = lifeInstance;
         m_nCurrentListenId = registerClientMsgId;
         MessageManager.Instance.RegistMessage(registerClientMsgId, OnTriggerChangeState);
-        m_CurrentCharStateConflictMap = ConfigManager.Instance.GetStateConflicMap(uid);
+        //m_CurrentCharStateConflictMap = ConfigManager.Instance.GetStateConflicMap(uid);
     }
-    public void RegisterState(ELifeState state, Type type)
+    static public void RegisterState(ELifeState state, Type type)
     {
         if (null == m_StateFactory)
         {
@@ -49,7 +51,7 @@ public class StateController
         if (!force )
         {
             List<StateConflictConfigElement> stateClash = null;
-            if (m_CurrentCharStateConflictMap.StateConflictMap.TryGetValue((int)(m_CurrentState.GetState()), out stateClash))
+            /*if (m_CurrentCharStateConflictMap.StateConflictMap.TryGetValue((int)(m_CurrentState.GetState()), out stateClash))
             {
                 foreach (StateConflictConfigElement s in stateClash)
                 {
@@ -68,7 +70,7 @@ public class StateController
                         }
                     }
                 }
-            }
+            }*/
 
             if (!m_CurrentState.CanExit())
             {
@@ -109,20 +111,30 @@ public class StateController
     private IState StateFactory(ELifeState stateId)
     {
         IState result = null;
-        if (m_StateUsingStore.TryGetValue(stateId, out result))
+        if (null != m_StateUsingStore && m_StateUsingStore.TryGetValue(stateId, out result))
         {
             return result;
         }
-
+        result = CreateStateInstance(stateId, m_lifeInstance);
+        if (null == m_StateUsingStore)
+        {
+            m_StateUsingStore = new Dictionary<ELifeState, IState>();
+        }
+        m_StateUsingStore.Add(stateId, result);
+        
+        return result;
+    }
+    private static IState CreateStateInstance(ELifeState stateId, Ilife unit)
+    {
+        if (null == m_StateFactory)
+        {
+            StateDefine.RegisterState();
+        }
+        IState result = null;
         Type type = null;
         if (m_StateFactory.TryGetValue(stateId, out type))
         {
-            result = Activator.CreateInstance(type) as IState;
-            if (null == m_StateUsingStore)
-            {
-                m_StateUsingStore = new Dictionary<ELifeState, IState>();
-            }
-            m_StateUsingStore.Add(stateId, result);
+            result = Activator.CreateInstance(type, unit,stateId) as IState;
         }
         return result;
     }

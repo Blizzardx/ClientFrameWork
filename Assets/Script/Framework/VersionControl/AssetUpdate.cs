@@ -9,257 +9,226 @@ using System.Collections.Generic;
 
 public class AssetUpdate : Singleton<AssetUpdate>
 {
-    private string          m_strSavePath;
-    private VersionConfig   m_RemoteRootVersionConfig;
-    private VersionConfig   m_LocalRootVersionConfig;
-    private List<string>    m_DownloadFloderList;
-    private VersionConfig   m_TmpRemoteFolderVersionConfig;
-    private VersionConfig   m_TmpLocalFolderVersionConfig;
-    private string          m_strTmpFolderName;
-    private Action          m_AllDoneCallBack;
+    private string                  m_strRemoteAssetServerURL;
+    private const string            m_strVersionConfigName      = "version_txtpkg.bytes";
+    private VersionConfig           m_RemoteVersionConfig;
+    private VersionConfig           m_LocalVersionConfig;
+    private List<AssetFile>         m_DownloadList; 
+    private Action<bool, string>    m_CompleteCallBack;
+    private Action<float, AssetFile> m_ProcessCallBack;
+    private int                     m_iCountingIndex;
+    private const int               m_iTriggerSaveRate = 5;
+    private Dictionary<string, string>  m_NameKeytoSignMap;
 
-    private const string    m_strRootPathVersionConfigName  = "VersionConfig.byte";
-    private const string    m_strRemoteAssetServerUrl       = "http://localhost/";
-    public void BeginCheck(Action onFinished)
+    public void CheckUpdate(Action<bool,string> CallBack,Action<float,AssetFile> processCallBack)
     {
-        m_AllDoneCallBack = onFinished;
-        m_strSavePath = Application.persistentDataPath;
+        m_CompleteCallBack = CallBack;
+        m_ProcessCallBack = processCallBack;
+        m_strRemoteAssetServerURL = "http://112.126.74.237:8080/client/";
+        m_RemoteVersionConfig = null;
+        m_LocalVersionConfig = null;
+        m_DownloadList = new List<AssetFile>();
+        m_iCountingIndex = 0;
+        m_NameKeytoSignMap = new Dictionary<string, string>();
 
-        CheckNetwork();
-
-        BeginCheckDownload();
+        //download remote version config
+        DownloadRemoteVersionConfig();
     }
-
-    private void ReTry()
+    private void DownloadRemoteVersionConfig()
     {
-        BeginCheck(m_AllDoneCallBack);
-    }
-    private void CheckNetwork()
-    {
-        return;
-    }
-    private void BeginCheckDownload()
-    {
-        HttpService.Singleton.enabled = true;
+        AssetFile remoteVersionFile = new AssetFile(m_strVersionConfigName,"",m_strRemoteAssetServerURL + m_strVersionConfigName);
 
-        List<AssetFile> downloadList = new List<AssetFile>();
-        AssetFile file = new AssetFile(m_strRootPathVersionConfigName, "", m_strRemoteAssetServerUrl + m_strRootPathVersionConfigName);
-        downloadList.Add(file);
+        List<AssetFile> tmpDownloadList = new List<AssetFile>();
+        tmpDownloadList.Add(remoteVersionFile);
 
-        AssetsDownloader.Singleton.StartDownload
-            (
-                downloadList,
-                (isComplete) =>
+        //trigger download remote versin config
+        AssetsDownloader.Instance.BeginDownload(
+            tmpDownloadList,
+            (file, fileInfo) =>
+            {
+                m_RemoteVersionConfig = new VersionConfig();
+                ThriftSerialize.DeSerialize(m_RemoteVersionConfig, file);
+            },
+            (e, fileInfo) =>
+            {
+                m_CompleteCallBack(false, e.Message);
+            },
+            (process, fileInfo) =>
+            {
+                
+            }, 
+            () =>
+            {
+                if (null == m_RemoteVersionConfig || m_RemoteVersionConfig.VersionList == null)
                 {
-                    CheckDownloadFolder();
+                    m_CompleteCallBack(false, "");
                 }
-                , (progress) =>
+                else
                 {
-                    
+                    CompareVersion();
                 }
-                , (element) =>
+            });
+    }
+    private void CompareVersion()
+    {
+        m_DownloadList.Clear();
+        m_NameKeytoSignMap.Clear();
+
+        m_LocalVersionConfig = ConfigManager.Instance.GetLocalVersionConfig();
+        if (null == m_LocalVersionConfig || null == m_LocalVersionConfig.VersionList ||
+            m_LocalVersionConfig.VersionList.Count == 0)
+        {
+            // download all
+            for (int i = 0; i < m_RemoteVersionConfig.VersionList.Count; ++i)
+            {
+                AddToDownloadList(m_RemoteVersionConfig.VersionList[i]);
+            }
+            m_LocalVersionConfig = new VersionConfig();
+            m_LocalVersionConfig.VersionList = new List<VersionConfigElement>();
+        }
+        else
+        {
+            for (int i = 0; i < m_RemoteVersionConfig.VersionList.Count; ++i)
+            {
+                VersionConfigElement remElem = m_RemoteVersionConfig.VersionList[i];
+                bool isExit = false;
+                for (int j = 0; j < m_LocalVersionConfig.VersionList.Count; ++j)
                 {
-                    if (element != null && element.bytes != null)
+                    VersionConfigElement localElem = m_LocalVersionConfig.VersionList[j];
+                    if (remElem.Name == localElem.Name)
                     {
-                        m_RemoteRootVersionConfig = new VersionConfig();
-                        ThriftSerialize.DeSerialize(m_RemoteRootVersionConfig, element.bytes);
+                        isExit = true;
+                        if (remElem.Sign != localElem.Sign)
+                        {
+                            AddToDownloadList(remElem);
+                            //remove date-out 
+                            m_LocalVersionConfig.VersionList.RemoveAt(j);
+                        }
+                        break;
                     }
+                }
 
+                if (!isExit)
+                {
+                    AddToDownloadList(remElem);
+                }
+            }
+        }
+        if (m_DownloadList.Count > 0)
+        {
+            //begin download
+            BeginDownload();
+        }
+        else
+        {
+            m_CompleteCallBack(true, "");
+        }
+    }
+    private void BeginDownload()
+    {
+        AssetsDownloader.Instance.BeginDownload
+            (   m_DownloadList,
+                (filedata, fileInfo) =>
+                {
+                    AddToLocalVersionConfigList(fileInfo);
+                    ++ m_iCountingIndex;
+                    TrySave();
                 },
-                false
+                (e, fileData) =>
+                {
+                    m_CompleteCallBack(false, e.Message);
+                },
+                (process, fileInfo) =>
+                {
+                    m_ProcessCallBack(process, fileInfo);
+                },
+                () =>
+                {
+                    SaveLocalVersionConfig();
+                    m_CompleteCallBack(true, "");
+                }
             );
     }
-    private void CheckDownloadFolder()
+    private void AddToDownloadList(VersionConfigElement elem)
     {
-        if (null == m_RemoteRootVersionConfig)
+        AssetFile downloadElem = new AssetFile(elem.Name, ConfigManager.Instance.GetConfigPath() + elem.Name,
+                   m_strRemoteAssetServerURL + elem.Name);
+        m_DownloadList.Add(downloadElem);
+        if (m_NameKeytoSignMap.ContainsKey(elem.Name))
         {
-            ShowErrorTip();
+            m_CompleteCallBack(false, "");
             return;
         }
-
-        m_DownloadFloderList = new List<string>();
-
-        // load local version config
-        string path = Path.Combine(m_strSavePath, m_strRootPathVersionConfigName);
-        bool isExit = ResourceManager.Instance.DecodePersonalDataTemplate(path, ref m_LocalRootVersionConfig);
-        if (isExit)
-        {
-            for (int i = 0; i < m_RemoteRootVersionConfig.VersionList.Count; ++i)
-            {
-                bool isHasNewFolder = false;
-                for (int j = 0; j < m_LocalRootVersionConfig.VersionList.Count; ++j)
-                {
-                    if (m_LocalRootVersionConfig.VersionList[j].Name == m_RemoteRootVersionConfig.VersionList[i].Name)
-                    {
-                        isHasNewFolder = true;
-                        if (m_LocalRootVersionConfig.VersionList[j].Sign !=
-                            m_RemoteRootVersionConfig.VersionList[i].Sign)
-                        {
-                            m_DownloadFloderList.Add(m_RemoteRootVersionConfig.VersionList[i].Name);
-                        }
-                    }
-                }
-                if (isHasNewFolder)
-                {
-                    m_DownloadFloderList.Add(m_RemoteRootVersionConfig.VersionList[i].Name);
-                }
-            }
-        }
         else
         {
-            for (int i = 0; i < m_RemoteRootVersionConfig.VersionList.Count; ++i)
-            {
-                m_DownloadFloderList.Add(m_RemoteRootVersionConfig.VersionList[i].Name);
-            }
-        }
-
-        BeginCheckFolder(m_DownloadFloderList[0], OnCheckFinished);
-    }
-    private void OnCheckFinished()
-    {
-        m_DownloadFloderList.RemoveAt(0);
-        if ( m_DownloadFloderList.Count > 0)
-        {
-            BeginCheckFolder(m_DownloadFloderList[0], OnCheckFinished);
-        }
-        else
-        {
-            string path = Path.Combine(m_strSavePath, m_strRootPathVersionConfigName);
-            SaveVersionConfig(path, m_RemoteRootVersionConfig);
-            HttpService.Singleton.enabled  = false;
-            m_AllDoneCallBack();
+            m_NameKeytoSignMap.Add(elem.Name, elem.Sign);
         }
     }
-    private void BeginCheckFolder(string folderName,Action finishedCallBack)
+    private void AddToLocalVersionConfigList(AssetFile elem)
     {
-        List<AssetFile> downloadList = new List<AssetFile>();
-        string path = Path.Combine(m_strRemoteAssetServerUrl, folderName);
-        path = Path.Combine(path, m_strRootPathVersionConfigName);
-
-        AssetFile file = new AssetFile(m_strRootPathVersionConfigName, "", path);
-        downloadList.Add(file);
-        m_strTmpFolderName = folderName;
-
-        m_TmpRemoteFolderVersionConfig = null;
-
-        AssetsDownloader.Singleton.StartDownload
-            (
-                downloadList,
-                (isComplete) =>
-                {
-                    CheckDownloadElement(finishedCallBack);
-                }
-                , (progress) =>
-                {
-
-                }
-                , (element) =>
-                {
-                    if (element != null && element.bytes != null)
-                    {
-                        m_TmpRemoteFolderVersionConfig = new VersionConfig();
-                        ThriftSerialize.DeSerialize(m_TmpRemoteFolderVersionConfig, element.bytes);
-                    }
-
-                },
-                false
-            );
+        VersionConfigElement element = new VersionConfigElement();
+        element.Name = elem.Name;
+        element.Sign = m_NameKeytoSignMap[elem.Name];
+        m_LocalVersionConfig.VersionList.Add(element);
     }
-    private void CheckDownloadElement(Action finishedCallBack)
+    private void TrySave()
     {
-        if (null == m_TmpRemoteFolderVersionConfig)
+        if (m_iCountingIndex >= m_iTriggerSaveRate)
         {
-            ShowErrorTip("");
+            m_iCountingIndex = 0;
+            SaveLocalVersionConfig();
+        }
+    }
+    private void SaveLocalVersionConfig()
+    {
+        ConfigManager.Instance.SaveLocalVersionConfig(m_LocalVersionConfig);
+    }
+}
+public class AssetUpdateManager : Singleton<AssetUpdateManager>
+{
+    private Action m_CompleteCallBack;
+
+    public void CheckUpdate(Action doneCallBack)
+    {
+        m_CompleteCallBack = doneCallBack;
+        TryConnect();
+    }
+    private void TryConnect()
+    {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+        }
+        else if (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork)
+        {
+            BeginCheck();
+        }
+        else if (Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork)
+        {
+            BeginCheck();
+        }
+    }
+    private void BeginCheck()
+    {
+        AssetUpdate.Instance.CheckUpdate(CheckResult,OnProcess);
+    }
+    private void OnProcess(float arg1, AssetFile arg2)
+    {
+        Debuger.Log("process: " + arg1 + " currentFile: " + arg2.Name);
+    }
+    private void CheckResult(bool isSucceed,string errorTip)
+    {
+        if (isSucceed)
+        {
+            m_CompleteCallBack();
             return;
         }
-
-        List<AssetFile> downloadList = new List<AssetFile>();
-
-        // load local version config
-        string path = Path.Combine(m_strSavePath, m_strTmpFolderName);
-        path = Path.Combine(path, m_strRootPathVersionConfigName);
-
-        bool isExit = ResourceManager.Instance.DecodePersonalDataTemplate(path, ref m_TmpLocalFolderVersionConfig);
-        if (isExit)
-        {
-            for (int i = 0; i < m_TmpRemoteFolderVersionConfig.VersionList.Count; ++i)
-            {
-                bool isHasNewFolder = false;
-                for (int j = 0; j < m_TmpLocalFolderVersionConfig.VersionList.Count; ++j)
-                {
-                    if (m_TmpLocalFolderVersionConfig.VersionList[j].Name == m_TmpRemoteFolderVersionConfig.VersionList[i].Name)
-                    {
-                        isHasNewFolder = true;
-                        if (m_TmpLocalFolderVersionConfig.VersionList[j].Sign !=
-                            m_TmpRemoteFolderVersionConfig.VersionList[i].Sign)
-                        {
-
-                            downloadList.Add(BuildDownloadElement(m_TmpRemoteFolderVersionConfig.VersionList[i]));
-                        }
-                    }
-                }
-                if (isHasNewFolder)
-                {
-                    downloadList.Add(BuildDownloadElement(m_TmpRemoteFolderVersionConfig.VersionList[i]));
-                }
-            }
-        }
         else
         {
-            for (int i = 0; i < m_TmpRemoteFolderVersionConfig.VersionList.Count; ++i)
-            {
-                downloadList.Add(BuildDownloadElement(m_TmpRemoteFolderVersionConfig.VersionList[i]));
-            }
+            Debuger.LogError(errorTip);
         }
-
-        //trigger download 
-        AssetsDownloader.Singleton.StartDownload
-            (
-                downloadList,
-                (isSucceed) =>
-                {
-                    if (isSucceed)
-                    {
-                        // save version config
-                        SaveVersionConfig(path, m_TmpRemoteFolderVersionConfig);
-                        finishedCallBack();
-                    }
-                    else
-                    {
-                        ShowErrorTip();
-                        return;
-                    }
-                },
-                (progress) =>
-                {
-                    Debuger.Log("progress : " + progress);
-                },
-                (data) =>
-                {
-                    Debuger.Log("one done");
-                }
-            );
     }
-    private void ShowErrorTip(string errorMsg = "")
+    private void Retry()
     {
-        if (string.IsNullOrEmpty(errorMsg))
-        {
-            errorMsg = "error ,retry";
-        }
-        Debuger.Log(errorMsg);
-        ReTry();
-    }
-    private AssetFile BuildDownloadElement(VersionConfigElement elem)
-    {
-        string name = elem.Name;
-        string localPath = Path.Combine(m_strSavePath, elem.Name);
-        string url = Path.Combine(m_strRemoteAssetServerUrl, elem.Name);
-        AssetFile downloadElem = new AssetFile(name, localPath, url);
-        return downloadElem;
-    }
-    private void SaveVersionConfig(string path, VersionConfig data)
-    {
-        byte[] byteData = ThriftSerialize.Serialize(data);
-        FileUtils.WriteByteFile(path, byteData);
+        BeginCheck();
     }
 }

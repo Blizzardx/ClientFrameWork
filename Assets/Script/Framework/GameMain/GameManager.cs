@@ -1,6 +1,7 @@
 ﻿using System;
+using System.IO;
 using Assets.Scripts.Core.Utils;
-using NetFramework.Auto;
+using Assets.Scripts.Framework.Network;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -10,6 +11,7 @@ public class GameManager : Singleton<GameManager>
     public void Initialize()
     {
         AdaptiveUI();
+        ClearTmpCache();
 
         TimeManager.Instance.Initialize();
 		LogManager.Instance.Initialize (AppManager.Instance.m_bIsShowDebugMsg);
@@ -26,19 +28,18 @@ public class GameManager : Singleton<GameManager>
         FuncMethodDef.InitFuncMethod();
         LimitMethodDef.InitLimitMethod();
         TargetMethodDef.InitTargetMethod();
-        //SdkManager.Instance.InitSdk();
-        CustomMain.Instance.Initialize();
-        /*// check asset
-        AssetUpdate.Instance.BeginCheck(() =>
+        //CustomMain.Instance.Initialize();
+        // check asset
+        AssetUpdateManager.Instance.CheckUpdate(() =>
         {
             CustomMain.Instance.Initialize();
-        });*/
-        
+        });
+        Debuger.Log(Application.persistentDataPath + " ");
     }
     public void Update()
     {
         TickTaskManager.Instance.Update();
-        //Test();
+        Test();
     }
     public void OnAppQuit()
     {
@@ -49,7 +50,15 @@ public class GameManager : Singleton<GameManager>
     #endregion
 
     #region system function
-   
+
+    private void ClearTmpCache()
+    {
+        var m_strTmpCache = Application.persistentDataPath + "/tmp/";
+        if (Directory.Exists(m_strTmpCache))
+        {
+            Directory.Delete(m_strTmpCache, true);
+        }
+    }
     private void AdaptiveUI()
     {
         int ManualWidth = 1920;
@@ -67,40 +76,41 @@ public class GameManager : Singleton<GameManager>
 
     #region test
 	private int i=0;
+    private Player a;
+    private List<Vector3> moveTarget;
     private void Test()
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            NetWorkManager.Instance.Connect("123.57.220.33", 8090);
+            a = new Player();
+            a.Initialize(1);
+            moveTarget = new List<Vector3>(10);
+            moveTarget.Add(new Vector3(0, 0, 1));
+            moveTarget.Add(new Vector3(0, 0, 2));
+            moveTarget.Add(new Vector3(2, 0, 3));
+            moveTarget.Add(new Vector3(4, 0, 3));
+            moveTarget.Add(new Vector3(5, 0, 4));
+            moveTarget.Add(new Vector3(6, 0, 5));
+            moveTarget.Add(new Vector3(7, 0, 6));
+            moveTarget.Add(new Vector3(7, 0, 10));
+            moveTarget.Add(new Vector3(8, 0, 11));
+            moveTarget.Add(new Vector3(9, 0, 12));
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
-            CSLoginMsg tmpmsg = new CSLoginMsg();
-            tmpmsg.OsType = OSType.Android;
-            tmpmsg.ChannelCode = ChannelCodeConstants.LOCAL_USER_PWD;
-            tmpmsg.DeviceId = "10001";
-            tmpmsg.DeviceModel = "aaa";
-            tmpmsg.OsVersion = "ios8";
-            tmpmsg.Terminal = Terminal.MOBIE;
-            tmpmsg.UserpasswordLogin = new UserPasswordLogin();
-            tmpmsg.UserpasswordLogin.Username = "baoxue456";
-            tmpmsg.UserpasswordLogin.Password = "";
-
-            NetWorkManager.Instance.SendMsgToServer(tmpmsg);
+            a.GetTransformData().MoveTo(moveTarget, 0.5f, 0.01f);
         }
         if (Input.GetKeyDown(KeyCode.B))
         {
-            CSApplyDisbandArmyMsg tmpMsg = new CSApplyDisbandArmyMsg();
-
-            NetWorkManager.Instance.SendMsgToServer(tmpMsg);
+            a.GetStateController().TryEnterState(ELifeState.Idle, false);
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-           StageManager.Instance.ChangeState(GameStateType.MainCityState);
+            a.GetStateController().TryEnterState(ELifeState.Walk, false);
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            StageManager.Instance.ChangeState(GameStateType.LoginState);
+            a.GetStateController().TryEnterState(ELifeState.Run, false);
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
@@ -108,21 +118,46 @@ public class GameManager : Singleton<GameManager>
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            WindowManager.Instance.CloseWindow(WindowID.WindowTest1);
+            List<AssetFile> tmp = new List<AssetFile>();
+
+            for (int i = 0; i < 40; ++i)
+            {
+                AssetFile newElem = new AssetFile("tmp" + i.ToString(),
+                    Application.persistentDataPath + "/downloadTest/tmp" + i.ToString() + ".txt",
+                    "http://112.126.74.237:8080/client/config/targetConfig_txtpkg.bytes");
+                tmp.Add(newElem);
+            }
+            AssetsDownloader.Instance.BeginDownload(tmp,
+                (buffer, fileInfo) =>
+                {
+                    Debuger.Log("Done : " + fileInfo.Name);
+                },
+                (e, fileInfo) =>
+                {
+                    Debuger.Log("error : " + e.Message);
+                },
+                (process, file) =>
+                {
+                    Debuger.Log("process : " + process);
+                }, 
+                () =>
+                {
+                    Debuger.Log("All done");
+                });
         }
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            WindowManager.Instance.OpenWindow(WindowID.WindowTest2);
+            AudioManager.Instance.PlayAudio("music_defeat", Vector3.zero, false);
         }
         if (Input.GetKeyDown(KeyCode.G))
         {
-            WindowManager.Instance.CloseWindow(WindowID.WindowTest2);
+            AudioManager.Instance.PlayAudio("music_menu", Vector3.zero, true);
         }
 
         if (Input.GetKeyDown(KeyCode.H))
         {
-            WindowManager.Instance.OpenWindow(WindowID.WindowTest3);
+            AudioManager.Instance.StopAudio("music_menu");
         }
         if (Input.GetKeyDown(KeyCode.I))
         {

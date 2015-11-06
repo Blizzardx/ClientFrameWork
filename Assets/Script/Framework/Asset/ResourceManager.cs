@@ -18,6 +18,8 @@ public enum AssetType
     Texture,
     Atlas,
     Prefab,
+    EditorRes,
+    Model,
 }
 
 public enum LoadType
@@ -375,6 +377,15 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             case AssetType.Prefab:
                 path = "Prefab/" + path;
                 break;
+            //Editor Temp Resource
+            case AssetType.EditorRes:
+                path = "EditorRes/" + path;
+                break;
+            //
+            case AssetType.Model:
+                path = "Model/" + path;
+                break;
+
             default:
             {
                 // do nothing

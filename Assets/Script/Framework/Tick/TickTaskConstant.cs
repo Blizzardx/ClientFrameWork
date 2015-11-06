@@ -9,8 +9,10 @@ public class TickTaskConstant
 {
 	public const int TICK_TIME_CORRECT = 0;
     public const int TICK_MESSAGE = 0;
-	public const int TICK_PLAYER = 0;
-	public const int TICK_UIWINDOW = 0;
+    public const int TICK_PLAYER = 0;
+    public const int TICK_DOWNLOAD = 200;
+    public const int TICK_UIWINDOW = 0;
+    public const int TICK_TERRAINTRIGGER = 200;
 
 	public const int TICK_PING = 2000;
 }

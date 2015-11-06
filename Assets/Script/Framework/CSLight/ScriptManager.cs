@@ -43,11 +43,11 @@ public class ScriptManager : Singleton<ScriptManager>
         m_ProjectScript.ClearValue();
         m_ProjectScript.BuildProject(m_strCurrentRunningProjectPath);
         m_ProjectScript.Eval("scriptMain.Instance.Initialize();");
-        PlayerTickTask.Instance.RegisterToUpdateList(Update);
+        LifeTickTask.Instance.RegisterToUpdateList(Update);
     }
     private void ClearProjectAndStop(string path)
     {
-        PlayerTickTask.Instance.UnRegisterFromUpdateList(Update);
+        LifeTickTask.Instance.UnRegisterFromUpdateList(Update);
         m_ProjectScript.Eval("scriptMain.Instance.Quit();");
     }
     private void Update()

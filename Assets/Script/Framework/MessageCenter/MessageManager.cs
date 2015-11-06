@@ -37,7 +37,7 @@ public class MessageManager : Singleton<MessageManager>
         m_MsgList.Initialize();
 
         //register message
-        MessageDefine.Instance.RegisterMessage();
+//        MessageDefine.Instance.RegisterMessage();
     }
     public void Update()
     {

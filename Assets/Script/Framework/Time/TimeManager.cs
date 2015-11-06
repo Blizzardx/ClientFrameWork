@@ -6,7 +6,6 @@ using System.Collections;
 
 public class TimeManager : Singleton<TimeManager>
 {
-	
 	private	bool	m_bDoubleSpeed = false;
 	private long	m_Now = 0L;
 
@@ -65,4 +64,10 @@ public class TimeManager : Singleton<TimeManager>
 		get{ return m_Now; }
 		set{ m_Now = value; }
 	}
+
+    public string GetCurrentTime()
+    {
+        return DateTime.Now.ToString("yyyy-M-d dddd HH:mm:ss");
+
+    }
 }

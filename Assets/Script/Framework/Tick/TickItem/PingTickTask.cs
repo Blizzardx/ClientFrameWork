@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using NetFramework.Auto;
+using NetWork.Auto;
+using UnityEngine;
 using System.Collections;
-using NetFramework.Auto;
 
 public class PingTickTask : AbstractTickTask
 {
@@ -23,7 +24,7 @@ public class PingTickTask : AbstractTickTask
 	{
 	    m_bIsConnect = false;
         //register msg
-        MessageManager.Instance.RegistMessage(MessageTypeConstants.SC_PING, OnPong);
+        //MessageManager.Instance.RegistMessage(MessageIdConstants.SC_PING, OnPong);
         m_iLastSendMsgTime = TimeManager.Instance.Now;
 	    m_Instance = this;
 		return false;

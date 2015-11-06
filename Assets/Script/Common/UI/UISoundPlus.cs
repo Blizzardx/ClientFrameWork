@@ -13,7 +13,7 @@ public class UISoundPlus : MonoBehaviour
     private void OnClick(GameObject go)
     {
         Debuger.Log("On trigger enter");
-        AudioManager.Instance.PlayUISound(m_AudioId);
+        //AudioManager.Instance.PlayUISound(m_AudioId);
     }
 
 }

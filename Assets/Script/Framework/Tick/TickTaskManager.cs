@@ -12,11 +12,12 @@ public class TickTaskManager : Singleton<TickTaskManager>
 
         m_TickTaskStore.Add(new TimerTickTask());
         m_TickTaskStore.Add(new MessageTickTask());
-        m_TickTaskStore.Add(new PlayerTickTask());
+        m_TickTaskStore.Add(new LifeTickTask());
         m_TickTaskStore.Add(new UITickTask());
         m_TickTaskStore.Add(new PingTickTask());
-        //m_TickTaskStore.Add(new TerrainTriggerTickTask());
+        m_TickTaskStore.Add(new TerrainTriggerTickTask());
         m_TickTaskStore.Add(new TimerTickTask());
+        m_TickTaskStore.Add(new DownloadTickTask());
     }
     public void Update()
     {

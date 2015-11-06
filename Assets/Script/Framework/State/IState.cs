@@ -4,7 +4,8 @@ public enum ELifeState
 {
     None = 0,
     Idle,
-    Move,
+    Walk,
+    Run,
     Attack,
     Attacked,
     Death,
@@ -15,13 +16,17 @@ public enum ELifeState
 public abstract class IState 
 {
     protected Ilife unit;
-
-    public IState(Ilife unit)
+    protected ELifeState state;
+    public IState(Ilife unit,ELifeState state)
 	{
 		this.unit = unit;
+        this.state = state;
 	}
 
-	public abstract ELifeState GetState();
+    public ELifeState GetState()
+    {
+        return state;
+    }
 	public abstract bool CanEnter();
 	public abstract void DoEnter();
 	public abstract bool CanExit();
