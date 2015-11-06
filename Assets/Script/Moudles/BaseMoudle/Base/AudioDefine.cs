@@ -31,12 +31,3 @@ public enum AudioId
     //ui
     OnClick,
 }
-
-public class AudioDefiner
-{
-    public static void RegisterAudio()
-    {
-        AudioManager.Instance.RegisterAudio(AudioId.LogIn, new AudioIndexStruct("music_defeat"));
-        AudioManager.Instance.RegisterAudio(AudioId.Battle_0, new AudioIndexStruct("music_level_a"));
-    }
-}

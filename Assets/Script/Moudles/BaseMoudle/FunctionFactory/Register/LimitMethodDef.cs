@@ -12,8 +12,9 @@ public class LimitMethodDef
         //Limit Array
         LimitExec = new Dictionary<int, LimitMethodsBase>
 		{
-			{0,new Limit_HANDLE_LIMIT_EXEC_NONE()},
-			{1,new Limit_HANDLE_LIMIT_EXEC_TRUE()},
+			{0,new Limit_Handle_False()},
+			{1,new Limit_Handle_True()},
+			{2,new Limit_Handle_Range()},
 		};
 
         LimitMethods.InitLimitMethods(LimitExec);

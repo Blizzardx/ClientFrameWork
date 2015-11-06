@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Assets.Scripts.Framework.Network;
 using CSLE;
 using UnityEngine;
 using System.Collections;
@@ -13,36 +14,34 @@ public class UIWindowProject1 : WindowBase
         InitUIComponent(ref m_SpriteDog, "m_SpriteDog");
 
         UIEventListener.Get(m_SpriteDog.gameObject).onClick = OnClickEvent0;
-        /*AddChildElementClickEvent(OnClickExit, "Button_Exit");
+        AddChildElementClickEvent(OnClickExit, "Button_Exit");
         AddChildElementClickEvent(OnClickEvent0, "Button_Event0");
         AddChildElementClickEvent(OnClickEvent1, "Button_Event1");
-        AddChildElementClickEvent(OnClickEvent2, "Button_Event2");*/
-        //EventReporter.Instance.EnterSceneReport("MainCity");
+        AddChildElementClickEvent(OnClickEvent2, "Button_Event2");
     }
     private void OnClickEvent0(GameObject go)
     {
         Debuger.Log("On OnClickEvent0");
         var value = new Dictionary<string, string>();
         value.Add("ClickCount", "10");
-        //EventReporter.Instance.CustomEventReport("0",value);
     }
     private void OnClickEvent1(GameObject go)
     {
         Debuger.Log("On OnClickEvent1");
         var value = new Dictionary<string, string>();
         value.Add("ClickCount", "15");
-        //EventReporter.Instance.CustomEventReport("1", value);
     }
     private void OnClickEvent2(GameObject go)
     {
         Debuger.Log("On OnClickEvent2");
         var value = new Dictionary<string, string>();
         value.Add("ClickCount", "20");
-//        EventReporter.Instance.CustomEventReport("2", value);
     }
     private void OnClickExit(GameObject go)
     {
         Debuger.Log("On exit");
+
+        
         Hide();
     }
     public override void OnOpen(object param)
@@ -53,6 +52,5 @@ public class UIWindowProject1 : WindowBase
     public override void OnClose()
     {
         base.OnClose();
-        //EventReporter.Instance.ExitSceneReport("MainCity");
     }
 }

@@ -1,5 +1,4 @@
-﻿using NetFramework.Auto;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public enum DataBindKey
@@ -15,7 +14,7 @@ public class DataBindDefine : Singleton<DataBindDefine>
 {
     public void RegisterBindMessageHandler()
     {
-        DataBindManager.Instance.RegisterMsgHandler(MessageTypeConstants.SC_CHARACTER_INFO,CharacterInfoHandler);
+        //DataBindManager.Instance.RegisterMsgHandler(MessageTypeConstants.SC_CHARACTER_INFO,CharacterInfoHandler);
     }
     public void RegisterBindTypeHandler()
     {
@@ -24,9 +23,9 @@ public class DataBindDefine : Singleton<DataBindDefine>
     #region message handler
 
     private void CharacterInfoHandler(object msgValue)
-    {
+    {/*
         SCCharacterInfoMsg msg = msgValue as SCCharacterInfoMsg;
-        DataBindManager.Instance.BindExcution(DataBindKey.Player_Exp,msg.Exp);
+        DataBindManager.Instance.BindExcution(DataBindKey.Player_Exp,msg.Exp);*/
     }
     #endregion
 

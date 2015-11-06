@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using Thrift.Protocol;
 using Thrift.Transport;
 
-namespace NetFramework.Auto
+namespace NetWork.Auto
 {
 
   #if !SILVERLIGHT
@@ -23,10 +23,10 @@ namespace NetFramework.Auto
   #endif
   public partial class Header : TBase
   {
-    private int _orderId;
+    private long _orderId;
     private string _sk;
 
-    public int OrderId
+    public long OrderId
     {
       get
       {
@@ -77,14 +77,14 @@ namespace NetFramework.Auto
         }
         switch (field.ID)
         {
-          case 1:
-            if (field.Type == TType.I32) {
-              OrderId = iprot.ReadI32();
+          case 10:
+            if (field.Type == TType.I64) {
+              OrderId = iprot.ReadI64();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 2:
+          case 20:
             if (field.Type == TType.String) {
               Sk = iprot.ReadString();
             } else { 
@@ -106,16 +106,16 @@ namespace NetFramework.Auto
       TField field = new TField();
       if (__isset.orderId) {
         field.Name = "orderId";
-        field.Type = TType.I32;
-        field.ID = 1;
+        field.Type = TType.I64;
+        field.ID = 10;
         oprot.WriteFieldBegin(field);
-        oprot.WriteI32(OrderId);
+        oprot.WriteI64(OrderId);
         oprot.WriteFieldEnd();
       }
       if (Sk != null && __isset.sk) {
         field.Name = "sk";
         field.Type = TType.String;
-        field.ID = 2;
+        field.ID = 20;
         oprot.WriteFieldBegin(field);
         oprot.WriteString(Sk);
         oprot.WriteFieldEnd();

@@ -1,5 +1,5 @@
 ﻿using System;
-using NetFramework.Auto;
+using NetWork.Auto;
 using Thrift.Protocol;
 using UnityEngine;
 using System.Collections;
@@ -12,7 +12,7 @@ public class SystemMsgHandler:Singleton<SystemMsgHandler>
     {
         MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_CLOSE, SocketClosed);
         MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_TIMEOUT, SocketConnetTimeOut);
-        MessageManager.Instance.RegistMessage(MessageTypeConstants.SC_SYSTEM_INFO, SystemInfo);
+        //MessageManager.Instance.RegistMessage(MessageIdConstants.SC_SYSTEM_INFO, SystemInfo);
     }
     #endregion
 

@@ -11,19 +11,19 @@ public class GameTestLogic: LogicBase<GameTestLogic>
 
 	public override void StartLogic()
 	{
-	   /* GameObject map =
+	    GameObject map =
 	        GameObject.Instantiate(ResourceManager.Instance.LoadBuildInResource<GameObject>("Scene", AssetType.Map));
-	    ComponentTool.Attach(null, map.transform);*/
+	    ComponentTool.Attach(null, map.transform);
 
         m_Camera = ComponentTool.FindChild("SceneCamera", null).transform;
         WindowManager.Instance.HideAllWindow();
         WindowManager.Instance.OpenWindow(WindowID.WindowProject1);
-        PlayerTickTask.Instance.RegisterToUpdateList(Update);
+        LifeTickTask.Instance.RegisterToUpdateList(Update);
 
 	}
 	public override void EndLogic()
 	{
-        PlayerTickTask.Instance.UnRegisterFromUpdateList(Update);
+        LifeTickTask.Instance.UnRegisterFromUpdateList(Update);
 	}
 
     private void Update()
@@ -51,7 +51,7 @@ public class GameTestLogic: LogicBase<GameTestLogic>
             }
         }
 
-        /*if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             m_bIsTouching = true;
             m_vInitPos = Input.mousePosition;
@@ -69,7 +69,7 @@ public class GameTestLogic: LogicBase<GameTestLogic>
             m_fDeltaDistance.z = m_fDeltaDistance.y;
             m_fDeltaDistance.y = 0;
             m_Camera.position = m_vInitCamPos + m_fDeltaDistance*0.001f;
-        }*/
+        }
     }
 
     /// ... to do : 
