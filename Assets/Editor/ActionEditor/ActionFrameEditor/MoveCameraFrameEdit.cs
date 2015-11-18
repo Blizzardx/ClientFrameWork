@@ -172,7 +172,7 @@ public class MoveCameraFrameEdit : FrameEdit
     #region System Functions
     private static void CreateWindow()
     {
-        m_Instance = EditorWindow.GetWindow<MoveCameraFrameEdit>(false, "摄像机移动", true);
+        m_Instance = EditorWindow.GetWindow<MoveCameraFrameEdit>(false, "移动摄像机", true);
     }
     #endregion
 }

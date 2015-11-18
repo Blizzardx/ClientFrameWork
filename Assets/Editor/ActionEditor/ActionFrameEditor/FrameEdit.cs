@@ -67,7 +67,7 @@ public class FrameEdit : EditorWindow
 
         GUILayout.Space(5f);
 
-        EditorGUILayout.LabelField("时间" + m_fTime.ToString("f3"), GUILayout.Width(100f));
+        EditorGUILayout.LabelField("时间" + m_fTime.ToString("f2"), GUILayout.Width(100f));
     }
 
 

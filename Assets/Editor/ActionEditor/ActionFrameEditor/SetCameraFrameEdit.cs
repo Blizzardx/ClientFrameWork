@@ -42,7 +42,7 @@ public class SetCameraFrameEdit : FrameEdit
     private ESetCameraType m_eSetCameraType;
     private float m_fTickTime;
     private GameObject m_InputCameraObj;
-    private Camera m_InputCamera;
+    private string m_CameraName;
     #endregion
 
     #region MonoBehavior
@@ -52,13 +52,21 @@ public class SetCameraFrameEdit : FrameEdit
         GUILayout.Space(5f);
         EditorGUILayout.BeginHorizontal();
         {
-            EditorGUILayout.LabelField("摄像机选择:", GUILayout.Width(50f), GUILayout.Height(18f));
-            if (GUILayout.Button("选取当前摄像机", GUILayout.Width(100f), GUILayout.Height(18f)))
+            EditorGUILayout.LabelField("摄像机选择:", GUILayout.Width(50f));
+            m_InputCameraObj = (GameObject)EditorGUILayout.ObjectField(m_InputCameraObj, typeof(GameObject));
+        }
+        EditorGUILayout.EndHorizontal();
+
+        GUILayout.Space(5f);
+        EditorGUILayout.BeginHorizontal();
+        {
+            if (GUILayout.Button("选取当前摄像机", GUILayout.Width(100f)))
             {
                 m_InputCameraObj = GlobalScripts.Instance.mGameCamera.gameObject;
+                m_CameraName = m_InputCameraObj.name +"_00";
             }
-            m_InputCameraObj = (GameObject)EditorGUILayout.ObjectField(m_InputCameraObj, typeof(GameObject), GUILayout.Height(18f));
-            m_InputCamera = m_InputCameraObj.GetComponent<Camera>();
+            EditorGUILayout.LabelField("剧情名称:", GUILayout.Width(50f));
+            m_CameraName = EditorGUILayout.TextField(m_CameraName);
         }
         EditorGUILayout.EndHorizontal();
     }
@@ -81,6 +89,7 @@ public class SetCameraFrameEdit : FrameEdit
         m_Instance = null;
     }
     #endregion
+
     #region System Event
     protected void Init()
     {
@@ -101,6 +110,11 @@ public class SetCameraFrameEdit : FrameEdit
     }
     protected override void OnSave()
     {
+        CreateCameraPrefab();
+        //Set Data
+        m_Config.CamName = m_CameraName;
+        m_Config.CamType = ESetCameraType.Permanent; // Temp
+        //Save Data
         m_ActionFrameData.Type = (int)m_eFrameType;
         m_ActionFrameData.Time = m_fTime;
         m_ActionFrameData.SetCameraFrame = m_Config;
@@ -116,7 +130,15 @@ public class SetCameraFrameEdit : FrameEdit
     #region System Functions
     private static void CreateWindow()
     {
-        m_Instance = EditorWindow.GetWindow<SetCameraFrameEdit>(false, "摄像机设定", true);
+        m_Instance = EditorWindow.GetWindow<SetCameraFrameEdit>(false, "定义摄像机", true);
+    }
+    private void CreateCameraPrefab()
+    {
+        foreach (MonoBehaviour script in m_InputCameraObj.GetComponents<MonoBehaviour>())
+        {
+            DestroyImmediate(script);
+        }
+        ActionHelper.SaveCameraPrefab(m_CameraName, m_InputCameraObj);
     }
     #endregion
 }

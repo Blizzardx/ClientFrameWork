@@ -45,6 +45,11 @@ class ActionListWindow : EditorWindow
             return;
         }
 
+        if (null == m_DataList.DataList)
+        {
+            return;
+        }
+
         for (int i = 0; i < m_DataList.DataList.Count; ++i)
         {
             EditorGUILayout.BeginHorizontal();

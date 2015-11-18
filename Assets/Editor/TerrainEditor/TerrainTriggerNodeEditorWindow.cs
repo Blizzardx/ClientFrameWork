@@ -67,21 +67,21 @@ public class TerrainTriggerNodeEditorWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.Label("离开条件函数ID", GUILayout.Width(120f));
-            m_InputBuffer[2] = GUILayout.TextArea(m_InputBuffer[1]);
+            m_InputBuffer[2] = GUILayout.TextArea(m_InputBuffer[2]);
         }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.Label("进入功能函数ID", GUILayout.Width(120f));
-            m_InputBuffer[3] = GUILayout.TextArea(m_InputBuffer[2]);
+            m_InputBuffer[3] = GUILayout.TextArea(m_InputBuffer[3]);
         }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         {
             GUILayout.Label("离开函数ID", GUILayout.Width(120f));
-            m_InputBuffer[4] = GUILayout.TextArea(m_InputBuffer[3]);
+            m_InputBuffer[4] = GUILayout.TextArea(m_InputBuffer[4]);
         }
         EditorGUILayout.EndHorizontal();
 
