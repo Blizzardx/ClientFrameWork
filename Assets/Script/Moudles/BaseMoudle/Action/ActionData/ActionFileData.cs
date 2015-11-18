@@ -27,7 +27,6 @@ namespace ActionEditor
     private string _fileName;
     private string _mapResName;
     private double _duration;
-    private bool _loop;
     private List<ActionFrameData> _frameDatalist;
 
     public int ID
@@ -82,19 +81,6 @@ namespace ActionEditor
       }
     }
 
-    public bool Loop
-    {
-      get
-      {
-        return _loop;
-      }
-      set
-      {
-        __isset.loop = true;
-        this._loop = value;
-      }
-    }
-
     public List<ActionFrameData> FrameDatalist
     {
       get
@@ -118,7 +104,6 @@ namespace ActionEditor
       public bool fileName;
       public bool mapResName;
       public bool duration;
-      public bool loop;
       public bool frameDatalist;
     }
 
@@ -165,24 +150,17 @@ namespace ActionEditor
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 5:
-            if (field.Type == TType.Bool) {
-              Loop = iprot.ReadBool();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
           case 10:
             if (field.Type == TType.List) {
               {
                 FrameDatalist = new List<ActionFrameData>();
-                TList _list0 = iprot.ReadListBegin();
-                for( int _i1 = 0; _i1 < _list0.Count; ++_i1)
+                TList _list4 = iprot.ReadListBegin();
+                for( int _i5 = 0; _i5 < _list4.Count; ++_i5)
                 {
-                  ActionFrameData _elem2 = new ActionFrameData();
-                  _elem2 = new ActionFrameData();
-                  _elem2.Read(iprot);
-                  FrameDatalist.Add(_elem2);
+                  ActionFrameData _elem6 = new ActionFrameData();
+                  _elem6 = new ActionFrameData();
+                  _elem6.Read(iprot);
+                  FrameDatalist.Add(_elem6);
                 }
                 iprot.ReadListEnd();
               }
@@ -235,14 +213,6 @@ namespace ActionEditor
         oprot.WriteDouble(Duration);
         oprot.WriteFieldEnd();
       }
-      if (__isset.loop) {
-        field.Name = "loop";
-        field.Type = TType.Bool;
-        field.ID = 5;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteBool(Loop);
-        oprot.WriteFieldEnd();
-      }
       if (FrameDatalist != null && __isset.frameDatalist) {
         field.Name = "frameDatalist";
         field.Type = TType.List;
@@ -250,9 +220,9 @@ namespace ActionEditor
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.Struct, FrameDatalist.Count));
-          foreach (ActionFrameData _iter3 in FrameDatalist)
+          foreach (ActionFrameData _iter7 in FrameDatalist)
           {
-            _iter3.Write(oprot);
+            _iter7.Write(oprot);
           }
           oprot.WriteListEnd();
         }
@@ -272,8 +242,6 @@ namespace ActionEditor
       sb.Append(MapResName);
       sb.Append(",Duration: ");
       sb.Append(Duration);
-      sb.Append(",Loop: ");
-      sb.Append(Loop);
       sb.Append(",FrameDatalist: ");
       sb.Append(FrameDatalist);
       sb.Append(")");

@@ -11,7 +11,7 @@ public class FuncMethodDef
         //Func Array
         FuncExec = new Dictionary<int, FuncMethodsBase>
 		{
-	        {0,new Func_HANDLE_FUNC_EXEC_NONE()},
+	        {0,new Func_0_NONE(0)},
 		};
 
         FuncMethods.InitFuncMethods(FuncExec);

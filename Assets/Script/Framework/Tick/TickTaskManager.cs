@@ -8,16 +8,20 @@ public class TickTaskManager : Singleton<TickTaskManager>
     #region public interface
     public void InitializeTickTaskSystem()
     {
-        m_TickTaskStore = new List<AbstractTickTask>(5);
+        m_TickTaskStore = new List<AbstractTickTask>();
 
-        m_TickTaskStore.Add(new TimerTickTask());
+        m_TickTaskStore.Add(new TimeTickTask());
         m_TickTaskStore.Add(new MessageTickTask());
+        m_TickTaskStore.Add(new AsyncTickTask());
         m_TickTaskStore.Add(new LifeTickTask());
         m_TickTaskStore.Add(new UITickTask());
         m_TickTaskStore.Add(new PingTickTask());
-        m_TickTaskStore.Add(new TerrainTriggerTickTask());
-        m_TickTaskStore.Add(new TimerTickTask());
+        m_TickTaskStore.Add(new TerrainTickTask());
+        m_TickTaskStore.Add(new CountDownTickTask());
         m_TickTaskStore.Add(new DownloadTickTask());
+        m_TickTaskStore.Add(new FlushDataTickTask());
+        m_TickTaskStore.Add(new SyncDataTickTask());
+        m_TickTaskStore.Add(new ActionTickTask());
     }
     public void Update()
     {

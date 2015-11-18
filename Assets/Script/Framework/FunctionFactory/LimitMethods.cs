@@ -7,7 +7,18 @@ using System.Collections.Generic;
 
 public abstract class LimitMethodsBase
 {
-    public abstract bool LimitExecHandler(HandleTarget Target, LimitData Limit); 
+    private int m_iId;
+
+    public int GetId()
+    {
+        return m_iId;
+    }
+
+    public LimitMethodsBase(int id)
+    {
+        m_iId = id;
+    }
+    public abstract bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context); 
 }
 static public class LimitMethods
 {
@@ -19,7 +30,7 @@ static public class LimitMethods
 	}
 	
 	//Limit Exec Func
-	static public bool HandleLimitExec( HandleTarget Target, int iLimitGroupId )
+    static public bool HandleLimitExec(HandleTarget Target, int iLimitGroupId, FuncContext context)
     {
         if (null == Target)
         {
@@ -52,7 +63,7 @@ static public class LimitMethods
 			if( 0 == limitdataGroup.Logic )
 			{
                 // Or-logic
-                bResult = handler.LimitExecHandler(Target, ExecData);
+                bResult = handler.LimitExecHandler(Target, ExecData,context);
 			    if (true == bResult)
 			    {
 			        break;
@@ -61,7 +72,7 @@ static public class LimitMethods
 			else if( 1 == limitdataGroup.Logic )
 			{
                 // And-logic
-                bResult = handler.LimitExecHandler(Target, ExecData);
+                bResult = handler.LimitExecHandler(Target, ExecData,context);
 				if( false == bResult )
 				{
 					break;

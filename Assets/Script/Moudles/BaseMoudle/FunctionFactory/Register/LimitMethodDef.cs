@@ -12,9 +12,12 @@ public class LimitMethodDef
         //Limit Array
         LimitExec = new Dictionary<int, LimitMethodsBase>
 		{
-			{0,new Limit_Handle_False()},
-			{1,new Limit_Handle_True()},
-			{2,new Limit_Handle_Range()},
+			{0,new Limit_0_False(0)},
+			{1,new Limit_1_True(1)},
+			{2,new Limit_2_Range(2)},
+			{3,new Limit_3_ByteCount(3)},
+			{4,new Limit_4_Flag(4)},
+			{5,new Limit_5_IntCount(5)},
 		};
 
         LimitMethods.InitLimitMethods(LimitExec);

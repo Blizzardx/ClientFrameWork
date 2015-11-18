@@ -50,15 +50,16 @@ public class ConfigManager :Singleton<ConfigManager>
     public const string Config_LangageDefine            = "zh_CN";
     public const string ConfigPath_VersionConfig        = "version_txtpkg.bytes";
     public const string ConfigPath_StateConflictConfig  = "";
-    public const string ConfigPath_FunctionGroupConfig  = "";
-    public const string ConfigPath_TerrainConfig        = "";
-    public const string ConfigPath_CharactorConfig      = "Config/charactorConfig_txtpkg.bytes";
-    public const string ConfigPath_NpcConfig            = "Config/npcConfig_txtpkg.bytes";
-    public const string ConfigPath_MessageConfig        = "Config/messageConfig_txtpkg.bytes";
+    public const string ConfigPath_FunctionGroupConfig  = "config/funcConfig_txtpkg.bytes";
+    public const string ConfigPath_LimitGroupConfig     = "config/limitConfig_txtpkg.bytes";
+    public const string ConfigPath_TargetGroupConfig    = "config/targetConfig_txtpkg.bytes";
+    public const string ConfigPath_MessageConfig        = "config/messageConfig_txtpkg.bytes";
+    public const string ConfigPath_TerrainConfig        = "config/terrainConfig_txtpkg.bytes";
+    public const string ConfigPath_CharactorConfig      = "config/charactorConfig_txtpkg.bytes";
+    public const string ConfigPath_NpcConfig            = "config/npcConfig_txtpkg.bytes";
     #endregion
 
     #region config handler
-
     public void SaveLocalVersionConfig(VersionConfig versionConfig)
     {
         TrySetConfig(ConfigPath_VersionConfig,versionConfig);
@@ -120,14 +121,14 @@ public class ConfigManager :Singleton<ConfigManager>
     }
     public LimitGroup GetLimitGroup(int iLimitGroupId)
     {
-        LimitConfgTable config = TryGetConfig<LimitConfgTable>(ConfigPath_FunctionGroupConfig) ;
+        LimitConfgTable config = TryGetConfig<LimitConfgTable>(ConfigPath_LimitGroupConfig) ;
         LimitGroup result = null;
         config.LimitMap.TryGetValue(iLimitGroupId, out result);
         return result;
     }
     public TargetGroup GetTargetGroup(int iTargetGroupId)
     {
-        TargetConfigTable config = TryGetConfig<TargetConfigTable>(ConfigPath_FunctionGroupConfig) ;
+        TargetConfigTable config = TryGetConfig<TargetConfigTable>(ConfigPath_TargetGroupConfig);
         TargetGroup result = null;
         config.TargetMap.TryGetValue(iTargetGroupId, out result);
         return result;
@@ -159,6 +160,11 @@ public class ConfigManager :Singleton<ConfigManager>
         NpcConfig res = null;
         config.NpcCofigMap.TryGetValue(id, out res);
         return res;
+    }
+    public NpcConfigTable GetNpcTable()
+    {
+        NpcConfigTable config = TryGetConfig<NpcConfigTable>(ConfigPath_NpcConfig);
+        return config;
     }
     public string GetMessage(int id)
     {

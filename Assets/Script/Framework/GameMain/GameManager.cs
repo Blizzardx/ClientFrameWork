@@ -4,6 +4,10 @@ using Assets.Scripts.Core.Utils;
 using Assets.Scripts.Framework.Network;
 using UnityEngine;
 using System.Collections.Generic;
+using Moudles.BaseMoudle.Converter;
+using Cache;
+using NetWork.Auto;
+using NetWork;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -14,6 +18,7 @@ public class GameManager : Singleton<GameManager>
         ClearTmpCache();
 
         TimeManager.Instance.Initialize();
+        CacheManager.Init(Application.persistentDataPath + "/Cache");
 		LogManager.Instance.Initialize (AppManager.Instance.m_bIsShowDebugMsg);
         ResourceManager.Instance.Initialize();
         TickTaskManager.Instance.InitializeTickTaskSystem();
@@ -24,7 +29,7 @@ public class GameManager : Singleton<GameManager>
         SystemMsgHandler.Instance.RegisterSystemMsg();
         ScriptManager.Instance.Initialize();
         AudioManager.Instance.Initialize();
-        MapManager.Instance.Initialize();
+        ConverterManager.Instance.Initialize();
         FuncMethodDef.InitFuncMethod();
         LimitMethodDef.InitLimitMethod();
         TargetMethodDef.InitTargetMethod();
@@ -76,29 +81,42 @@ public class GameManager : Singleton<GameManager>
 
     #region test
 	private int i=0;
-    private Player a;
+    private PlayerCharacter a;
     private List<Vector3> moveTarget;
+
+    
+
+        
+
     private void Test()
     {
+        
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            a = new Player();
-            a.Initialize(1);
-            moveTarget = new List<Vector3>(10);
-            moveTarget.Add(new Vector3(0, 0, 1));
-            moveTarget.Add(new Vector3(0, 0, 2));
-            moveTarget.Add(new Vector3(2, 0, 3));
-            moveTarget.Add(new Vector3(4, 0, 3));
-            moveTarget.Add(new Vector3(5, 0, 4));
-            moveTarget.Add(new Vector3(6, 0, 5));
-            moveTarget.Add(new Vector3(7, 0, 6));
-            moveTarget.Add(new Vector3(7, 0, 10));
-            moveTarget.Add(new Vector3(8, 0, 11));
-            moveTarget.Add(new Vector3(9, 0, 12));
+            //a = new Player();
+            //a.Initialize(1);
+            //moveTarget = new List<Vector3>(10);
+            //moveTarget.Add(new Vector3(0, 0, 1));
+            //moveTarget.Add(new Vector3(0, 0, 2));
+            //moveTarget.Add(new Vector3(2, 0, 3));
+            //moveTarget.Add(new Vector3(4, 0, 3));
+            //moveTarget.Add(new Vector3(5, 0, 4));
+            //moveTarget.Add(new Vector3(6, 0, 5));
+            //moveTarget.Add(new Vector3(7, 0, 6));
+            //moveTarget.Add(new Vector3(7, 0, 10));
+            //moveTarget.Add(new Vector3(8, 0, 11));
+            //moveTarget.Add(new Vector3(9, 0, 12));
+            LoginRequest req = new LoginRequest();
+            req.Username = "dfdf";
+            req.Password = "sdfsdfsd";
+
+            AsyncLoginRequest loginReq = new AsyncLoginRequest(req);
+            
+            loginReq.TryRequest();
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
-            a.GetTransformData().MoveTo(moveTarget, 0.5f, 0.01f);
+//            a.GetTransformData().MoveTo(moveTarget, 0.5f, 0.01f);
         }
         if (Input.GetKeyDown(KeyCode.B))
         {
@@ -106,7 +124,7 @@ public class GameManager : Singleton<GameManager>
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            a.GetStateController().TryEnterState(ELifeState.Walk, false);
+            a.GetStateController().TryEnterState(ELifeState.Move, false);
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
@@ -114,7 +132,7 @@ public class GameManager : Singleton<GameManager>
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
-            WindowManager.Instance.OpenWindow(WindowID.WindowTest1);
+//            a.GetTransformData().FindPath(new Vector3(0, 0, 10));
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -161,7 +179,7 @@ public class GameManager : Singleton<GameManager>
         }
         if (Input.GetKeyDown(KeyCode.I))
         {
-            WindowManager.Instance.CloseWindow(WindowID.WindowTest3);
+            StageManager.Instance.ChangeState(GameStateType.TestProject2);
         }
 		if (Input.GetKeyDown (KeyCode.L)) 
 		{

@@ -48,7 +48,7 @@ namespace BehaviourTree
 			/// 不确定因素//
 			/// 
 			HandleTarget handleTarget = HandleTarget.GetHandleTarget(Owner );
-			return LimitMethods.HandleLimitExec (handleTarget, m_iLimitId);
+			return LimitMethods.HandleLimitExec (handleTarget, m_iLimitId,null);
 //			VLimitFuncContext context = VLimitFuncContext.Create ();
 //			VHandleTarget handleTarget = null;
 //			if(m_iTargetId == 0)

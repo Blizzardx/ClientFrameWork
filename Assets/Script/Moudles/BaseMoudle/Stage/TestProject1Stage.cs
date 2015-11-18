@@ -15,6 +15,6 @@ public class TestProject1Stage: StageBase
     }
     public override void EndStage()
     {
-		GameTestLogic.Instance.EndLogic();
+        GameTestLogic.Instance.EndLogic();
     }
 }

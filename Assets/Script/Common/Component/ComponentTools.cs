@@ -16,19 +16,6 @@ public class ComponentTool
         child.localScale = new Vector3(1, 1, 1);
         child.localEulerAngles = new Vector3(0, 0, 0);
     }
-
-    public static Vector3 ConvertThriftVec3ToVec3(ThriftVector3 source)
-    {
-        return new Vector3(source.X / 1000.0f, source.Y / 1000.0f, source.Z / 1000.0f);
-    }
-    public static ThriftVector3 ConvertVec3ToThriftVec3(Vector3 source)
-    {
-        ThriftVector3 res = new ThriftVector3();
-        res.X = (int)(source.x * 1000);
-        res.Y = (int)(source.y * 1000);
-        res.Z = (int)(source.z * 1000);
-        return res;
-    }
     public static T FindChildComponent<T>(string objName, GameObject fromParent) where T : Component
     {
         GameObject obj = FindChild(objName, fromParent);

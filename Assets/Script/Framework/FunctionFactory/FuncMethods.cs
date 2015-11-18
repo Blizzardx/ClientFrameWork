@@ -11,8 +11,19 @@ public enum EFuncRet
     Error,
 }
 public abstract class FuncMethodsBase
-{
-    public  abstract EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata);
+{ 
+    private int m_iId;
+
+    public int GetId()
+    {
+        return m_iId;
+    }
+
+    public FuncMethodsBase(int id)
+    {
+        m_iId = id;
+    }
+    public  abstract EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata,FuncContext context);
 }
 static public class FuncMethods
 {
@@ -21,7 +32,7 @@ static public class FuncMethods
 	{
 	    FuncExec = dataSource;
 	}
-	static public int HandleFuncExec( HandleTarget Target, int iFuncGroupId)
+    static public int HandleFuncExec(HandleTarget Target, int iFuncGroupId, FuncContext context)
 	{
 		if( null == Target )
 			return 0;
@@ -49,7 +60,7 @@ static public class FuncMethods
 		        continue;
 		    }
 
-            EFuncRet eRet = func.FuncExecHandler(Target, ExecData);
+            EFuncRet eRet = func.FuncExecHandler(Target, ExecData,context);
 			
 			if (EFuncRet.Break == eRet)
 			{

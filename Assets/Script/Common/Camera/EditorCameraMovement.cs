@@ -9,6 +9,7 @@
 //
 //========================================================================
 using UnityEngine;
+//using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,10 @@ using System.Text;
 class EditorCameraMovement : SingletonTemplateMon<EditorCameraMovement>
 {
     #region Property
-    [Range(0.01f,0.1f)]
-    public float m_fSpeed = 0.1f;
+    [Range(0.1f,0.3f)]
+    public float m_fSpeed = 0.2f;
     [Range(0.1f, 0.3f)]
-    public float m_fRotate = 0.1f;
+    public float m_fRotate = 0.2f;
     public Camera m_SceneCamera;
     #endregion
 
@@ -35,6 +36,7 @@ class EditorCameraMovement : SingletonTemplateMon<EditorCameraMovement>
     void Awake()
     {
         _instance = this;
+        AudioManager.Instance.Initialize();
     }
 
     // Update is called once per frame

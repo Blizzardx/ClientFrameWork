@@ -2,12 +2,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Monstor : Npc,IAIBehaviour
+public class Monstor : Npc
 {
-    private AIAgent m_AiAgent;
-
-    public AIAgent GetAIAgent()
-    {
-        return m_AiAgent;
-    }
+    
 }

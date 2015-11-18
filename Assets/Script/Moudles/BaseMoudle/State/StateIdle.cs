@@ -14,7 +14,8 @@ public class StateIdle : IState
 
     public override void DoEnter()
     {
-        ((ITransformBehaviour) (unit)).GetTransformData().PlayAnimation("Idle");
+        CharTransformData data = (((ITransformBehaviour)(unit)).GetTransformData()) as CharTransformData;
+        data.PlayAnimation("Idle");
     }
 
     public override bool CanExit()

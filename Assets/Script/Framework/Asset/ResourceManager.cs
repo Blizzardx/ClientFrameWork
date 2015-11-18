@@ -11,6 +11,7 @@ using Object = UnityEngine.Object;
 
 public enum AssetType
 {
+    None,
     UI,
     Animation,
     Audio,
@@ -19,7 +20,8 @@ public enum AssetType
     Atlas,
     Prefab,
     EditorRes,
-    Model,
+    Char,
+    Trigger
 }
 
 public enum LoadType
@@ -57,24 +59,28 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         string realPath = GetRealPath(path, type,LoadType.BuildIn);
         
         UnityEngine.Object res = null;
-        m_AssetStore.TryGetValue(realPath, out res);
-        if (null != res)
+        if (m_AssetStore.TryGetValue(realPath, out res))
         {
-            return res as T;
-        }
-        else
-        {
-            res = Resources.Load<T>(realPath);
-            if (m_AssetStore.ContainsKey(realPath))
+            if (null != res)
             {
-                m_AssetStore[realPath] = res;
+                return res as T;
             }
             else
             {
-                m_AssetStore.Add(realPath, res);
+                m_AssetStore.Remove(realPath);
             }
-            return res as T;
         }
+
+        res = Resources.Load<T>(realPath);
+        if (m_AssetStore.ContainsKey(realPath))
+        {
+            m_AssetStore[realPath] = res;
+        }
+        else
+        {
+            m_AssetStore.Add(realPath, res);
+        }
+        return res as T;
     }
     public void LoadBuildInAssetsAsync(string path, AssetType type, Action<UnityEngine.Object> CallBack)
     {
@@ -200,11 +206,17 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     {
         string realPath = GetRealPath(path, type, LoadType.BuildIn);
         UnityEngine.Object res = null;
-        m_AssetStore.TryGetValue(realPath, out res);
-        if (null != res)
+        if (m_AssetStore.TryGetValue(realPath, out res))
         {
-            CallBack(res);
-            yield return null;
+            if (null != res)
+            {
+                CallBack(res);
+                yield return null;
+            }
+            else
+            {
+                m_AssetStore.Remove(realPath);
+            }
         }
 
         //register to call back store
@@ -382,8 +394,11 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
                 path = "EditorRes/" + path;
                 break;
             //
-            case AssetType.Model:
-                path = "Model/" + path;
+            case AssetType.Char:
+                path = "Char/" + path;
+                break;
+            case AssetType.Trigger:
+                path = "Model/Trigger/" + path;
                 break;
 
             default:

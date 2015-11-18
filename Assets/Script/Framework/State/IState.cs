@@ -4,7 +4,7 @@ public enum ELifeState
 {
     None = 0,
     Idle,
-    Walk,
+    Move,
     Run,
     Attack,
     Attacked,

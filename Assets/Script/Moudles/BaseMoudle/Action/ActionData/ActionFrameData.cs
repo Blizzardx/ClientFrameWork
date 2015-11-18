@@ -27,6 +27,11 @@ namespace ActionEditor
     private int _type;
     private SetCameraFrameConfig _setCameraFrame;
     private MoveCameraFrameConfig _moveCameraFrame;
+    private PlayAudioFrameConfig _playAudioFrame;
+    private boolCommonConfig _boolFrame;
+    private stringCommonConfig _stringFrame;
+    private MoveTransformFrameConfig _moveTransformFrame;
+    private Common.Auto.ThriftVector3 _vector3Frame;
 
     public double Time
     {
@@ -80,6 +85,71 @@ namespace ActionEditor
       }
     }
 
+    public PlayAudioFrameConfig PlayAudioFrame
+    {
+      get
+      {
+        return _playAudioFrame;
+      }
+      set
+      {
+        __isset.playAudioFrame = true;
+        this._playAudioFrame = value;
+      }
+    }
+
+    public boolCommonConfig BoolFrame
+    {
+      get
+      {
+        return _boolFrame;
+      }
+      set
+      {
+        __isset.boolFrame = true;
+        this._boolFrame = value;
+      }
+    }
+
+    public stringCommonConfig StringFrame
+    {
+      get
+      {
+        return _stringFrame;
+      }
+      set
+      {
+        __isset.stringFrame = true;
+        this._stringFrame = value;
+      }
+    }
+
+    public MoveTransformFrameConfig MoveTransformFrame
+    {
+      get
+      {
+        return _moveTransformFrame;
+      }
+      set
+      {
+        __isset.moveTransformFrame = true;
+        this._moveTransformFrame = value;
+      }
+    }
+
+    public Common.Auto.ThriftVector3 Vector3Frame
+    {
+      get
+      {
+        return _vector3Frame;
+      }
+      set
+      {
+        __isset.vector3Frame = true;
+        this._vector3Frame = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -90,6 +160,11 @@ namespace ActionEditor
       public bool type;
       public bool setCameraFrame;
       public bool moveCameraFrame;
+      public bool playAudioFrame;
+      public bool boolFrame;
+      public bool stringFrame;
+      public bool moveTransformFrame;
+      public bool vector3Frame;
     }
 
     public ActionFrameData() {
@@ -133,6 +208,46 @@ namespace ActionEditor
             if (field.Type == TType.Struct) {
               MoveCameraFrame = new MoveCameraFrameConfig();
               MoveCameraFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 30:
+            if (field.Type == TType.Struct) {
+              PlayAudioFrame = new PlayAudioFrameConfig();
+              PlayAudioFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 101:
+            if (field.Type == TType.Struct) {
+              BoolFrame = new boolCommonConfig();
+              BoolFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 102:
+            if (field.Type == TType.Struct) {
+              StringFrame = new stringCommonConfig();
+              StringFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 103:
+            if (field.Type == TType.Struct) {
+              MoveTransformFrame = new MoveTransformFrameConfig();
+              MoveTransformFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 104:
+            if (field.Type == TType.Struct) {
+              Vector3Frame = new Common.Auto.ThriftVector3();
+              Vector3Frame.Read(iprot);
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -182,6 +297,46 @@ namespace ActionEditor
         MoveCameraFrame.Write(oprot);
         oprot.WriteFieldEnd();
       }
+      if (PlayAudioFrame != null && __isset.playAudioFrame) {
+        field.Name = "playAudioFrame";
+        field.Type = TType.Struct;
+        field.ID = 30;
+        oprot.WriteFieldBegin(field);
+        PlayAudioFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (BoolFrame != null && __isset.boolFrame) {
+        field.Name = "boolFrame";
+        field.Type = TType.Struct;
+        field.ID = 101;
+        oprot.WriteFieldBegin(field);
+        BoolFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (StringFrame != null && __isset.stringFrame) {
+        field.Name = "stringFrame";
+        field.Type = TType.Struct;
+        field.ID = 102;
+        oprot.WriteFieldBegin(field);
+        StringFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (MoveTransformFrame != null && __isset.moveTransformFrame) {
+        field.Name = "moveTransformFrame";
+        field.Type = TType.Struct;
+        field.ID = 103;
+        oprot.WriteFieldBegin(field);
+        MoveTransformFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (Vector3Frame != null && __isset.vector3Frame) {
+        field.Name = "vector3Frame";
+        field.Type = TType.Struct;
+        field.ID = 104;
+        oprot.WriteFieldBegin(field);
+        Vector3Frame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
       oprot.WriteFieldStop();
       oprot.WriteStructEnd();
     }
@@ -196,6 +351,16 @@ namespace ActionEditor
       sb.Append(SetCameraFrame== null ? "<null>" : SetCameraFrame.ToString());
       sb.Append(",MoveCameraFrame: ");
       sb.Append(MoveCameraFrame== null ? "<null>" : MoveCameraFrame.ToString());
+      sb.Append(",PlayAudioFrame: ");
+      sb.Append(PlayAudioFrame== null ? "<null>" : PlayAudioFrame.ToString());
+      sb.Append(",BoolFrame: ");
+      sb.Append(BoolFrame== null ? "<null>" : BoolFrame.ToString());
+      sb.Append(",StringFrame: ");
+      sb.Append(StringFrame== null ? "<null>" : StringFrame.ToString());
+      sb.Append(",MoveTransformFrame: ");
+      sb.Append(MoveTransformFrame== null ? "<null>" : MoveTransformFrame.ToString());
+      sb.Append(",Vector3Frame: ");
+      sb.Append(Vector3Frame== null ? "<null>" : Vector3Frame.ToString());
       sb.Append(")");
       return sb.ToString();
     }

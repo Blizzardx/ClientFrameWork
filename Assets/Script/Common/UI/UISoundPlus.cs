@@ -3,7 +3,7 @@ using System.Collections;
 
 public class UISoundPlus : MonoBehaviour
 {
-    public AudioId m_AudioId;
+    //public AudioId m_AudioId;
 
     void Start()
     {

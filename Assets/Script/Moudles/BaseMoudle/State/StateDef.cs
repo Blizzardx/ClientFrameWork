@@ -6,8 +6,7 @@ public class StateDefine
     static public void RegisterState ()
     {
         StateMachine.RegisterState(ELifeState.Idle, typeof(StateIdle));
-        StateMachine.RegisterState(ELifeState.Run, typeof(StateRun));
-        StateMachine.RegisterState(ELifeState.Walk, typeof(StateWalk));
+        StateMachine.RegisterState(ELifeState.Move, typeof(StateMove));
     }
 	
 }

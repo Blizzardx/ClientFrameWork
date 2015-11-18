@@ -9,7 +9,9 @@ public class ClientCustomMessageDefine
     }
 
     //300000 - 400000
-    public const int C_SOCKET_CLOSE = 300000;
-    public const int C_SOCKET_TIMEOUT = 300001;
+    public const int C_SOCKET_CLOSE     = 300000;
+    public const int C_SOCKET_TIMEOUT   = 300001;
+    public const int C_HIT_LIFE        = 300002;
+    public const int C_HIT_TERRAIN     = 300003;
 
 }

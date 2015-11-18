@@ -4,6 +4,7 @@ using System.Collections;
 public class AppManager : SingletonTemplateMon<AppManager>
 {
     public bool m_bIsShowDebugMsg;
+    public bool m_bIsShowTerrainTrigger;
 
     void Awake()
     {

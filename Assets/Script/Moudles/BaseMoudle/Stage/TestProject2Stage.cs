@@ -9,7 +9,7 @@ public class TestProject2Stage : StageBase
     }
     public override void StartStage()
     {
-        
+        WindowManager.Instance.CloseAllWindow();
     }
 
     public override void EndStage()

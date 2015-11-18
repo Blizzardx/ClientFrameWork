@@ -53,8 +53,8 @@ public class Definer
         StageManager.Instance.RegisterStage(GameStateType.MainCityState, "MainCity", typeof(MaincityStage));
         StageManager.Instance.RegisterStage(GameStateType.BattleState, "Battle", typeof(BattleStage));
         StageManager.Instance.RegisterStage(GameStateType.ReConnect, "Login", typeof(ReconnectStage));
-        StageManager.Instance.RegisterStage(GameStateType.TestProject1, "Main", typeof(TestProject1Stage));
-        StageManager.Instance.RegisterStage(GameStateType.TestProject2, "Main", typeof(TestProject2Stage));
+        StageManager.Instance.RegisterStage(GameStateType.TestProject1, "Scene_01", typeof(TestProject1Stage));
+        StageManager.Instance.RegisterStage(GameStateType.TestProject2, "Empty", typeof(TestProject2Stage));
     }
     public static  void DoCollection()
     {

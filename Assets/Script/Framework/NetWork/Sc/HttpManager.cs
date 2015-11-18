@@ -15,9 +15,11 @@ namespace NetWork
     {
         private const string URL = "http://192.168.1.186:8080/cgz-game-web/game/faced.do";
 
+        public string Sk { get; set; }
+
         private long orderId = 0L;
 
-        private long GetNextOrderId()
+        public long GetNextOrderId()
         {
             lock (this)
             {
@@ -27,16 +29,6 @@ namespace NetWork
 
         public ResponseMessage PostMessage(Header header, TBase message)
         {
-            return PostMessage(header, message, true);
-        }
-
-        public ResponseMessage PostMessage(Header header, TBase message, bool genOrderId)
-        {
-            if (genOrderId)
-            {
-                header.OrderId = GetNextOrderId();
-            }
-
             Stream requestStream = null;
             Stream responseStream = null;
             try
@@ -70,22 +62,26 @@ namespace NetWork
 
                 return Decode(responseStream);
             }
-            catch (WebException e)
-            {
-                if (e.Response is HttpWebResponse)
-                {
-                    HttpWebResponse response = e.Response as HttpWebResponse;
-                    ResponseMessage responseMessage = new ResponseMessage();
-                    responseMessage.StatusCode = response.StatusCode;
-                    return responseMessage;
-                }
-                Debug.LogException(e);
-                return null;
-            }
             catch (Exception e)
             {
-                Debug.LogException(e);
-                return null;
+                ResponseMessage responseMessage = new ResponseMessage();
+                if (e is WebException)
+                {
+                    WebException webEx = e as WebException;
+                    if (webEx.Response is HttpWebResponse)
+                    {
+                        HttpWebResponse response = webEx.Response as HttpWebResponse;
+                        
+                        responseMessage.StatusCode = response.StatusCode;
+                        
+                    }
+                    Debug.LogException(e);
+                }
+                else
+                {
+                    responseMessage.Ex = e;
+                }
+                return responseMessage;
             }
             finally
             {

@@ -1,4 +1,5 @@
-﻿using TerrainEditor;
+﻿using System;
+using TerrainEditor;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -6,16 +7,29 @@ public class TerrainTrigger :  ITransformBehaviour
 {
     protected TerrainTriggerData    m_NodeData;
     private HashSet<Ilife>          m_CurrentTargetList;
-    private TransformData           m_TransformData;
+    private TransformDataBase       m_TransformData;
+    private bool                    m_bIsShowObject;
+    private GameObject              m_TriggerObject;
 
     public void InitTrigger(TerrainTriggerData data)
     {
+        m_bIsShowObject = AppManager.Instance.m_bIsShowTerrainTrigger;
         m_CurrentTargetList = new HashSet<Ilife>();
         m_NodeData = data;
+        m_TransformData = new TransformDataBase();
+        m_TransformData.SetPosition(m_NodeData.Pos.GetVector3());
+        m_TransformData.SetRotation(m_NodeData.Rot.GetVector3());
+        m_TransformData.SetScale(m_NodeData.Scale.GetVector3());
+
+        if (m_bIsShowObject)
+        {
+            //create obj
+            CreateObject();
+        }
     }
     public virtual bool ExecNode()
     {
-        HandleTarget target = TargetMethods.GetTargetList(this, m_NodeData.TargetMethodId);
+        HandleTarget target = TargetMethods.GetTargetList(this, m_NodeData.TargetMethodId,null);
 
         if (target.GetTarget(EFuncTarget.EFT_Target).Count == 0)
         {
@@ -29,10 +43,11 @@ public class TerrainTrigger :  ITransformBehaviour
                 foreach (Ilife elem in m_CurrentTargetList)
                 {
                     //离开
+                    Debuger.Log("trigger exit " + elem.GetInstanceId());
                     HandleTarget tmpTarget = HandleTarget.GetHandleTarget(elem);
-                    if (LimitMethods.HandleLimitExec(tmpTarget, m_NodeData.ExitLimitMethodId))
+                    if (LimitMethods.HandleLimitExec(tmpTarget, m_NodeData.ExitLimitMethodId, null))
                     {
-                        FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.ExitFuncMethodId);
+                        FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.ExitFuncMethodId, null);
                     }
                     HandleTarget.CollectionHandlerTargetInstance(tmpTarget);
                 }
@@ -47,10 +62,11 @@ public class TerrainTrigger :  ITransformBehaviour
             if (m_NodeData.IsTick)
             {
                 //进入
+                Debuger.Log("trigger enter " + targetList[i].GetInstanceId());
                 HandleTarget tmpTarget = HandleTarget.GetHandleTarget(targetList[i]);
-                if (LimitMethods.HandleLimitExec(tmpTarget, m_NodeData.EnterLimitMethodId))
+                if (LimitMethods.HandleLimitExec(tmpTarget, m_NodeData.EnterLimitMethodId, null))
                 {
-                    FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.EnterFuncMethodId);
+                    FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.EnterFuncMethodId, null);
                 }
                 HandleTarget.CollectionHandlerTargetInstance(tmpTarget);
             }
@@ -60,10 +76,11 @@ public class TerrainTrigger :  ITransformBehaviour
                 if (!m_NodeData.IsTick)
                 {
                     //进入
+                    Debuger.Log("trigger enter " + targetList[i].GetInstanceId());
                     HandleTarget tmpTarget = HandleTarget.GetHandleTarget(targetList[i]);
-                    if (LimitMethods.HandleLimitExec(tmpTarget, m_NodeData.EnterLimitMethodId))
+                    if (LimitMethods.HandleLimitExec(tmpTarget, m_NodeData.EnterLimitMethodId, null))
                     {
-                        FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.EnterFuncMethodId);
+                        FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.EnterFuncMethodId, null);
                     }
                     HandleTarget.CollectionHandlerTargetInstance(tmpTarget);
                 }
@@ -77,10 +94,11 @@ public class TerrainTrigger :  ITransformBehaviour
         foreach (Ilife elem in m_CurrentTargetList)
         {
             HandleTarget tmpTarget = HandleTarget.GetHandleTarget(elem);
-            if (LimitMethods.HandleLimitExec(tmpTarget, m_NodeData.ExitLimitMethodId))
+            if (LimitMethods.HandleLimitExec(tmpTarget, m_NodeData.ExitLimitMethodId, null))
             {
                 //离开
-                FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.ExitFuncMethodId);
+                Debuger.Log("trigger exit " + elem.GetInstanceId());
+                FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.ExitFuncMethodId, null);
             }
             HandleTarget.CollectionHandlerTargetInstance(tmpTarget);
         }
@@ -103,14 +121,45 @@ public class TerrainTrigger :  ITransformBehaviour
             m_CurrentTargetList.Add(targetList[i]);
         }
     }
-    public TransformData GetTransformData()
+    public TransformDataBase GetTransformData()
     {
         return m_TransformData;
     }
-
     public int GetInstanceId()
     {
         return 0;
+    }
+    public void Distructor()
+    {
+        if (m_bIsShowObject && m_TriggerObject != null)
+        {
+            GameObject.Destroy(m_TriggerObject);
+        }
+    }
+    private void CreateObject()
+    {
+        string path = string.Empty;
+        switch (m_NodeData.AreaType)
+        {
+            case ETriggerAreaType.Sphere:
+                path = "Trigger_Sphere";
+                break;
+                case ETriggerAreaType.Cube:
+                path = "Trigger_Cube";
+                break;
+        }
+        m_TriggerObject = GameObject.Instantiate(ResourceManager.Instance.LoadBuildInResource<GameObject>(path, AssetType.Trigger));
+        if (null != m_TriggerObject)
+        {
+            m_TriggerObject.transform.position = m_NodeData.Pos.GetVector3();
+            m_TriggerObject.transform.eulerAngles = m_NodeData.Rot.GetVector3();
+            m_TriggerObject.transform.localScale = m_NodeData.Scale.GetVector3();
+        }
+        else
+        {
+            Debuger.LogError("Can't load trigger at : " + path);
+        }
+
     }
 }
 public class TerrainTriggerManager
@@ -121,45 +170,39 @@ public class TerrainTriggerManager
     private int                         m_nLastIndex;
     private const int                   m_nProcessNodeMaxTimeLimit = 20;
     private const int                   m_nTriggerCheckTimeOutCount = 10;
-    private TerrainEditorData           m_TerrainData;
     
-    public void InitTerrainTrigger(int terrainId)
+    public void InitTerrainTrigger(List<TerrainTriggerData> triggerDataList)
     {
         if (null == m_TriggerList)
         {
             m_TriggerList = new List<TerrainTrigger>();
         }
-        ClearTrigger();
 
-        // add trigger node to list
-        m_TerrainData = ConfigManager.Instance.GetTerrainEditorData(terrainId);
-        if (null == m_TerrainData)
+        m_TriggerList.Clear();
+        m_nLastIndex = 0;
+
+        if (m_TriggerList.Capacity < triggerDataList.Count)
         {
-            return;
+            m_TriggerList.Capacity = triggerDataList.Count;
         }
 
-        if (m_TriggerList.Capacity < m_TerrainData.TriggerDataList.Count)
-        {
-            m_TriggerList.Capacity = m_TerrainData.TriggerDataList.Count;
-        }
-
-        for (int i = 0; i < m_TerrainData.TriggerDataList.Count; ++i)
+        for (int i = 0; i < triggerDataList.Count; ++i)
         {
             TerrainTrigger node = new TerrainTrigger();
-            node.InitTrigger(m_TerrainData.TriggerDataList[i]);
+            node.InitTrigger(triggerDataList[i]);
             m_TriggerList.Add(node);
         }
-        TerrainTriggerTickTask.Instance.RegisterToUpdateList(Update);
-        TerrainTriggerTickTask.Instance.SetStatus(true);
     }
     public void ClearTrigger()
     {
+        foreach (var elem in m_TriggerList)
+        {
+            elem.Distructor();
+        }
         m_TriggerList.Clear();
         m_nLastIndex = 0;
-        TerrainTriggerTickTask.Instance.UnRegisterFromUpdateList(Update);
-        TerrainTriggerTickTask.Instance.SetStatus(false);
     }
-    private void Update()
+    public void Update()
     {
         m_nTmpCount = 0;
         m_nTmpTimeCount = (int) (TimeManager.Instance.Now);
@@ -183,5 +226,6 @@ public class TerrainTriggerManager
                 break;
             }
         }
+        m_nLastIndex = 0;
     }
 }

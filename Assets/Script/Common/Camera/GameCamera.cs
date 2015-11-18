@@ -55,7 +55,7 @@ public class GameCamera : MonoBehaviour
     #region MonoBehavior
     void Start()
     {
-        DontDestroyOnLoad(transform.parent);
+        //DontDestroyOnLoad(transform.parent);
         m_fInitDistance = m_fDistance;
         m_fInitHeight = m_fHeight;
         m_fInitHeightDamping = m_fHeightDamping;
@@ -136,31 +136,23 @@ public class GameCamera : MonoBehaviour
     {
         if (null == UICamera.hoveredObject && Input.GetMouseButtonDown(0))
         {
-            //LayerMask Lifelayer = 1 << LayerMask.NameToLayer("Life");
-            //Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-            //RaycastHit hit;
-            //if (Physics.Raycast(ray, out hit, 100f, Lifelayer.value))
-            //{
-            //    LogicEventMgr.Instance.ExecuteLogicEvent(ELoigc_Event.Camera_HitTarget, hit.transform);
-            //    //BattleLogic.Instance.OnHitTargetEventHandler( hit.transform );
-            //    return;
-            //}
-
-            //LayerMask Triggerlayer = 1 << LayerMask.NameToLayer("Trigger");
-            //if (Physics.Raycast(ray, out hit, 100f, Triggerlayer.value))
-            //{
-            //    LogicEventMgr.Instance.ExecuteLogicEvent(ELoigc_Event.Camera_HitTrigger, hit.transform);
-            //    //BattleLogic.Instance.OnHitMoveEventhandler( hit.point );
-            //    return;
-            //}
-
-            //LayerMask Terrainlayer = 1 << LayerMask.NameToLayer("Terrain");
-            //if (Physics.Raycast(ray, out hit, 100f, Terrainlayer.value))
-            //{
-            //    LogicEventMgr.Instance.ExecuteLogicEvent(ELoigc_Event.Camera_HitMove, hit.point);
-            //    //BattleLogic.Instance.OnHitMoveEventhandler( hit.point );
-            //    return;
-            //}
+            if (null == UICamera.hoveredObject && Input.GetMouseButtonDown(0))
+            {
+                LayerMask Lifelayer = 1 << LayerMask.NameToLayer("Life");
+                Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, 100f, Lifelayer.value))
+                {
+                    MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_HIT_LIFE, hit.transform));
+                    return;
+                }
+                LayerMask Terrainlayer = 1 << LayerMask.NameToLayer("Terrain");
+                if (Physics.Raycast(ray, out hit, 100f, Terrainlayer.value))
+                {
+                    MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_HIT_TERRAIN, hit.point));
+                    return;
+                }
+            }
         }
     }
     #endregion

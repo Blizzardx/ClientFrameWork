@@ -5,7 +5,18 @@ using Config;
 
 public abstract class TargetMethodBase
 {
-    public abstract List<Ilife> GetTargetList(Ilife thisUnit, TargetData data);
+    private int m_iId;
+
+    public int GetId()
+    {
+        return m_iId;
+    }
+
+    public TargetMethodBase(int id)
+    {
+        m_iId = id;
+    }
+    public abstract List<Ilife> GetTargetList(Ilife thisUnit, TargetData data, FuncContext context);
 }
 
 public enum EFuncTarget
@@ -84,7 +95,6 @@ public class HandleTarget
                 return m_lstTarget;
             case EFuncTarget.EFT_User:
                 return m_lstUser;
-                break;
         }
 
         return null;
@@ -128,7 +138,7 @@ public static class TargetMethods
     {
         TargetExec = dataSource;
     }
-    public static HandleTarget GetTargetList(Ilife srcLife, int iTargetGroupId)
+    public static HandleTarget GetTargetList(Ilife srcLife, int iTargetGroupId, FuncContext context)
     {
         HandleTarget handle = HandleTarget.GetHandleTarget(srcLife);
 
@@ -156,7 +166,7 @@ public static class TargetMethods
                 continue;
             }
 
-            List<Ilife> targetUnitList = handler.GetTargetList(srcLife, data);
+            List<Ilife> targetUnitList = handler.GetTargetList(srcLife, data,context);
             handle.AddTarget(targetUnitList);
         }
 

@@ -57,7 +57,7 @@ namespace Assets.Scripts.Framework.Network
         private long m_lLength;
         private string                              m_strFileTmpName;
         private string m_strDataPath;
-
+        private static long m_MarkIndex = 0;
         public void Initialize(string dataPath,Action<byte[], object,long,long> onProcess,Action<object> OnComplate,Action<Exception,object> OnError)
         {
             m_strDataPath = dataPath;
@@ -76,7 +76,7 @@ namespace Assets.Scripts.Framework.Network
             }
             m_lLength = length;
             // create tmp file
-            m_strFileTmpName = m_strDataPath + TimeManager.Instance.Now;
+            m_strFileTmpName = m_strDataPath + TimeManager.Instance.Now.ToString() + (m_MarkIndex++).ToString();
             FileUtils.EnsureFolder(m_strFileTmpName);
             m_CurrentFileStream = continueFileStream == null ? new FileStream(m_strFileTmpName, FileMode.Create) : continueFileStream;
         }
@@ -196,8 +196,8 @@ namespace Assets.Scripts.Framework.Network
         }
         private void OnError( Exception e,object param)
         {
-            m_bHaveError = true;
             m_ErrorException = e;
+            m_bHaveError = true;
         }
         private void BeginDownload()
         {

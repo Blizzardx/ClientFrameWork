@@ -19,5 +19,7 @@ namespace NetWork
         public MEventList EventList { get; set; }
 
         public int MessageId { get; set; }
+
+        public Exception Ex { get; set; }
     }
 }

@@ -34,9 +34,8 @@ public class CollectionManager : Singleton<CollectionManager>
 
         // clear common logic
         WindowManager.Instance.CloseAllWindow();
-
-        MapManager.Instance.Destructor();
-
+        
+        TerrainManager.Instance.CloseTerrain();
         //release assets
         Resources.UnloadUnusedAssets();
         System.GC.Collect();

@@ -17,37 +17,110 @@ using System.Collections.Generic;
 using ActionEditor;
 using Communication;
 using Assets.Scripts.Core.Utils;
+
+public enum EActionFrameType
+{
+    None = -1,
+    SetCamera = 0,
+    MoveCamera = 1,
+    PlayAudio = 2,
+    AddNpc = 3,
+    EditNpc = 4,
+
+    Max,
+}
+
+public class KeyframeData
+{
+    public List<ActionFrameData> framedatalist;
+}
+
 public static class ActionHelper
 {
-    #region Get ActionData
-    public static string GetActionDataPath()
+    static public readonly string ACTION_DATA_PATH = "/EditorData/actionConfig_txtpkg.bytes";
+    static public readonly string ACTION_RESOURCE_PATH = "Assets/EditorCommon/EditorResources/";
+
+    #region Get Path
+    public static string GetActionFileDataPath()
     {
-        return Application.persistentDataPath + "/EditorData/ActionData.bytes";
+        return Application.persistentDataPath + ACTION_DATA_PATH;
+    }
+    #endregion
+
+    #region Get ActionData
+    public static GameObject GetSceneMap(string mapResName)
+    {
+        return ResourceManager.Instance.LoadBuildInResource<GameObject>(mapResName, AssetType.Map);
+    }
+    public static Transform GetCameraTransform(string cameraName)
+    {
+        GameObject camobj = ResourceManager.Instance.LoadBuildInResource<GameObject>(cameraName, AssetType.EditorRes);
+        if (camobj == null)
+        {
+            Debuger.LogError("Camera Object Not Found");
+        }
+        return camobj.transform;
+    }
+    public static Camera GetCamera(string cameraName)
+    {
+        GameObject camobj = ResourceManager.Instance.LoadBuildInResource<GameObject>(cameraName, AssetType.EditorRes);
+        Camera cam = camobj.GetComponent<Camera>();
+        if (cam == null)
+        {
+            Debuger.LogError("Camera Component Not Found");
+        }
+        return cam;
     }
     public static ActionFileDataArray GetActionEditFileList()
     {
         ActionFileDataArray m_FileDataList = new ActionFileDataArray();
-        ResourceManager.Instance.DecodePersonalDataTemplate(GetActionDataPath(), ref m_FileDataList);
+        ResourceManager.Instance.DecodePersonalDataTemplate(GetActionFileDataPath(), ref m_FileDataList);
         return m_FileDataList;
     }
-    public static List<ActionFrameData> ConvertActionFrameData(Dictionary<float, ActionFrameData> keyFrameData)
+    public static List<ActionFrameData> ConvertActionFrameData(Dictionary<float, KeyframeData> keyFrameDataDict)
     {
-        return new List<ActionFrameData>(keyFrameData.Values);
+        List<KeyframeData> keyFrameDataList = new List<KeyframeData>(keyFrameDataDict.Values);
+        List<ActionFrameData> result = new List<ActionFrameData>();
+        foreach (KeyframeData key in keyFrameDataList)
+        {
+            if (key.framedatalist != null)
+            {
+                result.AddRange(key.framedatalist);
+            }
+        }
+        //return new List<ActionFrameData>(keyFrameData);
+        return result;
     }
-    public static Dictionary<float, ActionFrameData> ConvertKeyFrameData(List<ActionFrameData> actionFrameData)
+    public static Dictionary<float, KeyframeData> ConvertKeyFrameData(List<ActionFrameData> actionFrameData)
     {
-        Dictionary<float, ActionFrameData> result = new Dictionary<float, ActionFrameData>();
+        Dictionary<float, KeyframeData> result = new Dictionary<float, KeyframeData>();
+
         if (actionFrameData != null)
         {
             foreach (ActionFrameData value in actionFrameData)
             {
-                if (!result.ContainsValue(value))
+                if (!result.ContainsKey((float)value.Time))
                 {
-                    result.Add((float)value.Time, value);
+                    KeyframeData key = new KeyframeData();
+                    key.framedatalist = new List<ActionFrameData>();
+                    key.framedatalist.Add(value);
+                    result.Add((float)value.Time, key);
+                }
+                else
+                { 
+                    KeyframeData key = result[(float)value.Time];
+                    key.framedatalist.Add(value);
                 }
             }
         }
         return result;
+    }
+    public static Texture LoadEditorKeyframeTex()
+    {
+        //return ResourceManager.Instance.LoadBuildInResource<Texture>("KeyFrameTex", AssetType.EditorRes);
+        //return (Texture)AssetDatabase.LoadAssetAtPath(ACTION_RESOURCE_PATH + "Director_EventItem_Dark.png", typeof(Texture));
+        return AssetDatabase.LoadAssetAtPath(ACTION_RESOURCE_PATH + "KeyFrameTex.png", typeof(Texture)) as Texture;
+        //return null;
     }
     #endregion
 
@@ -65,6 +138,7 @@ public static class ActionHelper
         }
         if (fileData.FrameDatalist.Contains(frameData))
         {
+            fileData.FrameDatalist.Sort(SortByTime);
             return;
         }
         fileData.FrameDatalist.Add(frameData);
@@ -113,6 +187,10 @@ public static class ActionHelper
         if (null == filedatalist)
         {
             filedatalist = new ActionFileDataArray();
+        }
+
+        if (null == filedatalist.DataList)
+        {
             filedatalist.DataList = new List<ActionFileData>();
         }
 
@@ -132,9 +210,14 @@ public static class ActionHelper
         }
 
         byte[] data = ThriftSerialize.Serialize(filedatalist);
-        FileUtils.WriteByteFile(GetActionDataPath(), data);
-
+        FileUtils.WriteByteFile(GetActionFileDataPath(), data);
     }
+#if UNITY_EDITOR
+    public static void SaveCameraPrefab(string prefabName, GameObject prefab)
+    {
+        PrefabUtility.CreatePrefab(ACTION_RESOURCE_PATH + prefabName + ".prefab", prefab);
+    }
+#endif
     #endregion
 
     #region Other
