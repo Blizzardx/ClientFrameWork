@@ -14,10 +14,12 @@ using System;
 using System.Runtime.Serialization.Formatters;
 using System.Collections;
 
-public class ActionEditorMain : SingletonTemplateMon<ActionEditorMain>
+public class ActionEditorRuntime : SingletonTemplateMon<ActionEditorRuntime>
 {
     #region Property
 
+    public float X_offset = 15f;
+    public float Y_offset = 300f;
     #endregion
 
     #region Field
@@ -34,20 +36,27 @@ public class ActionEditorMain : SingletonTemplateMon<ActionEditorMain>
     #region MonoBehavior
     void Awake()
     {
-        _instance = this;
     }
 
     // Use this for initialization
     void Start()
     {
-        ResourceManager.Instance.Initialize();
+        TimeManager.Instance.Initialize();
         LogManager.Instance.Initialize(true, true);
+        ResourceManager.Instance.Initialize();
+        TickTaskManager.Instance.InitializeTickTaskSystem();
+        MessageManager.Instance.Initialize();
+        AssetUpdateManager.Instance.CheckUpdate(() =>
+        {
+            _instance = this;
+        });
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        TickTaskManager.Instance.Update();
+        ActionManager.Instance.Update();
     }
     #endregion
 

@@ -15,18 +15,25 @@ public class TerrainEditorMain : SingletonTemplateMon<TerrainEditorMain>
     #region MonoBehavior
     void Awake()
     {
-        _instance = this;
     }
     // Use this for initialization
     void Start()
     {
-        ResourceManager.Instance.Initialize();
+        TimeManager.Instance.Initialize();
         LogManager.Instance.Initialize(true, true);
+        ResourceManager.Instance.Initialize();
+        TickTaskManager.Instance.InitializeTickTaskSystem();
+        MessageManager.Instance.Initialize();
+        AssetUpdateManager.Instance.CheckUpdate(() =>
+        {
+            _instance = this;
+        });
     }
 
     // Update is called once per frame
     void Update()
     {
+        TickTaskManager.Instance.Update();
         if (null != m_ObjSceneCamera)
         {
             HandlerSceneCamera();
