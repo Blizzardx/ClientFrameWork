@@ -22,16 +22,13 @@ public class Target_1_INCIRCLERANGE:TargetMethodBase
             {
                 continue;
             }
-            List<Ilife> otherLifes = elem.Value;
-            for (int i = 0; i < otherLifes.Count; ++i)
-            {
-                Vector3 point1 = ((ITransformBehaviour)(otherLifes[i])).GetTransformData().GetPosition();
-                if (Vector3.Distance(point, point1) < r)
-                {
-                    // add to target list
-                    res.Add(otherLifes[i]);
-                }
-            }
+           Ilife otherLifes = elem.Value;
+           Vector3 point1 = ((ITransformBehaviour)(otherLifes)).GetTransformData().GetPosition();
+           if (Vector3.Distance(point, point1) < r)
+           {
+               // add to target list
+               res.Add(otherLifes);
+           }
         }
         return res;
     }

@@ -28,7 +28,7 @@ public abstract class IState
         return state;
     }
 	public abstract bool CanEnter();
-	public abstract void DoEnter();
+	public abstract void DoEnter(object param);
 	public abstract bool CanExit();
     public abstract void DoExit();
     public virtual void DoAction()

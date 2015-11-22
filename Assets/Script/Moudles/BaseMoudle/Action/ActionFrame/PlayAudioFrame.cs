@@ -42,7 +42,7 @@ public class PlayAudioFrame : AbstractActionFrame
     {
         return true;
     }
-    public override void Execute()
+    protected override void Execute()
     {
         AudioManager.Instance.PlayAudio(m_FrameConfig.AudioSource, m_FrameConfig.PlayPosition.GetVector3(),
             m_FrameConfig.IsLoop);

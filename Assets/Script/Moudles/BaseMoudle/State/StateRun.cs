@@ -7,23 +7,19 @@ public class StateRun : IState
         : base(unit, state)
     {
     }
-
     public override bool CanEnter()
     {
         return true;
     }
-
-    public override void DoEnter()
+    public override void DoEnter(object param)
     {
         CharTransformData data = (((ITransformBehaviour)(unit)).GetTransformData()) as CharTransformData;
         data.PlayAnimation("Run");
     }
-
     public override bool CanExit()
     {
         return true;
     }
-
     public override void DoExit()
     {
     }

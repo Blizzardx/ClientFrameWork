@@ -18,11 +18,11 @@ public class SetCameraFrame : AbstractActionFrame
     #region Field
     private SetCameraFrameConfig m_Config;
     #endregion
-
-    public SetCameraFrame(ActionPlayer action, ActionFrameData data) : base(action, data)
-	{
+    public SetCameraFrame(ActionPlayer action, ActionFrameData data)
+        : base(action, data)
+    {
         m_Config = m_FrameData.SetCameraFrame;
-	}
+    }
 
     #region Public Interface
     public override bool IsTrigger(float fRealTime)
@@ -33,7 +33,7 @@ public class SetCameraFrame : AbstractActionFrame
     {
         throw new System.NotImplementedException();
     }
-    public override void Execute()
+    protected override void Execute()
     {
         throw new System.NotImplementedException();
     }
@@ -58,6 +58,6 @@ public class SetCameraFrame : AbstractActionFrame
     #region System Functions
 
     #endregion
-   
+
 }
 

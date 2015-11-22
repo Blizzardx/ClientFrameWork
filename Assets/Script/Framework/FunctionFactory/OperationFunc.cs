@@ -53,7 +53,23 @@ public static class OperationFunc
 		
 		return nValue;
 	}
-	
+    public static sbyte FuncOperatorValue(EFuncOperator eOpt, ref sbyte nValue, sbyte nChange)
+    {
+        switch (eOpt)
+        {
+            case EFuncOperator.EFO_Dec:
+                nValue -= nChange;
+                break;
+            case EFuncOperator.EFO_Inc:
+                nValue += nChange;
+                break;
+            case EFuncOperator.EFO_Set:
+                nValue = nChange;
+                break;
+        }
+
+        return nValue;
+    }
 	public static double FuncOperatorValue(EFuncOperator eOpt, ref double dValue, double dChange)
 	{
 		switch (eOpt)

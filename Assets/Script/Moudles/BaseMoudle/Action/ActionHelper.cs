@@ -115,6 +115,7 @@ public static class ActionHelper
         }
         return result;
     }
+#if UNITY_EDITOR
     public static Texture LoadEditorKeyframeTex()
     {
         //return ResourceManager.Instance.LoadBuildInResource<Texture>("KeyFrameTex", AssetType.EditorRes);
@@ -122,6 +123,7 @@ public static class ActionHelper
         return AssetDatabase.LoadAssetAtPath(ACTION_RESOURCE_PATH + "KeyFrameTex.png", typeof(Texture)) as Texture;
         //return null;
     }
+#endif
     #endregion
 
     #region Modify ActionData
@@ -212,12 +214,6 @@ public static class ActionHelper
         byte[] data = ThriftSerialize.Serialize(filedatalist);
         FileUtils.WriteByteFile(GetActionFileDataPath(), data);
     }
-#if UNITY_EDITOR
-    public static void SaveCameraPrefab(string prefabName, GameObject prefab)
-    {
-        PrefabUtility.CreatePrefab(ACTION_RESOURCE_PATH + prefabName + ".prefab", prefab);
-    }
-#endif
     #endregion
 
     #region Other
@@ -235,4 +231,11 @@ public static class ActionHelper
         return 0;
     }
     #endregion
+
+#if UNITY_EDITOR
+    public static void SaveCameraPrefab(string prefabName, GameObject prefab)
+    {
+        PrefabUtility.CreatePrefab(ACTION_RESOURCE_PATH + prefabName + ".prefab", prefab);
+    }
+#endif
 }

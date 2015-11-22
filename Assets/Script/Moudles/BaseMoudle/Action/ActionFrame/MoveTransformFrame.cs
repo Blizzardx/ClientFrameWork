@@ -18,7 +18,7 @@ public class MoveTransformFrame : AbstractActionFrame
         throw new NotImplementedException();
     }
 
-    public override void Execute()
+    protected override void Execute()
     {
         if (m_Config.Path.Count <= 0) { Debug.Log("No Path"); return; }
         Vector3[] path = new Vector3[m_Config.Path.Count];

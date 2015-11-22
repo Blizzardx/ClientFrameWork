@@ -34,6 +34,9 @@ public class ActionFrameFactory
             case EActionFrameType.PlayAudio:
                 actionFrame = new PlayAudioFrame(action, data);
                 break;
+            case EActionFrameType.AddNpc:
+                actionFrame = new AddNpcFrame(action, data);
+                break;
         }
 
         return actionFrame;

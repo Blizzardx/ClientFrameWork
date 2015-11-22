@@ -29,7 +29,7 @@ public class StateMachine
         }
         m_StateFactory.Add(state, type);
     }
-    public bool TryEnterState(ELifeState newStateID, bool force)
+    public bool TryEnterState(ELifeState newStateID, bool force,object param = null)
     {
         IState newState = StateFactory(newStateID);
         if (null == newState)
@@ -45,7 +45,7 @@ public class StateMachine
             }
             //reset state
             m_CurrentState = newState;
-            m_CurrentState.DoEnter();
+            m_CurrentState.DoEnter(param);
             return true;
         }
         if (!force )
@@ -87,7 +87,7 @@ public class StateMachine
 
         //reset state
         m_CurrentState = newState;
-        m_CurrentState.DoEnter();
+        m_CurrentState.DoEnter(param);
         return true;
     }
     public void Distructor()

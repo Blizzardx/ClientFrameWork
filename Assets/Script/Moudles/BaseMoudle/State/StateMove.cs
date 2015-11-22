@@ -13,7 +13,7 @@ public class StateMove : IState
         return true;
     }
 
-    public override void DoEnter()
+    public override void DoEnter(object param)
     {
         CharTransformData data = (((ITransformBehaviour)(unit)).GetTransformData()) as CharTransformData;
         data.PlayAnimation("Walk");

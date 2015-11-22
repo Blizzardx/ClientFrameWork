@@ -34,8 +34,9 @@ static public class FuncMethods
 	}
     static public int HandleFuncExec(HandleTarget Target, int iFuncGroupId, FuncContext context)
 	{
-		if( null == Target )
+		if( null == Target || 0 == iFuncGroupId)
 			return 0;
+
 		FuncGroup funcdataGroup = ConfigManager.Instance.GetFuncGroup( iFuncGroupId );
 		if( null == funcdataGroup || null == funcdataGroup.FuncDataList )
 			return 0;

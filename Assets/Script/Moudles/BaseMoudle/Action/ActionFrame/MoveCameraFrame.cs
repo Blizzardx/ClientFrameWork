@@ -58,7 +58,7 @@ public class MoveCameraFrame : AbstractActionFrame
     {
         return false;
     }
-    public override void Execute()
+    protected override void Execute()
     {
         float fDetalDistance = Math.Abs(GlobalScripts.Instance.mGameCamera.m_fDistance - (float)m_Config.Distance);
         float fDistanceDamping = 0 == (float)m_Config.MoveToTime ? float.MaxValue : fDetalDistance / (float)m_Config.MoveToTime;

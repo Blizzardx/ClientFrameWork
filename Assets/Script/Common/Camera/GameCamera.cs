@@ -62,8 +62,14 @@ public class GameCamera : MonoBehaviour
         m_fInitDistanceDamping = m_fDistanceDamping;
         m_fInitOffsetHeigh = m_fOffsetHeight;
         m_fInitOffsetHeightDamping = m_fOffsetHeightDamping;
+
+        CameraTickTask.Instance.RegisterToUpdateList(BasicUpdate);
     }
-    void LateUpdate()
+    void OnDestroy()
+    {
+        CameraTickTask.Instance.UnRegisterFromUpdateList(BasicUpdate);
+    }
+    void BasicUpdate()
     {
         if (OpenClick)
         {

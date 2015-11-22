@@ -17,7 +17,7 @@ public class EnableObjFrame : AbstractActionFrame
         throw new NotImplementedException();
     }
 
-    public override void Execute()
+    protected override void Execute()
     {
         if (TargetObjects == null || TargetObjects.Count <= 0)
             return;

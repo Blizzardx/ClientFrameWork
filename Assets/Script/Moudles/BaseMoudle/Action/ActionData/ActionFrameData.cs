@@ -25,6 +25,7 @@ namespace ActionEditor
   {
     private double _time;
     private int _type;
+    private List<int> _targetIDs;
     private SetCameraFrameConfig _setCameraFrame;
     private MoveCameraFrameConfig _moveCameraFrame;
     private PlayAudioFrameConfig _playAudioFrame;
@@ -32,6 +33,7 @@ namespace ActionEditor
     private stringCommonConfig _stringFrame;
     private MoveTransformFrameConfig _moveTransformFrame;
     private Common.Auto.ThriftVector3 _vector3Frame;
+    private AddNpcFrameConfig _addNpcFrame;
 
     public double Time
     {
@@ -56,6 +58,19 @@ namespace ActionEditor
       {
         __isset.type = true;
         this._type = value;
+      }
+    }
+
+    public List<int> TargetIDs
+    {
+      get
+      {
+        return _targetIDs;
+      }
+      set
+      {
+        __isset.targetIDs = true;
+        this._targetIDs = value;
       }
     }
 
@@ -150,6 +165,19 @@ namespace ActionEditor
       }
     }
 
+    public AddNpcFrameConfig AddNpcFrame
+    {
+      get
+      {
+        return _addNpcFrame;
+      }
+      set
+      {
+        __isset.addNpcFrame = true;
+        this._addNpcFrame = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -158,6 +186,7 @@ namespace ActionEditor
     public struct Isset {
       public bool time;
       public bool type;
+      public bool targetIDs;
       public bool setCameraFrame;
       public bool moveCameraFrame;
       public bool playAudioFrame;
@@ -165,6 +194,7 @@ namespace ActionEditor
       public bool stringFrame;
       public bool moveTransformFrame;
       public bool vector3Frame;
+      public bool addNpcFrame;
     }
 
     public ActionFrameData() {
@@ -192,6 +222,23 @@ namespace ActionEditor
           case 2:
             if (field.Type == TType.I32) {
               Type = iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 3:
+            if (field.Type == TType.List) {
+              {
+                TargetIDs = new List<int>();
+                TList _list4 = iprot.ReadListBegin();
+                for( int _i5 = 0; _i5 < _list4.Count; ++_i5)
+                {
+                  int _elem6 = 0;
+                  _elem6 = iprot.ReadI32();
+                  TargetIDs.Add(_elem6);
+                }
+                iprot.ReadListEnd();
+              }
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -252,6 +299,14 @@ namespace ActionEditor
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
+          case 105:
+            if (field.Type == TType.Struct) {
+              AddNpcFrame = new AddNpcFrameConfig();
+              AddNpcFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
           default: 
             TProtocolUtil.Skip(iprot, field.Type);
             break;
@@ -279,6 +334,21 @@ namespace ActionEditor
         field.ID = 2;
         oprot.WriteFieldBegin(field);
         oprot.WriteI32(Type);
+        oprot.WriteFieldEnd();
+      }
+      if (TargetIDs != null && __isset.targetIDs) {
+        field.Name = "targetIDs";
+        field.Type = TType.List;
+        field.ID = 3;
+        oprot.WriteFieldBegin(field);
+        {
+          oprot.WriteListBegin(new TList(TType.I32, TargetIDs.Count));
+          foreach (int _iter7 in TargetIDs)
+          {
+            oprot.WriteI32(_iter7);
+          }
+          oprot.WriteListEnd();
+        }
         oprot.WriteFieldEnd();
       }
       if (SetCameraFrame != null && __isset.setCameraFrame) {
@@ -337,6 +407,14 @@ namespace ActionEditor
         Vector3Frame.Write(oprot);
         oprot.WriteFieldEnd();
       }
+      if (AddNpcFrame != null && __isset.addNpcFrame) {
+        field.Name = "addNpcFrame";
+        field.Type = TType.Struct;
+        field.ID = 105;
+        oprot.WriteFieldBegin(field);
+        AddNpcFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
       oprot.WriteFieldStop();
       oprot.WriteStructEnd();
     }
@@ -347,6 +425,8 @@ namespace ActionEditor
       sb.Append(Time);
       sb.Append(",Type: ");
       sb.Append(Type);
+      sb.Append(",TargetIDs: ");
+      sb.Append(TargetIDs);
       sb.Append(",SetCameraFrame: ");
       sb.Append(SetCameraFrame== null ? "<null>" : SetCameraFrame.ToString());
       sb.Append(",MoveCameraFrame: ");
@@ -361,6 +441,8 @@ namespace ActionEditor
       sb.Append(MoveTransformFrame== null ? "<null>" : MoveTransformFrame.ToString());
       sb.Append(",Vector3Frame: ");
       sb.Append(Vector3Frame== null ? "<null>" : Vector3Frame.ToString());
+      sb.Append(",AddNpcFrame: ");
+      sb.Append(AddNpcFrame== null ? "<null>" : AddNpcFrame.ToString());
       sb.Append(")");
       return sb.ToString();
     }

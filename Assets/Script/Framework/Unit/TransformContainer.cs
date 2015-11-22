@@ -14,8 +14,12 @@ using System.Collections.Generic;
 
 class TransformContainer : MonoBehaviour
 {
-    private int     m_iId;
-    private Ilife   m_Data;
+    [SerializeField]
+    private int                     m_iId;
+    [SerializeField]
+    private Ilife                   m_Data;
+    [SerializeField]
+    private static List<GameObject> m_SceneObjList = new List<GameObject>();
 
     public void Initialize(int id,Ilife data)
     {
@@ -26,7 +30,6 @@ class TransformContainer : MonoBehaviour
     {
         return m_Data;
     }
-
     public int GetId()
     {
         return m_iId;
@@ -34,6 +37,15 @@ class TransformContainer : MonoBehaviour
     private void OnDestroy()
     {
         // to do:
+        m_SceneObjList.Remove(this.gameObject);
+    }
+    private void Start()
+    {
+        m_SceneObjList.Add(this.gameObject);
+    }
+    public static List<GameObject> GetSceneObjList()
+    {
+        return m_SceneObjList;
     }
 }
 

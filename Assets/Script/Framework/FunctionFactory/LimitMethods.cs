@@ -32,7 +32,7 @@ static public class LimitMethods
 	//Limit Exec Func
     static public bool HandleLimitExec(HandleTarget Target, int iLimitGroupId, FuncContext context)
     {
-        if (null == Target)
+        if (null == Target || 0 == iLimitGroupId)
         {
             return false;
         }

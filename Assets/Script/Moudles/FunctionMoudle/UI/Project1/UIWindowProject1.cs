@@ -32,7 +32,7 @@ public class UIWindowProject1 : WindowBase
         Debuger.Log("On OnClickEvent1");
         var value = new Dictionary<string, string>();
         value.Add("ClickCount", "15");
-     //   EventReporter.Instance.CustomEventReport("1", value);
+      //  EventReporter.Instance.CustomEventReport("1", value);
     }
     private void OnClickEvent2(GameObject go)
     {
@@ -56,6 +56,6 @@ public class UIWindowProject1 : WindowBase
     public override void OnClose()
     {
         base.OnClose();
-       // EventReporter.Instance.ExitSceneReport("MainCity");
+      //  EventReporter.Instance.ExitSceneReport("MainCity");
     }
 }

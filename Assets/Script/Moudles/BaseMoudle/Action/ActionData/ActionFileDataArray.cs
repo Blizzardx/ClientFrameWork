@@ -66,13 +66,13 @@ namespace ActionEditor
             if (field.Type == TType.List) {
               {
                 DataList = new List<ActionFileData>();
-                TList _list8 = iprot.ReadListBegin();
-                for( int _i9 = 0; _i9 < _list8.Count; ++_i9)
+                TList _list12 = iprot.ReadListBegin();
+                for( int _i13 = 0; _i13 < _list12.Count; ++_i13)
                 {
-                  ActionFileData _elem10 = new ActionFileData();
-                  _elem10 = new ActionFileData();
-                  _elem10.Read(iprot);
-                  DataList.Add(_elem10);
+                  ActionFileData _elem14 = new ActionFileData();
+                  _elem14 = new ActionFileData();
+                  _elem14.Read(iprot);
+                  DataList.Add(_elem14);
                 }
                 iprot.ReadListEnd();
               }
@@ -100,9 +100,9 @@ namespace ActionEditor
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.Struct, DataList.Count));
-          foreach (ActionFileData _iter11 in DataList)
+          foreach (ActionFileData _iter15 in DataList)
           {
-            _iter11.Write(oprot);
+            _iter15.Write(oprot);
           }
           oprot.WriteListEnd();
         }

@@ -130,6 +130,10 @@ public class CharTransformData : TransformDataBase
             Move();
         }
     }
+    public GameObject GetGameObject()
+    {
+        return m_ObjectInstance;
+    }
     #endregion
 
     #region move

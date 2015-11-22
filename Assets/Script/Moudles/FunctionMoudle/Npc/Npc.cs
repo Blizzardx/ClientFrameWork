@@ -31,6 +31,11 @@ public class Npc : IStateMachineBehaviour, ITransformBehaviour, IAIBehaviour
     {
         m_iId = id;
         m_NpcBaseInfo = ConfigManager.Instance.GetNpcConfig(id);
+        if (null == m_NpcBaseInfo)
+        {
+            Debuger.LogWarning("can't load target npc: " + id);
+            return;
+        }
         m_StateMation = new StateMachine(0, 0, this);
         m_CharTransformData = new CharTransformData();
         m_CharTransformData.Initialize(this, m_NpcBaseInfo.ModelResource, AssetType.Char);
@@ -44,7 +49,7 @@ public class Npc : IStateMachineBehaviour, ITransformBehaviour, IAIBehaviour
     public void Distructor()
     {
         LifeTickTask.Instance.UnRegisterFromUpdateList(Update);
-        LifeManager.UnRegisterLife(m_iId, this);
+        LifeManager.UnRegisterLife(m_iId);
     }
     private void Update()
     {

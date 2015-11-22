@@ -77,6 +77,7 @@ public class ActionManager : Singleton<ActionManager>
 
             if (m_lstAction[i].GetInstanceID() == instanceID)
             {
+                m_lstAction[i].Destory();
                 m_lstAction.RemoveAt(i);
                 return;
             }
@@ -122,10 +123,35 @@ public class ActionManager : Singleton<ActionManager>
             }
         }
     }
+    public void Initialize()
+    {
+        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnTriggerPlayAction);
+    }
+    public void Distructor()
+    {
+        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnTriggerPlayAction);
+    }
     #endregion
 
     #region System Functions
 
+    private void OnTriggerPlayAction(MessageObject obj)
+    {
+        // trigger to play action
+        if (!(obj.msgValue is int))
+        {
+            return;
+        }
+
+        //get id
+        int id = (int) (obj.msgValue);
+        
+        //get current scene gameobject
+        var objList = TransformContainer.GetSceneObjList();
+
+        //try play  action
+
+    }
     #endregion
 }
 

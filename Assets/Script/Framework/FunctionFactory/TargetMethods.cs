@@ -142,7 +142,7 @@ public static class TargetMethods
     {
         HandleTarget handle = HandleTarget.GetHandleTarget(srcLife);
 
-        if (iTargetGroupId <= 0)
+        if (iTargetGroupId == 0)
         {
             return handle;
         }

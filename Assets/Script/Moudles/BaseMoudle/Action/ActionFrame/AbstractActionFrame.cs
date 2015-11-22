@@ -27,17 +27,44 @@ abstract public class AbstractActionFrame
     #region Field
     protected EActionFrameState m_FrameState = EActionFrameState.None;
     protected ActionFrameData m_FrameData;
-    private ActionPlayer m_ActionPlayer;
+    protected GameObject m_ObjNpcRoot;
     protected List<GameObject> m_lstTargetObjects;
+    protected ActionPlayer m_ActionPlayer;
     #endregion
 
     public AbstractActionFrame(ActionPlayer action, ActionFrameData data)
     {
         m_ActionPlayer = action;
         m_FrameData = data;
+        m_ObjNpcRoot = m_ActionPlayer.GetNpcRoot();
+        m_lstTargetObjects = new List<GameObject>();
+
+        if (data.TargetIDs == null)
+        {
+            Debuger.LogWarning("No Target ID in ActionFrameData at time: " + data.Time.ToString());
+            return;
+        }
+
+        Dictionary<int, GameObject> allObjects = m_ActionPlayer.GetTargetObjects();
+        foreach (int index in data.TargetIDs)
+        {
+            if (allObjects.ContainsKey(index))
+            {
+                m_lstTargetObjects.Add(allObjects[index]);
+            }
+            else if (index > 10000000)
+            {
+                Debuger.LogWarning("Affected GameObject Not Found, ID: " + index.ToString());
+            }
+            else
+            {
+                Debuger.Log("Need Generated Object, ID: : " + index.ToString());
+            }
+        }
     }
 
-    #region Set & Get
+    #region Get & Set
+    public List<GameObject> TargetObjects { get { return m_lstTargetObjects; } }
     public ActionFrameData FrameData
     {
         get { return m_FrameData; }
@@ -50,13 +77,15 @@ abstract public class AbstractActionFrame
     {
         m_FrameState = eState;
     }
-    public List<GameObject> TargetObjects { get { return m_lstTargetObjects; } }
     #endregion
 
     #region Public Interface
+    public void ExecuteBase() {
+        UpdateGeneratedObjects();
+        Execute();
+    }
     abstract public bool IsTrigger(float fRealTime);
     abstract public bool IsFinish(float fRealTime);
-    abstract public void Execute();
     abstract public void Play();
     abstract public void Pause(float fTime);
     abstract public void Stop();
@@ -65,7 +94,30 @@ abstract public class AbstractActionFrame
     #endregion
 
     #region System Functions
+    virtual protected void Execute() { }
+    protected void UpdateGeneratedObjects()
+    {
+        if (m_FrameData.TargetIDs == null)
+        {
+            return;
+        }
+        Dictionary<int, GameObject> allObjects = m_ActionPlayer.GetTargetObjects();
+        foreach (int index in m_FrameData.TargetIDs)
+        {
+            if (index <= 10000000)
+            {
+                if (allObjects.ContainsKey(index))
+                {
+                    m_lstTargetObjects.Add(allObjects[index]);
+                }
+                else
+                {
+                    Debuger.LogWarning("Generated GameObject Not Found, ID: " + index.ToString());
+                }
+            }
+        }
 
+    }
     #endregion
 
 }
