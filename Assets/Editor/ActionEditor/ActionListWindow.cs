@@ -35,6 +35,7 @@ class ActionListWindow : EditorWindow
     #region Field
     private static ActionListWindow m_Instance;
     private ActionFileDataArray m_DataList;
+    private Vector2 m_EventScorllPos;
     #endregion
 
     #region MonoBehavior
@@ -49,22 +50,45 @@ class ActionListWindow : EditorWindow
         {
             return;
         }
-
-        for (int i = 0; i < m_DataList.DataList.Count; ++i)
+        m_EventScorllPos = EditorGUILayout.BeginScrollView(m_EventScorllPos);
         {
-            EditorGUILayout.BeginHorizontal();
+            for (int i = 0; i < m_DataList.DataList.Count; ++i)
             {
-                EditorGUILayout.LabelField("名称: " + m_DataList.DataList[i].FileName, GUILayout.Width(100f));
-
-                EditorGUILayout.LabelField("ID: " + m_DataList.DataList[i].ID, GUILayout.Width(100f));
-
-                if (GUILayout.Button("选择", GUILayout.Width(100f)))
+                EditorGUILayout.BeginHorizontal();
                 {
-                    ChoiseMap(m_DataList.DataList[i]);
+                    EditorGUILayout.LabelField("ID: " + m_DataList.DataList[i].ID, GUILayout.Width(100f));
+
+                    EditorGUILayout.LabelField("名称: " + m_DataList.DataList[i].FileName);
+
+                    string time = TimeManager.Instance.CheckTime(m_DataList.DataList[i].TimeStamp);
+                    EditorGUILayout.LabelField("修改时间: " + time);
+
+                    if (GUILayout.Button("选择", GUILayout.Width(100f)))
+                    {
+                        ChoiseMap(m_DataList.DataList[i]);
+                    }
+                    if (GUILayout.Button("复制", GUILayout.Width(100f)))
+                    {
+                        Copy(m_DataList.DataList[i]);
+                    }
+                    if (GUILayout.Button("删除", GUILayout.Width(100f)))
+                    {
+                        var option = EditorUtility.DisplayDialog("确定要删除剧情方案吗？",
+                                                                                   "确定吗？确定吗？确定吗？确定吗？确定吗？",
+                                                                                   "确定", "取消");
+                        if (option)
+                        {
+                            Delete(m_DataList.DataList[i]);
+                            break;
+                        }
+
+                    }
                 }
+                EditorGUILayout.EndHorizontal();
+                GUILayout.Box("", new GUILayoutOption[] { GUILayout.ExpandWidth(true), GUILayout.Height(1) }); //draw line
             }
-            EditorGUILayout.EndHorizontal();
         }
+        EditorGUILayout.EndScrollView();
     }
     #endregion
 
@@ -88,13 +112,41 @@ class ActionListWindow : EditorWindow
     #region System Functions
     static void CreateWindow()
     {
-        m_Instance = EditorWindow.GetWindow<ActionListWindow>(false, "地形方案列表", true);
+        m_Instance = EditorWindow.GetWindow<ActionListWindow>(false, "方案列表", true);
     }
     private void ChoiseMap(ActionFileData data)
     {
         m_Instance.Close();
         m_Instance = null;
         ActionEditorWindow.Instance.OpenAction(data);
+    }
+    private void Copy(ActionFileData data)
+    {
+        int max = 0;
+        for (int i = 0; i < m_DataList.DataList.Count; ++i)
+        {
+            if (m_DataList.DataList[i].ID > max)
+            {
+                max = m_DataList.DataList[i].ID;
+            }
+        }
+        ++max;
+        ActionFileData elem = new ActionFileData();
+        elem.ID = max;
+        elem.FileName = data.FileName;
+        elem.MapResName = data.MapResName;
+        elem.Duration = data.Duration;
+        elem.FrameDatalist = data.FrameDatalist;
+        m_DataList = ActionHelper.GetActionEditFileList();
+        ActionHelper.SaveActionEditFileList(m_DataList, elem);
+        ActionHelper.CombineActionEditFileList(m_DataList);
+        Repaint();
+    }
+
+    private void Delete(ActionFileData data)
+    {
+        ActionHelper.DeleteActionEditFile(m_DataList, data);
+        Repaint();
     }
     #endregion
 

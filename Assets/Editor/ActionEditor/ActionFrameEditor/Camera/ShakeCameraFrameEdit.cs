@@ -1,7 +1,7 @@
 ﻿//========================================================================
 // Copyright(C): CYTX
 //
-// FileName : SetCameraFrameEdit
+// FileName : ShakeCameraFrameEdit
 // CLR Version : 4.0.30319.42000
 // 
 // Created by : LeoLi at 2015/11/4 16:49:54
@@ -15,10 +15,10 @@ using System.Collections;
 using ActionEditor;
 using System;
 
-public class SetCameraFrameEdit : FrameEdit
+public class ShakeCameraFrameEdit : AbstractFrameEdit
 {
     #region Property
-    static public SetCameraFrameEdit Instance
+    static public ShakeCameraFrameEdit Instance
     {
         get
         {
@@ -36,37 +36,45 @@ public class SetCameraFrameEdit : FrameEdit
     //readonly
     private float WINDOW_MIN_WIDTH = 650f;
     private float WINDOW_MIN_HIEGHT = 300f;
-    private static SetCameraFrameEdit m_Instance;
+    private static ShakeCameraFrameEdit m_Instance;
 
-    private SetCameraFrameConfig m_Config;
-    private ESetCameraType m_eSetCameraType;
-    private float m_fTickTime;
-    private GameObject m_InputCameraObj;
-    private string m_CameraName;
+    private ShakeCameraFrameConfig m_Config;
+    private Vector3 m_ShakeAmount = new Vector3 (1,1,1);
+    private Vector3 m_LastTimeShakeAmount;
     #endregion
 
     #region MonoBehavior
     private void OnGUI()
     {
         DrawBaseInfo();
+
         GUILayout.Space(5f);
         EditorGUILayout.BeginHorizontal();
         {
-            EditorGUILayout.LabelField("摄像机选择:", GUILayout.Width(50f));
-            m_InputCameraObj = (GameObject)EditorGUILayout.ObjectField(m_InputCameraObj, typeof(GameObject));
+            GUILayout.Space(5f);
+            m_Config.Time = EditorGUILayout.FloatField("震动时长:", (float)m_Config.Time);
         }
         EditorGUILayout.EndHorizontal();
 
         GUILayout.Space(5f);
         EditorGUILayout.BeginHorizontal();
         {
-            if (GUILayout.Button("选取当前摄像机", GUILayout.Width(100f)))
+            GUILayout.Space(5f);
+            EditorGUILayout.LabelField("震动幅度:", GUILayout.Width(80f));
+
+            GUILayout.Label("x", GUILayout.Width(20f));
+            m_ShakeAmount.x = EditorGUILayout.FloatField(m_ShakeAmount.x);
+            GUILayout.Label("y", GUILayout.Width(20f));
+            m_ShakeAmount.y = EditorGUILayout.FloatField(m_ShakeAmount.y);
+            GUILayout.Label("z", GUILayout.Width(20f));
+            m_ShakeAmount.z = EditorGUILayout.FloatField(m_ShakeAmount.z);
+
+            if (m_LastTimeShakeAmount != m_ShakeAmount)
             {
-                m_InputCameraObj = GlobalScripts.Instance.mGameCamera.gameObject;
-                m_CameraName = m_InputCameraObj.name +"_00";
+                m_Config.Amount.SetVector3(m_ShakeAmount);
             }
-            EditorGUILayout.LabelField("剧情名称:", GUILayout.Width(50f));
-            m_CameraName = EditorGUILayout.TextField(m_CameraName);
+
+            m_LastTimeShakeAmount = m_ShakeAmount;
         }
         EditorGUILayout.EndHorizontal();
     }
@@ -96,49 +104,43 @@ public class SetCameraFrameEdit : FrameEdit
         if (null != m_ActionFrameData)
         {
             m_fTime = (float)m_ActionFrameData.Time;
-            m_Config = m_ActionFrameData.SetCameraFrame;
+            m_Config = m_ActionFrameData.ShakeCameraFrame;
+            m_ShakeAmount = m_Config.Amount.GetVector3();
         }
         else
         {
             m_ActionFrameData = new ActionFrameData();
-            m_Config = new SetCameraFrameConfig();
+            m_Config = new ShakeCameraFrameConfig();
+            m_Config.Amount = new Common.Auto.ThriftVector3();
+            m_Config.Time = 1f;
         }
 
         m_Instance.minSize = new Vector2(WINDOW_MIN_WIDTH, WINDOW_MIN_HIEGHT);
 
-        GlobalScripts.Instance.mGameCamera.ResetCam();
     }
     protected override void OnSave()
     {
-        CreateCameraPrefab();
-        //Set Data
-        m_Config.CamName = m_CameraName;
-        m_Config.CamType = ESetCameraType.Permanent; // Temp
         //Save Data
-        m_ActionFrameData.Type = (int)m_eFrameType;
-        m_ActionFrameData.Time = m_fTime;
-        m_ActionFrameData.SetCameraFrame = m_Config;
+        //m_Config.CamName = m_CameraName;
+        //m_Config.CamType = ESetCameraType.Permanent; // Temp
+        m_ActionFrameData.ShakeCameraFrame = m_Config;
         ActionEditorWindow.Instance.SaveData(m_ActionFrameData);
         m_Instance.Close();
     }
     protected override void OnPlay()
     {
-        GlobalScripts.Instance.mGameCamera.ResetCam();
+        GameObject tmpObj = GameObject.Find("MainCamera");
+        if (null != tmpObj)
+        {
+            GlobalScripts.Instance.mGameCamera.ShakeCamera((float)m_Config.Time, m_Config.Amount.GetVector3());
+        }
     }
     #endregion
 
     #region System Functions
     private static void CreateWindow()
     {
-        m_Instance = EditorWindow.GetWindow<SetCameraFrameEdit>(false, "定义摄像机", true);
-    }
-    private void CreateCameraPrefab()
-    {
-        foreach (MonoBehaviour script in m_InputCameraObj.GetComponents<MonoBehaviour>())
-        {
-            DestroyImmediate(script);
-        }
-        ActionHelper.SaveCameraPrefab(m_CameraName, m_InputCameraObj);
+        m_Instance = EditorWindow.GetWindow<ShakeCameraFrameEdit>(false, "摄像机震动", true);
     }
     #endregion
 }

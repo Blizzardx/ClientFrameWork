@@ -47,7 +47,7 @@ public class TerrainListWindow : EditorWindow
         {
             return;
         }
-
+        int delIndex = -1;
         for (int i = 0; i < m_DataList.DataList.Count; ++i)
         {
             EditorGUILayout.BeginHorizontal();
@@ -62,8 +62,23 @@ public class TerrainListWindow : EditorWindow
                 {
                     ChoiseMap(m_DataList.DataList[i]);
                 }
+                if (GUILayout.Button("复制", GUILayout.Width(100f)))
+                {
+                    Copy(m_DataList.DataList[i]);
+                }
+                if (GUILayout.Button("删除", GUILayout.Width(100f)))
+                {
+                    delIndex = i;
+                }
             }
             EditorGUILayout.EndHorizontal();
+        }
+        if (delIndex != -1)
+        {
+            if (EditorUtility.DisplayDialog("警告", "确定要删除吗？", "ok"))
+            {
+                Delete(delIndex);
+            }
         }
     }
 
@@ -72,5 +87,43 @@ public class TerrainListWindow : EditorWindow
         m_Instance.Close();
         m_Instance = null;
         TerrainEditorWindow.Instance.OpenTerrain(data);
+        EditorWindow.FocusWindowIfItsOpen(typeof(TerrainEditorWindow));
+    }
+
+    private void Copy(TerrainEditorData data)
+    {
+        int max = 0;
+        for (int i = 0; i < m_DataList.DataList.Count; ++i)
+        {
+            if (m_DataList.DataList[i].ID > max)
+            {
+                max = m_DataList.DataList[i].ID;
+            }
+        }
+        ++ max;
+        TerrainEditorData elem = new TerrainEditorData();
+        elem.ID = max;
+        elem.MapName = data.MapName;
+        elem.MapResName = data.MapResName;
+        elem.MapSceneName = data.MapSceneName;
+        elem.NpcDataList = data.NpcDataList;
+        elem.PlayerInitPos = data.PlayerInitPos;
+        elem.TriggerDataList = data.TriggerDataList;
+
+        m_DataList.DataList.Add(elem);
+
+        Save();
+    }
+    private void Delete(int index)
+    {
+        if (index >= 0 && index < m_DataList.DataList.Count)
+        {
+            m_DataList.DataList.RemoveAt(index);
+        }
+        Save();
+    }
+    private void Save()
+    {
+        TerrainEditorWindow.Instance.SaveTerrainEditFileList(m_DataList,null);
     }
 }

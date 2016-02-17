@@ -16,7 +16,6 @@ using ActionEditor;
 
 public class ActionKeyframeWindow : EditorWindow
 {
-    #region Property
     static public ActionKeyframeWindow Instance
     {
         get
@@ -29,9 +28,7 @@ public class ActionKeyframeWindow : EditorWindow
             return m_Instance;
         }
     }
-    #endregion
 
-    #region Field
     private readonly float WINDOW_MIN_WIDTH = 300;
     private readonly float WINDOW_MIN_HIEGHT = 200;
 
@@ -39,7 +36,6 @@ public class ActionKeyframeWindow : EditorWindow
 
     private float m_KeyframeTime;
     private KeyframeData m_KeyframeData;
-    #endregion
 
     #region MonoBehavior
     private void OnGUI()
@@ -65,8 +61,9 @@ public class ActionKeyframeWindow : EditorWindow
             {
                 ActionFrameData temp = m_KeyframeData.framedatalist[i];
 
-                EditorGUILayout.LabelField("节点类型: " + ActionEditorWindow.Instance.m_szActionFrameName[temp.Type], GUILayout.Width(100f));
+                EditorGUILayout.LabelField("节点类型: " + ActionEditorWindow.Instance.m_szActionFrameName[temp.Type]);
 
+                GUILayout.FlexibleSpace();
                 if (GUILayout.Button("编辑节点", GUILayout.Width(100f)))
                 {
                     ActionEditorWindow.Instance.InsertFrame((EActionFrameType)temp.Type, temp);
@@ -103,6 +100,7 @@ public class ActionKeyframeWindow : EditorWindow
         m_KeyframeTime = time;
         m_KeyframeData = key;
         Repaint();
+        this.Focus();
     }
     public static void CloseWindow()
     {
