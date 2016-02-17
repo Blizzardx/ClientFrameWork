@@ -26,7 +26,7 @@ namespace ActionEditor
     private double _time;
     private int _type;
     private List<int> _targetIDs;
-    private SetCameraFrameConfig _setCameraFrame;
+    private ShakeCameraFrameConfig _shakeCameraFrame;
     private MoveCameraFrameConfig _moveCameraFrame;
     private PlayAudioFrameConfig _playAudioFrame;
     private boolCommonConfig _boolFrame;
@@ -34,6 +34,21 @@ namespace ActionEditor
     private MoveTransformFrameConfig _moveTransformFrame;
     private Common.Auto.ThriftVector3 _vector3Frame;
     private AddNpcFrameConfig _addNpcFrame;
+    private Runtime_CreateEffectFrameConfig _runtime_CreateEffect;
+    private Runtime_MoveEffectFrameConfig _runtime_MoveEffect;
+    private Runtime_AttackExecFrameConfig _runtime_AttackExec;
+    private Runtime_RemoveEffectFrameConfig _runtime_RemoveEffect;
+    private MoveCharFrameConfig _movecharFrame;
+    private AddStateEffectFrameConfig _addStateEffectFrame;
+    private AddUIFrameConfig _addUIFrame;
+    private RemoveUIFrameConfig _removeUIFrame;
+    private EntityPlayAnimationConfig _entityPlayAnim;
+    private AnimCharFrameConfig _animcharFrame;
+    private RotateCharFrameConfig _rotcharFrame;
+    private RotateCameraFrameConfig _rotCameraFrame;
+    private ObjectTransformFrameConfig _objTransformFrame;
+    private FuncMethodFrameConfig _funcMethodFrame;
+    private StopAudioFrameConfig _stopAudioFrame;
 
     public double Time
     {
@@ -74,16 +89,16 @@ namespace ActionEditor
       }
     }
 
-    public SetCameraFrameConfig SetCameraFrame
+    public ShakeCameraFrameConfig ShakeCameraFrame
     {
       get
       {
-        return _setCameraFrame;
+        return _shakeCameraFrame;
       }
       set
       {
-        __isset.setCameraFrame = true;
-        this._setCameraFrame = value;
+        __isset.shakeCameraFrame = true;
+        this._shakeCameraFrame = value;
       }
     }
 
@@ -178,6 +193,201 @@ namespace ActionEditor
       }
     }
 
+    public Runtime_CreateEffectFrameConfig Runtime_CreateEffect
+    {
+      get
+      {
+        return _runtime_CreateEffect;
+      }
+      set
+      {
+        __isset.runtime_CreateEffect = true;
+        this._runtime_CreateEffect = value;
+      }
+    }
+
+    public Runtime_MoveEffectFrameConfig Runtime_MoveEffect
+    {
+      get
+      {
+        return _runtime_MoveEffect;
+      }
+      set
+      {
+        __isset.runtime_MoveEffect = true;
+        this._runtime_MoveEffect = value;
+      }
+    }
+
+    public Runtime_AttackExecFrameConfig Runtime_AttackExec
+    {
+      get
+      {
+        return _runtime_AttackExec;
+      }
+      set
+      {
+        __isset.runtime_AttackExec = true;
+        this._runtime_AttackExec = value;
+      }
+    }
+
+    public Runtime_RemoveEffectFrameConfig Runtime_RemoveEffect
+    {
+      get
+      {
+        return _runtime_RemoveEffect;
+      }
+      set
+      {
+        __isset.runtime_RemoveEffect = true;
+        this._runtime_RemoveEffect = value;
+      }
+    }
+
+    public MoveCharFrameConfig MovecharFrame
+    {
+      get
+      {
+        return _movecharFrame;
+      }
+      set
+      {
+        __isset.movecharFrame = true;
+        this._movecharFrame = value;
+      }
+    }
+
+    public AddStateEffectFrameConfig AddStateEffectFrame
+    {
+      get
+      {
+        return _addStateEffectFrame;
+      }
+      set
+      {
+        __isset.addStateEffectFrame = true;
+        this._addStateEffectFrame = value;
+      }
+    }
+
+    public AddUIFrameConfig AddUIFrame
+    {
+      get
+      {
+        return _addUIFrame;
+      }
+      set
+      {
+        __isset.addUIFrame = true;
+        this._addUIFrame = value;
+      }
+    }
+
+    public RemoveUIFrameConfig RemoveUIFrame
+    {
+      get
+      {
+        return _removeUIFrame;
+      }
+      set
+      {
+        __isset.removeUIFrame = true;
+        this._removeUIFrame = value;
+      }
+    }
+
+    public EntityPlayAnimationConfig EntityPlayAnim
+    {
+      get
+      {
+        return _entityPlayAnim;
+      }
+      set
+      {
+        __isset.entityPlayAnim = true;
+        this._entityPlayAnim = value;
+      }
+    }
+
+    public AnimCharFrameConfig AnimcharFrame
+    {
+      get
+      {
+        return _animcharFrame;
+      }
+      set
+      {
+        __isset.animcharFrame = true;
+        this._animcharFrame = value;
+      }
+    }
+
+    public RotateCharFrameConfig RotcharFrame
+    {
+      get
+      {
+        return _rotcharFrame;
+      }
+      set
+      {
+        __isset.rotcharFrame = true;
+        this._rotcharFrame = value;
+      }
+    }
+
+    public RotateCameraFrameConfig RotCameraFrame
+    {
+      get
+      {
+        return _rotCameraFrame;
+      }
+      set
+      {
+        __isset.rotCameraFrame = true;
+        this._rotCameraFrame = value;
+      }
+    }
+
+    public ObjectTransformFrameConfig ObjTransformFrame
+    {
+      get
+      {
+        return _objTransformFrame;
+      }
+      set
+      {
+        __isset.objTransformFrame = true;
+        this._objTransformFrame = value;
+      }
+    }
+
+    public FuncMethodFrameConfig FuncMethodFrame
+    {
+      get
+      {
+        return _funcMethodFrame;
+      }
+      set
+      {
+        __isset.funcMethodFrame = true;
+        this._funcMethodFrame = value;
+      }
+    }
+
+    public StopAudioFrameConfig StopAudioFrame
+    {
+      get
+      {
+        return _stopAudioFrame;
+      }
+      set
+      {
+        __isset.stopAudioFrame = true;
+        this._stopAudioFrame = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -187,7 +397,7 @@ namespace ActionEditor
       public bool time;
       public bool type;
       public bool targetIDs;
-      public bool setCameraFrame;
+      public bool shakeCameraFrame;
       public bool moveCameraFrame;
       public bool playAudioFrame;
       public bool boolFrame;
@@ -195,6 +405,21 @@ namespace ActionEditor
       public bool moveTransformFrame;
       public bool vector3Frame;
       public bool addNpcFrame;
+      public bool runtime_CreateEffect;
+      public bool runtime_MoveEffect;
+      public bool runtime_AttackExec;
+      public bool runtime_RemoveEffect;
+      public bool movecharFrame;
+      public bool addStateEffectFrame;
+      public bool addUIFrame;
+      public bool removeUIFrame;
+      public bool entityPlayAnim;
+      public bool animcharFrame;
+      public bool rotcharFrame;
+      public bool rotCameraFrame;
+      public bool objTransformFrame;
+      public bool funcMethodFrame;
+      public bool stopAudioFrame;
     }
 
     public ActionFrameData() {
@@ -230,12 +455,12 @@ namespace ActionEditor
             if (field.Type == TType.List) {
               {
                 TargetIDs = new List<int>();
-                TList _list4 = iprot.ReadListBegin();
-                for( int _i5 = 0; _i5 < _list4.Count; ++_i5)
+                TList _list12 = iprot.ReadListBegin();
+                for( int _i13 = 0; _i13 < _list12.Count; ++_i13)
                 {
-                  int _elem6 = 0;
-                  _elem6 = iprot.ReadI32();
-                  TargetIDs.Add(_elem6);
+                  int _elem14 = 0;
+                  _elem14 = iprot.ReadI32();
+                  TargetIDs.Add(_elem14);
                 }
                 iprot.ReadListEnd();
               }
@@ -245,8 +470,8 @@ namespace ActionEditor
             break;
           case 10:
             if (field.Type == TType.Struct) {
-              SetCameraFrame = new SetCameraFrameConfig();
-              SetCameraFrame.Read(iprot);
+              ShakeCameraFrame = new ShakeCameraFrameConfig();
+              ShakeCameraFrame.Read(iprot);
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -307,6 +532,126 @@ namespace ActionEditor
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
+          case 106:
+            if (field.Type == TType.Struct) {
+              Runtime_CreateEffect = new Runtime_CreateEffectFrameConfig();
+              Runtime_CreateEffect.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 107:
+            if (field.Type == TType.Struct) {
+              Runtime_MoveEffect = new Runtime_MoveEffectFrameConfig();
+              Runtime_MoveEffect.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 108:
+            if (field.Type == TType.Struct) {
+              Runtime_AttackExec = new Runtime_AttackExecFrameConfig();
+              Runtime_AttackExec.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 109:
+            if (field.Type == TType.Struct) {
+              Runtime_RemoveEffect = new Runtime_RemoveEffectFrameConfig();
+              Runtime_RemoveEffect.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 110:
+            if (field.Type == TType.Struct) {
+              MovecharFrame = new MoveCharFrameConfig();
+              MovecharFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 111:
+            if (field.Type == TType.Struct) {
+              AddStateEffectFrame = new AddStateEffectFrameConfig();
+              AddStateEffectFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 112:
+            if (field.Type == TType.Struct) {
+              AddUIFrame = new AddUIFrameConfig();
+              AddUIFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 113:
+            if (field.Type == TType.Struct) {
+              RemoveUIFrame = new RemoveUIFrameConfig();
+              RemoveUIFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 114:
+            if (field.Type == TType.Struct) {
+              EntityPlayAnim = new EntityPlayAnimationConfig();
+              EntityPlayAnim.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 115:
+            if (field.Type == TType.Struct) {
+              AnimcharFrame = new AnimCharFrameConfig();
+              AnimcharFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 116:
+            if (field.Type == TType.Struct) {
+              RotcharFrame = new RotateCharFrameConfig();
+              RotcharFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 117:
+            if (field.Type == TType.Struct) {
+              RotCameraFrame = new RotateCameraFrameConfig();
+              RotCameraFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 118:
+            if (field.Type == TType.Struct) {
+              ObjTransformFrame = new ObjectTransformFrameConfig();
+              ObjTransformFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 119:
+            if (field.Type == TType.Struct) {
+              FuncMethodFrame = new FuncMethodFrameConfig();
+              FuncMethodFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 120:
+            if (field.Type == TType.Struct) {
+              StopAudioFrame = new StopAudioFrameConfig();
+              StopAudioFrame.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
           default: 
             TProtocolUtil.Skip(iprot, field.Type);
             break;
@@ -343,20 +688,20 @@ namespace ActionEditor
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.I32, TargetIDs.Count));
-          foreach (int _iter7 in TargetIDs)
+          foreach (int _iter15 in TargetIDs)
           {
-            oprot.WriteI32(_iter7);
+            oprot.WriteI32(_iter15);
           }
           oprot.WriteListEnd();
         }
         oprot.WriteFieldEnd();
       }
-      if (SetCameraFrame != null && __isset.setCameraFrame) {
-        field.Name = "setCameraFrame";
+      if (ShakeCameraFrame != null && __isset.shakeCameraFrame) {
+        field.Name = "shakeCameraFrame";
         field.Type = TType.Struct;
         field.ID = 10;
         oprot.WriteFieldBegin(field);
-        SetCameraFrame.Write(oprot);
+        ShakeCameraFrame.Write(oprot);
         oprot.WriteFieldEnd();
       }
       if (MoveCameraFrame != null && __isset.moveCameraFrame) {
@@ -415,6 +760,126 @@ namespace ActionEditor
         AddNpcFrame.Write(oprot);
         oprot.WriteFieldEnd();
       }
+      if (Runtime_CreateEffect != null && __isset.runtime_CreateEffect) {
+        field.Name = "runtime_CreateEffect";
+        field.Type = TType.Struct;
+        field.ID = 106;
+        oprot.WriteFieldBegin(field);
+        Runtime_CreateEffect.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (Runtime_MoveEffect != null && __isset.runtime_MoveEffect) {
+        field.Name = "runtime_MoveEffect";
+        field.Type = TType.Struct;
+        field.ID = 107;
+        oprot.WriteFieldBegin(field);
+        Runtime_MoveEffect.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (Runtime_AttackExec != null && __isset.runtime_AttackExec) {
+        field.Name = "runtime_AttackExec";
+        field.Type = TType.Struct;
+        field.ID = 108;
+        oprot.WriteFieldBegin(field);
+        Runtime_AttackExec.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (Runtime_RemoveEffect != null && __isset.runtime_RemoveEffect) {
+        field.Name = "runtime_RemoveEffect";
+        field.Type = TType.Struct;
+        field.ID = 109;
+        oprot.WriteFieldBegin(field);
+        Runtime_RemoveEffect.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (MovecharFrame != null && __isset.movecharFrame) {
+        field.Name = "movecharFrame";
+        field.Type = TType.Struct;
+        field.ID = 110;
+        oprot.WriteFieldBegin(field);
+        MovecharFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (AddStateEffectFrame != null && __isset.addStateEffectFrame) {
+        field.Name = "addStateEffectFrame";
+        field.Type = TType.Struct;
+        field.ID = 111;
+        oprot.WriteFieldBegin(field);
+        AddStateEffectFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (AddUIFrame != null && __isset.addUIFrame) {
+        field.Name = "addUIFrame";
+        field.Type = TType.Struct;
+        field.ID = 112;
+        oprot.WriteFieldBegin(field);
+        AddUIFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (RemoveUIFrame != null && __isset.removeUIFrame) {
+        field.Name = "removeUIFrame";
+        field.Type = TType.Struct;
+        field.ID = 113;
+        oprot.WriteFieldBegin(field);
+        RemoveUIFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (EntityPlayAnim != null && __isset.entityPlayAnim) {
+        field.Name = "entityPlayAnim";
+        field.Type = TType.Struct;
+        field.ID = 114;
+        oprot.WriteFieldBegin(field);
+        EntityPlayAnim.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (AnimcharFrame != null && __isset.animcharFrame) {
+        field.Name = "animcharFrame";
+        field.Type = TType.Struct;
+        field.ID = 115;
+        oprot.WriteFieldBegin(field);
+        AnimcharFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (RotcharFrame != null && __isset.rotcharFrame) {
+        field.Name = "rotcharFrame";
+        field.Type = TType.Struct;
+        field.ID = 116;
+        oprot.WriteFieldBegin(field);
+        RotcharFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (RotCameraFrame != null && __isset.rotCameraFrame) {
+        field.Name = "rotCameraFrame";
+        field.Type = TType.Struct;
+        field.ID = 117;
+        oprot.WriteFieldBegin(field);
+        RotCameraFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (ObjTransformFrame != null && __isset.objTransformFrame) {
+        field.Name = "objTransformFrame";
+        field.Type = TType.Struct;
+        field.ID = 118;
+        oprot.WriteFieldBegin(field);
+        ObjTransformFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (FuncMethodFrame != null && __isset.funcMethodFrame) {
+        field.Name = "funcMethodFrame";
+        field.Type = TType.Struct;
+        field.ID = 119;
+        oprot.WriteFieldBegin(field);
+        FuncMethodFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (StopAudioFrame != null && __isset.stopAudioFrame) {
+        field.Name = "stopAudioFrame";
+        field.Type = TType.Struct;
+        field.ID = 120;
+        oprot.WriteFieldBegin(field);
+        StopAudioFrame.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
       oprot.WriteFieldStop();
       oprot.WriteStructEnd();
     }
@@ -427,8 +892,8 @@ namespace ActionEditor
       sb.Append(Type);
       sb.Append(",TargetIDs: ");
       sb.Append(TargetIDs);
-      sb.Append(",SetCameraFrame: ");
-      sb.Append(SetCameraFrame== null ? "<null>" : SetCameraFrame.ToString());
+      sb.Append(",ShakeCameraFrame: ");
+      sb.Append(ShakeCameraFrame== null ? "<null>" : ShakeCameraFrame.ToString());
       sb.Append(",MoveCameraFrame: ");
       sb.Append(MoveCameraFrame== null ? "<null>" : MoveCameraFrame.ToString());
       sb.Append(",PlayAudioFrame: ");
@@ -443,6 +908,36 @@ namespace ActionEditor
       sb.Append(Vector3Frame== null ? "<null>" : Vector3Frame.ToString());
       sb.Append(",AddNpcFrame: ");
       sb.Append(AddNpcFrame== null ? "<null>" : AddNpcFrame.ToString());
+      sb.Append(",Runtime_CreateEffect: ");
+      sb.Append(Runtime_CreateEffect== null ? "<null>" : Runtime_CreateEffect.ToString());
+      sb.Append(",Runtime_MoveEffect: ");
+      sb.Append(Runtime_MoveEffect== null ? "<null>" : Runtime_MoveEffect.ToString());
+      sb.Append(",Runtime_AttackExec: ");
+      sb.Append(Runtime_AttackExec== null ? "<null>" : Runtime_AttackExec.ToString());
+      sb.Append(",Runtime_RemoveEffect: ");
+      sb.Append(Runtime_RemoveEffect== null ? "<null>" : Runtime_RemoveEffect.ToString());
+      sb.Append(",MovecharFrame: ");
+      sb.Append(MovecharFrame== null ? "<null>" : MovecharFrame.ToString());
+      sb.Append(",AddStateEffectFrame: ");
+      sb.Append(AddStateEffectFrame== null ? "<null>" : AddStateEffectFrame.ToString());
+      sb.Append(",AddUIFrame: ");
+      sb.Append(AddUIFrame== null ? "<null>" : AddUIFrame.ToString());
+      sb.Append(",RemoveUIFrame: ");
+      sb.Append(RemoveUIFrame== null ? "<null>" : RemoveUIFrame.ToString());
+      sb.Append(",EntityPlayAnim: ");
+      sb.Append(EntityPlayAnim== null ? "<null>" : EntityPlayAnim.ToString());
+      sb.Append(",AnimcharFrame: ");
+      sb.Append(AnimcharFrame== null ? "<null>" : AnimcharFrame.ToString());
+      sb.Append(",RotcharFrame: ");
+      sb.Append(RotcharFrame== null ? "<null>" : RotcharFrame.ToString());
+      sb.Append(",RotCameraFrame: ");
+      sb.Append(RotCameraFrame== null ? "<null>" : RotCameraFrame.ToString());
+      sb.Append(",ObjTransformFrame: ");
+      sb.Append(ObjTransformFrame== null ? "<null>" : ObjTransformFrame.ToString());
+      sb.Append(",FuncMethodFrame: ");
+      sb.Append(FuncMethodFrame== null ? "<null>" : FuncMethodFrame.ToString());
+      sb.Append(",StopAudioFrame: ");
+      sb.Append(StopAudioFrame== null ? "<null>" : StopAudioFrame.ToString());
       sb.Append(")");
       return sb.ToString();
     }

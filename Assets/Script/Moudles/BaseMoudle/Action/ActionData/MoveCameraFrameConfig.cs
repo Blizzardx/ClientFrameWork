@@ -23,15 +23,24 @@ namespace ActionEditor
   #endif
   public partial class MoveCameraFrameConfig : TBase
   {
-    private sbyte _moveType;
-    private double _moveToTime;
-    private double _StayTime;
-    private double _moveBackTime;
+    private EMoveCameraType _moveType;
+    private bool _isImmediate;
+    private bool _isOverObstacle;
+    private ECameraFollowType _followType;
     private double _distance;
     private double _height;
     private double _offseHeight;
+    private double _rotation;
+    private double _posDamping;
+    private double _rotDamping;
+    private Common.Auto.ThriftVector3 _endPos;
+    private Common.Auto.ThriftVector3 _endRot;
 
-    public sbyte MoveType
+    /// <summary>
+    /// 
+    /// <seealso cref="EMoveCameraType"/>
+    /// </summary>
+    public EMoveCameraType MoveType
     {
       get
       {
@@ -44,42 +53,46 @@ namespace ActionEditor
       }
     }
 
-    public double MoveToTime
+    public bool IsImmediate
     {
       get
       {
-        return _moveToTime;
+        return _isImmediate;
       }
       set
       {
-        __isset.moveToTime = true;
-        this._moveToTime = value;
+        __isset.isImmediate = true;
+        this._isImmediate = value;
       }
     }
 
-    public double StayTime
+    public bool IsOverObstacle
     {
       get
       {
-        return _StayTime;
+        return _isOverObstacle;
       }
       set
       {
-        __isset.StayTime = true;
-        this._StayTime = value;
+        __isset.isOverObstacle = true;
+        this._isOverObstacle = value;
       }
     }
 
-    public double MoveBackTime
+    /// <summary>
+    /// 
+    /// <seealso cref="ECameraFollowType"/>
+    /// </summary>
+    public ECameraFollowType FollowType
     {
       get
       {
-        return _moveBackTime;
+        return _followType;
       }
       set
       {
-        __isset.moveBackTime = true;
-        this._moveBackTime = value;
+        __isset.followType = true;
+        this._followType = value;
       }
     }
 
@@ -122,6 +135,71 @@ namespace ActionEditor
       }
     }
 
+    public double Rotation
+    {
+      get
+      {
+        return _rotation;
+      }
+      set
+      {
+        __isset.rotation = true;
+        this._rotation = value;
+      }
+    }
+
+    public double PosDamping
+    {
+      get
+      {
+        return _posDamping;
+      }
+      set
+      {
+        __isset.posDamping = true;
+        this._posDamping = value;
+      }
+    }
+
+    public double RotDamping
+    {
+      get
+      {
+        return _rotDamping;
+      }
+      set
+      {
+        __isset.rotDamping = true;
+        this._rotDamping = value;
+      }
+    }
+
+    public Common.Auto.ThriftVector3 EndPos
+    {
+      get
+      {
+        return _endPos;
+      }
+      set
+      {
+        __isset.endPos = true;
+        this._endPos = value;
+      }
+    }
+
+    public Common.Auto.ThriftVector3 EndRot
+    {
+      get
+      {
+        return _endRot;
+      }
+      set
+      {
+        __isset.endRot = true;
+        this._endRot = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -129,12 +207,17 @@ namespace ActionEditor
     #endif
     public struct Isset {
       public bool moveType;
-      public bool moveToTime;
-      public bool StayTime;
-      public bool moveBackTime;
+      public bool isImmediate;
+      public bool isOverObstacle;
+      public bool followType;
       public bool distance;
       public bool height;
       public bool offseHeight;
+      public bool rotation;
+      public bool posDamping;
+      public bool rotDamping;
+      public bool endPos;
+      public bool endRot;
     }
 
     public MoveCameraFrameConfig() {
@@ -153,50 +236,87 @@ namespace ActionEditor
         switch (field.ID)
         {
           case 1:
-            if (field.Type == TType.Byte) {
-              MoveType = iprot.ReadByte();
+            if (field.Type == TType.I32) {
+              MoveType = (EMoveCameraType)iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 2:
+            if (field.Type == TType.Bool) {
+              IsImmediate = iprot.ReadBool();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 3:
+            if (field.Type == TType.Bool) {
+              IsOverObstacle = iprot.ReadBool();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 4:
+            if (field.Type == TType.I32) {
+              FollowType = (ECameraFollowType)iprot.ReadI32();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 10:
             if (field.Type == TType.Double) {
-              MoveToTime = iprot.ReadDouble();
+              Distance = iprot.ReadDouble();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 20:
             if (field.Type == TType.Double) {
-              StayTime = iprot.ReadDouble();
+              Height = iprot.ReadDouble();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 30:
             if (field.Type == TType.Double) {
-              MoveBackTime = iprot.ReadDouble();
+              OffseHeight = iprot.ReadDouble();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 40:
             if (field.Type == TType.Double) {
-              Distance = iprot.ReadDouble();
+              Rotation = iprot.ReadDouble();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 50:
+          case 100:
             if (field.Type == TType.Double) {
-              Height = iprot.ReadDouble();
+              PosDamping = iprot.ReadDouble();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 60:
+          case 200:
             if (field.Type == TType.Double) {
-              OffseHeight = iprot.ReadDouble();
+              RotDamping = iprot.ReadDouble();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 1000:
+            if (field.Type == TType.Struct) {
+              EndPos = new Common.Auto.ThriftVector3();
+              EndPos.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 2000:
+            if (field.Type == TType.Struct) {
+              EndRot = new Common.Auto.ThriftVector3();
+              EndRot.Read(iprot);
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -216,40 +336,40 @@ namespace ActionEditor
       TField field = new TField();
       if (__isset.moveType) {
         field.Name = "moveType";
-        field.Type = TType.Byte;
+        field.Type = TType.I32;
         field.ID = 1;
         oprot.WriteFieldBegin(field);
-        oprot.WriteByte(MoveType);
+        oprot.WriteI32((int)MoveType);
         oprot.WriteFieldEnd();
       }
-      if (__isset.moveToTime) {
-        field.Name = "moveToTime";
-        field.Type = TType.Double;
-        field.ID = 10;
+      if (__isset.isImmediate) {
+        field.Name = "isImmediate";
+        field.Type = TType.Bool;
+        field.ID = 2;
         oprot.WriteFieldBegin(field);
-        oprot.WriteDouble(MoveToTime);
+        oprot.WriteBool(IsImmediate);
         oprot.WriteFieldEnd();
       }
-      if (__isset.StayTime) {
-        field.Name = "StayTime";
-        field.Type = TType.Double;
-        field.ID = 20;
+      if (__isset.isOverObstacle) {
+        field.Name = "isOverObstacle";
+        field.Type = TType.Bool;
+        field.ID = 3;
         oprot.WriteFieldBegin(field);
-        oprot.WriteDouble(StayTime);
+        oprot.WriteBool(IsOverObstacle);
         oprot.WriteFieldEnd();
       }
-      if (__isset.moveBackTime) {
-        field.Name = "moveBackTime";
-        field.Type = TType.Double;
-        field.ID = 30;
+      if (__isset.followType) {
+        field.Name = "followType";
+        field.Type = TType.I32;
+        field.ID = 4;
         oprot.WriteFieldBegin(field);
-        oprot.WriteDouble(MoveBackTime);
+        oprot.WriteI32((int)FollowType);
         oprot.WriteFieldEnd();
       }
       if (__isset.distance) {
         field.Name = "distance";
         field.Type = TType.Double;
-        field.ID = 40;
+        field.ID = 10;
         oprot.WriteFieldBegin(field);
         oprot.WriteDouble(Distance);
         oprot.WriteFieldEnd();
@@ -257,7 +377,7 @@ namespace ActionEditor
       if (__isset.height) {
         field.Name = "height";
         field.Type = TType.Double;
-        field.ID = 50;
+        field.ID = 20;
         oprot.WriteFieldBegin(field);
         oprot.WriteDouble(Height);
         oprot.WriteFieldEnd();
@@ -265,9 +385,49 @@ namespace ActionEditor
       if (__isset.offseHeight) {
         field.Name = "offseHeight";
         field.Type = TType.Double;
-        field.ID = 60;
+        field.ID = 30;
         oprot.WriteFieldBegin(field);
         oprot.WriteDouble(OffseHeight);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.rotation) {
+        field.Name = "rotation";
+        field.Type = TType.Double;
+        field.ID = 40;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteDouble(Rotation);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.posDamping) {
+        field.Name = "posDamping";
+        field.Type = TType.Double;
+        field.ID = 100;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteDouble(PosDamping);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.rotDamping) {
+        field.Name = "rotDamping";
+        field.Type = TType.Double;
+        field.ID = 200;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteDouble(RotDamping);
+        oprot.WriteFieldEnd();
+      }
+      if (EndPos != null && __isset.endPos) {
+        field.Name = "endPos";
+        field.Type = TType.Struct;
+        field.ID = 1000;
+        oprot.WriteFieldBegin(field);
+        EndPos.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (EndRot != null && __isset.endRot) {
+        field.Name = "endRot";
+        field.Type = TType.Struct;
+        field.ID = 2000;
+        oprot.WriteFieldBegin(field);
+        EndRot.Write(oprot);
         oprot.WriteFieldEnd();
       }
       oprot.WriteFieldStop();
@@ -278,18 +438,28 @@ namespace ActionEditor
       StringBuilder sb = new StringBuilder("MoveCameraFrameConfig(");
       sb.Append("MoveType: ");
       sb.Append(MoveType);
-      sb.Append(",MoveToTime: ");
-      sb.Append(MoveToTime);
-      sb.Append(",StayTime: ");
-      sb.Append(StayTime);
-      sb.Append(",MoveBackTime: ");
-      sb.Append(MoveBackTime);
+      sb.Append(",IsImmediate: ");
+      sb.Append(IsImmediate);
+      sb.Append(",IsOverObstacle: ");
+      sb.Append(IsOverObstacle);
+      sb.Append(",FollowType: ");
+      sb.Append(FollowType);
       sb.Append(",Distance: ");
       sb.Append(Distance);
       sb.Append(",Height: ");
       sb.Append(Height);
       sb.Append(",OffseHeight: ");
       sb.Append(OffseHeight);
+      sb.Append(",Rotation: ");
+      sb.Append(Rotation);
+      sb.Append(",PosDamping: ");
+      sb.Append(PosDamping);
+      sb.Append(",RotDamping: ");
+      sb.Append(RotDamping);
+      sb.Append(",EndPos: ");
+      sb.Append(EndPos== null ? "<null>" : EndPos.ToString());
+      sb.Append(",EndRot: ");
+      sb.Append(EndRot== null ? "<null>" : EndRot.ToString());
       sb.Append(")");
       return sb.ToString();
     }

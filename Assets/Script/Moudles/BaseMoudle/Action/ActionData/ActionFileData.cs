@@ -27,6 +27,7 @@ namespace ActionEditor
     private string _fileName;
     private string _mapResName;
     private double _duration;
+    private long _timeStamp;
     private List<ActionFrameData> _frameDatalist;
 
     public int ID
@@ -81,6 +82,19 @@ namespace ActionEditor
       }
     }
 
+    public long TimeStamp
+    {
+      get
+      {
+        return _timeStamp;
+      }
+      set
+      {
+        __isset.timeStamp = true;
+        this._timeStamp = value;
+      }
+    }
+
     public List<ActionFrameData> FrameDatalist
     {
       get
@@ -104,6 +118,7 @@ namespace ActionEditor
       public bool fileName;
       public bool mapResName;
       public bool duration;
+      public bool timeStamp;
       public bool frameDatalist;
     }
 
@@ -150,17 +165,24 @@ namespace ActionEditor
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
+          case 5:
+            if (field.Type == TType.I64) {
+              TimeStamp = iprot.ReadI64();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
           case 10:
             if (field.Type == TType.List) {
               {
                 FrameDatalist = new List<ActionFrameData>();
-                TList _list8 = iprot.ReadListBegin();
-                for( int _i9 = 0; _i9 < _list8.Count; ++_i9)
+                TList _list16 = iprot.ReadListBegin();
+                for( int _i17 = 0; _i17 < _list16.Count; ++_i17)
                 {
-                  ActionFrameData _elem10 = new ActionFrameData();
-                  _elem10 = new ActionFrameData();
-                  _elem10.Read(iprot);
-                  FrameDatalist.Add(_elem10);
+                  ActionFrameData _elem18 = new ActionFrameData();
+                  _elem18 = new ActionFrameData();
+                  _elem18.Read(iprot);
+                  FrameDatalist.Add(_elem18);
                 }
                 iprot.ReadListEnd();
               }
@@ -213,6 +235,14 @@ namespace ActionEditor
         oprot.WriteDouble(Duration);
         oprot.WriteFieldEnd();
       }
+      if (__isset.timeStamp) {
+        field.Name = "timeStamp";
+        field.Type = TType.I64;
+        field.ID = 5;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteI64(TimeStamp);
+        oprot.WriteFieldEnd();
+      }
       if (FrameDatalist != null && __isset.frameDatalist) {
         field.Name = "frameDatalist";
         field.Type = TType.List;
@@ -220,9 +250,9 @@ namespace ActionEditor
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.Struct, FrameDatalist.Count));
-          foreach (ActionFrameData _iter11 in FrameDatalist)
+          foreach (ActionFrameData _iter19 in FrameDatalist)
           {
-            _iter11.Write(oprot);
+            _iter19.Write(oprot);
           }
           oprot.WriteListEnd();
         }
@@ -242,6 +272,8 @@ namespace ActionEditor
       sb.Append(MapResName);
       sb.Append(",Duration: ");
       sb.Append(Duration);
+      sb.Append(",TimeStamp: ");
+      sb.Append(TimeStamp);
       sb.Append(",FrameDatalist: ");
       sb.Append(FrameDatalist);
       sb.Append(")");

@@ -24,8 +24,13 @@ namespace ActionEditor
   public partial class PlayAudioFrameConfig : TBase
   {
     private string _audioSource;
-    private Common.Auto.ThriftVector3 _playPosition;
     private bool _isLoop;
+    private bool _isAttach;
+    private Common.Auto.ThriftVector3 _playPosition;
+    private EntityType _entityType;
+    private int _attachNpcId;
+    private bool _isCareGender;
+    private string _paramAudioSource;
 
     public string AudioSource
     {
@@ -37,19 +42,6 @@ namespace ActionEditor
       {
         __isset.audioSource = true;
         this._audioSource = value;
-      }
-    }
-
-    public Common.Auto.ThriftVector3 PlayPosition
-    {
-      get
-      {
-        return _playPosition;
-      }
-      set
-      {
-        __isset.playPosition = true;
-        this._playPosition = value;
       }
     }
 
@@ -66,6 +58,88 @@ namespace ActionEditor
       }
     }
 
+    public bool IsAttach
+    {
+      get
+      {
+        return _isAttach;
+      }
+      set
+      {
+        __isset.isAttach = true;
+        this._isAttach = value;
+      }
+    }
+
+    public Common.Auto.ThriftVector3 PlayPosition
+    {
+      get
+      {
+        return _playPosition;
+      }
+      set
+      {
+        __isset.playPosition = true;
+        this._playPosition = value;
+      }
+    }
+
+    /// <summary>
+    /// 
+    /// <seealso cref="EntityType"/>
+    /// </summary>
+    public EntityType EntityType
+    {
+      get
+      {
+        return _entityType;
+      }
+      set
+      {
+        __isset.entityType = true;
+        this._entityType = value;
+      }
+    }
+
+    public int AttachNpcId
+    {
+      get
+      {
+        return _attachNpcId;
+      }
+      set
+      {
+        __isset.attachNpcId = true;
+        this._attachNpcId = value;
+      }
+    }
+
+    public bool IsCareGender
+    {
+      get
+      {
+        return _isCareGender;
+      }
+      set
+      {
+        __isset.isCareGender = true;
+        this._isCareGender = value;
+      }
+    }
+
+    public string ParamAudioSource
+    {
+      get
+      {
+        return _paramAudioSource;
+      }
+      set
+      {
+        __isset.paramAudioSource = true;
+        this._paramAudioSource = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -73,8 +147,13 @@ namespace ActionEditor
     #endif
     public struct Isset {
       public bool audioSource;
-      public bool playPosition;
       public bool isLoop;
+      public bool isAttach;
+      public bool playPosition;
+      public bool entityType;
+      public bool attachNpcId;
+      public bool isCareGender;
+      public bool paramAudioSource;
     }
 
     public PlayAudioFrameConfig() {
@@ -100,6 +179,20 @@ namespace ActionEditor
             }
             break;
           case 2:
+            if (field.Type == TType.Bool) {
+              IsLoop = iprot.ReadBool();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 3:
+            if (field.Type == TType.Bool) {
+              IsAttach = iprot.ReadBool();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 4:
             if (field.Type == TType.Struct) {
               PlayPosition = new Common.Auto.ThriftVector3();
               PlayPosition.Read(iprot);
@@ -107,9 +200,30 @@ namespace ActionEditor
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 3:
+          case 5:
+            if (field.Type == TType.I32) {
+              EntityType = (EntityType)iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 6:
+            if (field.Type == TType.I32) {
+              AttachNpcId = iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 7:
             if (field.Type == TType.Bool) {
-              IsLoop = iprot.ReadBool();
+              IsCareGender = iprot.ReadBool();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 8:
+            if (field.Type == TType.String) {
+              ParamAudioSource = iprot.ReadString();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -135,20 +249,60 @@ namespace ActionEditor
         oprot.WriteString(AudioSource);
         oprot.WriteFieldEnd();
       }
+      if (__isset.isLoop) {
+        field.Name = "isLoop";
+        field.Type = TType.Bool;
+        field.ID = 2;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteBool(IsLoop);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.isAttach) {
+        field.Name = "isAttach";
+        field.Type = TType.Bool;
+        field.ID = 3;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteBool(IsAttach);
+        oprot.WriteFieldEnd();
+      }
       if (PlayPosition != null && __isset.playPosition) {
         field.Name = "playPosition";
         field.Type = TType.Struct;
-        field.ID = 2;
+        field.ID = 4;
         oprot.WriteFieldBegin(field);
         PlayPosition.Write(oprot);
         oprot.WriteFieldEnd();
       }
-      if (__isset.isLoop) {
-        field.Name = "isLoop";
-        field.Type = TType.Bool;
-        field.ID = 3;
+      if (__isset.entityType) {
+        field.Name = "entityType";
+        field.Type = TType.I32;
+        field.ID = 5;
         oprot.WriteFieldBegin(field);
-        oprot.WriteBool(IsLoop);
+        oprot.WriteI32((int)EntityType);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.attachNpcId) {
+        field.Name = "attachNpcId";
+        field.Type = TType.I32;
+        field.ID = 6;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteI32(AttachNpcId);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.isCareGender) {
+        field.Name = "isCareGender";
+        field.Type = TType.Bool;
+        field.ID = 7;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteBool(IsCareGender);
+        oprot.WriteFieldEnd();
+      }
+      if (ParamAudioSource != null && __isset.paramAudioSource) {
+        field.Name = "paramAudioSource";
+        field.Type = TType.String;
+        field.ID = 8;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteString(ParamAudioSource);
         oprot.WriteFieldEnd();
       }
       oprot.WriteFieldStop();
@@ -159,10 +313,20 @@ namespace ActionEditor
       StringBuilder sb = new StringBuilder("PlayAudioFrameConfig(");
       sb.Append("AudioSource: ");
       sb.Append(AudioSource);
-      sb.Append(",PlayPosition: ");
-      sb.Append(PlayPosition== null ? "<null>" : PlayPosition.ToString());
       sb.Append(",IsLoop: ");
       sb.Append(IsLoop);
+      sb.Append(",IsAttach: ");
+      sb.Append(IsAttach);
+      sb.Append(",PlayPosition: ");
+      sb.Append(PlayPosition== null ? "<null>" : PlayPosition.ToString());
+      sb.Append(",EntityType: ");
+      sb.Append(EntityType);
+      sb.Append(",AttachNpcId: ");
+      sb.Append(AttachNpcId);
+      sb.Append(",IsCareGender: ");
+      sb.Append(IsCareGender);
+      sb.Append(",ParamAudioSource: ");
+      sb.Append(ParamAudioSource);
       sb.Append(")");
       return sb.ToString();
     }

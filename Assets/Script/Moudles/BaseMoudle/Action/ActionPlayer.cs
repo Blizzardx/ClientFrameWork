@@ -29,7 +29,6 @@ public class ActionPlayer
     private EActionState m_eActionState = EActionState.Play;
     private float m_fStartTime;
     private float m_fRunTime;
-    private GameObject m_ObjNpcRoot;
     //Action Data
     private static int AllocInstanceId()
     {
@@ -42,36 +41,62 @@ public class ActionPlayer
     //private List<GameObject> m_lstAffectedObjects = new List<GameObject>();
     //private List<GameObject> m_lstGeneratedObjects = new List<GameObject>();
     private Dictionary<int, GameObject> m_mapTargetObjects = new Dictionary<int, GameObject>();
+    private ActionParam m_ActionParam;
+    //Init Info
+    private bool m_InitLock;
+    private bool m_InitOverObstacle;
+    private Transform m_InitTarget;
+    private float m_InitDistance = 15f;
+    private float m_InitHeight = 9f;
+    private float m_InitOffsetHeight = 0.5f;
+    private float m_InitRotation = 0f;
+    private float m_InitPositonDamping = 2f;
+    private float m_InitRotationDamping = 2f;
+    private Vector3 m_InitPos = new Vector3(0, 0, 0);
+    private Vector3 m_InitRot = new Vector3(0, 0, 0);
     #endregion
-    public ActionPlayer(int iActionId, ActionFileData data, List<GameObject> affectedObjects = null)
+    private List<GameObject> m_AffectedObject;
+
+    public ActionPlayer(int iActionId, ActionFileData data, ActionParam param, List<GameObject> affectedObjects = null)
     {
+        //Check
         if (null == data)
         {
             return;
         }
+        m_AffectedObject = affectedObjects;
+
+        //Save Init Info
+        SaveInitInfo();
+        //Set Data
         m_ActionId = iActionId;
         m_ActionFileData = data;
         m_nInstanceID = AllocInstanceId();
-        foreach (GameObject obj in affectedObjects)
+        m_ActionParam = param;
+        if (affectedObjects != null && affectedObjects.Count > 0)
         {
-            if (obj == null)
+            //Add Target
+            foreach (GameObject obj in affectedObjects)
             {
-                Debuger.LogWarning("None(GameObject) in TargetObjectList");
-                continue;
-            }
-            TransformContainer objContainer = obj.GetComponent<TransformContainer>();
-            if (objContainer == null)
-            {
-                Debuger.LogWarning("Instance Container Not Found in " + obj.name);
-                continue;
-            }
-            else
-            {
-                AddAffectedObject(obj, objContainer);
+                if (obj == null)
+                {
+                    Debuger.LogWarning("None(GameObject) in TargetObjectList");
+                    continue;
+                }
+                CharTransformContainer objContainer = obj.GetComponent<CharTransformContainer>();
+                if (objContainer == null)
+                {
+                    Debuger.LogWarning("Instance Container Not Found in " + obj.name);
+                    continue;
+                }
+                else
+                {
+                    AddAffectedObject(obj, objContainer);
+                }
+                //disable rigidbody
+                SetPhysicStatus(obj, false);
             }
         }
-        m_ObjNpcRoot = GameObject.Find("NpcRoot");
-        CheckNpcRoot();
         Reset();
     }
     #region Get
@@ -87,6 +112,10 @@ public class ActionPlayer
     public int GetInstanceID()
     {
         return m_nInstanceID;
+    }
+    public int GetActionId()
+    {
+        return m_ActionId;
     }
     public EActionState GetActionState()
     {
@@ -104,7 +133,10 @@ public class ActionPlayer
     {
         return m_fRunTime;
     }
-
+    public ActionParam GetActionParam()
+    {
+        return m_ActionParam;
+    }
     //public List<GameObject> GetAffectedObjects()
     //{
     //    return m_lstAffectedObjects;
@@ -117,11 +149,6 @@ public class ActionPlayer
     {
         return m_mapTargetObjects;
     }
-    public GameObject GetNpcRoot()
-    {
-        CheckNpcRoot();
-        return m_ObjNpcRoot;
-    }
     #endregion
 
     #region Set
@@ -130,14 +157,14 @@ public class ActionPlayer
         m_fRunTime = time;
         m_fStartTime -= time;
     }
-    public void InsertGeneratedObjects(Dictionary<int,GameObject> generatedObjects)
+    public void InsertGeneratedObjects(Dictionary<int, GameObject> generatedObjects)
     {
         foreach (int index in generatedObjects.Keys)
         {
-            TransformContainer objContainer = generatedObjects[index].GetComponent<TransformContainer>();
+            CharTransformContainer objContainer = generatedObjects[index].GetComponent<CharTransformContainer>();
             if (objContainer == null)
             {
-                Debuger.LogWarning("Generated Container Not Found in " + generatedObjects[index].name +" ,ID: "+ index.ToString());
+                Debuger.LogWarning("Generated Container Not Found in " + generatedObjects[index].name + " ,ID: " + index.ToString());
                 continue;
             }
             else
@@ -165,6 +192,10 @@ public class ActionPlayer
                 m_lstActionFrames.Add(skillFrame);
             }
         }
+
+        // Stop Char Move
+        StopCharMove();
+        //DisableAI();
     }
     public void Destory()
     {
@@ -177,15 +208,34 @@ public class ActionPlayer
                     continue;
                 }
 
-                frame.Destory();
+                frame.DestoryBase();
             }
-
+            ResetInitInfo();
             m_lstActionFrames.Clear();
+            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ACTION_FININSH, m_ActionParam));
+            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, GameLogicSceneType.ActionEnd));
+            //EnableAI();
+            if(null != m_AffectedObject)
+            {
+                foreach(var obj in m_AffectedObject)
+                {
+                    if(null == obj)
+                    {
+                        continue;
+                    }
+                    //enable 
+                    SetPhysicStatus(obj, true);
+                }
+            }
         }
     }
     public void Pause()
     {
-
+        m_eActionState = EActionState.Pause;
+    }
+    public void Play()
+    {
+        m_eActionState = EActionState.Play;
     }
     public void Stop()
     {
@@ -258,9 +308,12 @@ public class ActionPlayer
                     m_fRunTime = TimeManager.Instance.GetTime() - m_fStartTime;
                 }
                 break;
+            case EActionState.Pause:
+                m_fStartTime = TimeManager.Instance.GetTime();
+                break;
         }
     }
-    private void AddAffectedObject(GameObject obj, TransformContainer objContainer)
+    private void AddAffectedObject(GameObject obj, CharTransformContainer objContainer)
     {
         if (m_mapTargetObjects.ContainsKey(objContainer.GetId()))
         {
@@ -272,7 +325,7 @@ public class ActionPlayer
             Debuger.Log("AffectedObject Add: " + objContainer.GetId().ToString());
         }
     }
-    private void AddGeneratedObject (GameObject obj, int iD)
+    private void AddGeneratedObject(GameObject obj, int iD)
     {
         if (m_mapTargetObjects.ContainsKey(iD))
         {
@@ -284,11 +337,130 @@ public class ActionPlayer
             Debuger.Log("GeneratedObject Add: " + iD.ToString());
         }
     }
-    private void CheckNpcRoot()
+    private void SaveInitInfo()
     {
-        if (!m_ObjNpcRoot)
+        GlobalScripts.Instance.Reset();
+        m_InitLock = GlobalScripts.Instance.mGameCamera.LockCam;
+        m_InitOverObstacle = GlobalScripts.Instance.mGameCamera.IsOverObstacle;
+        m_InitPositonDamping = GlobalScripts.Instance.mGameCamera.PositonDamping;
+        m_InitRotationDamping = GlobalScripts.Instance.mGameCamera.RotationDamping;
+        m_InitDistance = GlobalScripts.Instance.mGameCamera.Distance;
+        m_InitHeight = GlobalScripts.Instance.mGameCamera.Height;
+        m_InitOffsetHeight = GlobalScripts.Instance.mGameCamera.OffsetHeight;
+        m_InitRotation = GlobalScripts.Instance.mGameCamera.Rotation;
+        if (m_InitLock && null != GlobalScripts.Instance.mGameCamera.LookTarget)
         {
-            m_ObjNpcRoot = new GameObject("NpcRoot");
+            m_InitTarget = GlobalScripts.Instance.mGameCamera.LookTarget;
+        }
+        else
+        {
+            m_InitPos = GlobalScripts.Instance.mGameCamera.GetCurrentPosition();
+            m_InitRot = GlobalScripts.Instance.mGameCamera.GetCurrentEuler();
+        }
+    }
+    private void ResetInitInfo()
+    {
+        GlobalScripts.Instance.mGameCamera.LockCam = m_InitLock;
+        GlobalScripts.Instance.mGameCamera.PositonDamping = m_InitPositonDamping;
+        GlobalScripts.Instance.mGameCamera.RotationDamping = m_InitRotationDamping;
+        GlobalScripts.Instance.mGameCamera.Distance = m_InitDistance;
+        GlobalScripts.Instance.mGameCamera.Height = m_InitHeight;
+        GlobalScripts.Instance.mGameCamera.OffsetHeight = m_InitOffsetHeight;
+        if (!GlobalScripts.Instance.mGameCamera.CheckRoating())
+            GlobalScripts.Instance.mGameCamera.Rotation = m_InitRotation;
+        GlobalScripts.Instance.mGameCamera.IsOverObstacle = m_InitOverObstacle;
+        if (m_InitLock && null != m_InitTarget)
+        {
+            GlobalScripts.Instance.mGameCamera.LookTarget = m_InitTarget;
+        }
+        else
+        {
+            GlobalScripts.Instance.mGameCamera.SetCameraPos(m_InitPos, true);
+            GlobalScripts.Instance.mGameCamera.SetCameraRot(m_InitRot, true);
+        }
+    }
+    private void StopCharMove()
+    {
+        // stop player
+        PlayerCharacter player = PlayerManager.Instance.GetPlayerInstance();
+        if (player != null)
+        {
+            player.StopMove();
+        }
+        // stop npcs
+        //if (m_mapTargetObjects == null || m_mapTargetObjects.Count <= 0)
+        //    return;
+        //foreach (GameObject obj in m_mapTargetObjects.Values)
+        //{
+        //    CharTransformContainer container = obj.GetComponent<CharTransformContainer>();
+        //    if (container != null)
+        //    {
+        //        if (container.GetData() is Npc)
+        //        {
+        //            Npc npc = (Npc)container.GetData();
+        //            npc.StopMove();
+        //        }
+        //    }
+        //}
+    }
+    private void DisableAI()
+    {
+        if (m_mapTargetObjects == null || m_mapTargetObjects.Count <= 0)
+        {
+            return;
+        }
+        foreach (GameObject charObject in m_mapTargetObjects.Values)
+        {
+            CharTransformContainer container = charObject.GetComponent<CharTransformContainer>();
+            if (container == null)
+            {
+                Debuger.LogError("No Container in " + charObject.ToString());
+                return;
+            }
+            Npc npc = null;
+            if (container.GetData() is Npc)
+            {
+                npc = (Npc)container.GetData();
+            }
+            if (null != npc)
+            {
+                npc.SetAIStatus(false);
+            }
+
+        }
+    }
+    private void EnableAI()
+    {
+        if (m_mapTargetObjects == null || m_mapTargetObjects.Count <= 0)
+        {
+            return;
+        }
+        foreach (GameObject charObject in m_mapTargetObjects.Values)
+        {
+            CharTransformContainer container = charObject.GetComponent<CharTransformContainer>();
+            if (container == null)
+            {
+                Debuger.LogError("No Container in " + charObject.ToString());
+                return;
+            }
+            Npc npc = null;
+            if (container.GetData() is Npc)
+            {
+                npc = (Npc)container.GetData();
+            }
+            if (null != npc)
+            {
+                npc.SetAIStatus(true);
+            }
+        }
+    }
+    private void SetPhysicStatus(GameObject obj,bool status)
+    {
+        //disable rigidbody
+        Rigidbody rigidbody = obj.GetComponent<Rigidbody>();
+        if (null != rigidbody)
+        {
+            rigidbody.isKinematic = !status;
         }
     }
     #endregion

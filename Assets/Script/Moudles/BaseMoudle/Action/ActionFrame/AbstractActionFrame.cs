@@ -27,7 +27,7 @@ abstract public class AbstractActionFrame
     #region Field
     protected EActionFrameState m_FrameState = EActionFrameState.None;
     protected ActionFrameData m_FrameData;
-    protected GameObject m_ObjNpcRoot;
+    //protected GameObject m_ObjNpcRoot;
     protected List<GameObject> m_lstTargetObjects;
     protected ActionPlayer m_ActionPlayer;
     #endregion
@@ -36,7 +36,6 @@ abstract public class AbstractActionFrame
     {
         m_ActionPlayer = action;
         m_FrameData = data;
-        m_ObjNpcRoot = m_ActionPlayer.GetNpcRoot();
         m_lstTargetObjects = new List<GameObject>();
 
         if (data.TargetIDs == null)
@@ -52,9 +51,22 @@ abstract public class AbstractActionFrame
             {
                 m_lstTargetObjects.Add(allObjects[index]);
             }
-            else if (index > 10000000)
+            else if (index > 10000010)
             {
-                Debuger.LogWarning("Affected GameObject Not Found, ID: " + index.ToString());
+                Debuger.LogWarning(("<color=orange>" + (EActionFrameType)data.Type).ToString() + "</color> Affected GameObject Not Found, ID: " + index.ToString());
+            }
+            else if (index > 10000000 && index <= 10000010)
+            {
+                if (!allObjects.ContainsKey(10000001) && !allObjects.ContainsKey(10000002))
+                {
+                    PlayerCharacter player = PlayerManager.Instance.GetPlayerInstance();
+                    if (player != null)
+                    {
+                        CharTransformData charData = (CharTransformData)(player.GetTransformData());
+                        GameObject charObject = charData.GetGameObject();
+                        m_lstTargetObjects.Add(charObject);
+                    }
+                }
             }
             else
             {
@@ -80,9 +92,17 @@ abstract public class AbstractActionFrame
     #endregion
 
     #region Public Interface
-    public void ExecuteBase() {
+    public void ExecuteBase()
+    {
         UpdateGeneratedObjects();
+        DisableAI(); 
+        StopMove();
         Execute();
+    }
+    public void DestoryBase()
+    {
+        EnableAI();
+        Destory();
     }
     abstract public bool IsTrigger(float fRealTime);
     abstract public bool IsFinish(float fRealTime);
@@ -112,11 +132,81 @@ abstract public class AbstractActionFrame
                 }
                 else
                 {
-                    Debuger.LogWarning("Generated GameObject Not Found, ID: " + index.ToString());
+                    Debuger.LogWarning(("<color=orange>" + (EActionFrameType)m_FrameData.Type).ToString() + "</color> Generated GameObject Not Found, ID: " + index.ToString());
                 }
             }
         }
+    }
+    private void StopMove ()
+    {
+        // stop npcs
+        if (m_lstTargetObjects == null || m_lstTargetObjects.Count <= 0)
+            return;
+        foreach (GameObject obj in m_lstTargetObjects)
+        {
+            CharTransformContainer container = obj.GetComponent<CharTransformContainer>();
+            if (container != null)
+            {
+                if (container.GetData() is Npc)
+                {
+                    Npc npc = (Npc)container.GetData();
+                    npc.StopMove();
+                }
+            }
+        }
+    }
+    private void DisableAI()
+    {
+        if (m_lstTargetObjects == null || m_lstTargetObjects.Count <= 0)
+        {
+            return;
+        }
+        foreach (GameObject charObject in m_lstTargetObjects)
+        {
+            CharTransformContainer container = charObject.GetComponent<CharTransformContainer>();
+            if (container == null)
+            {
+                Debuger.LogError("No Container in " + charObject.ToString());
+                return;
+            }
+            Npc npc = null;
+            if (container.GetData() is Npc)
+            {
+                npc = (Npc)container.GetData();
+            }
+            if (null != npc)
+            {
+                npc.SetAIStatus(false);
+            }
 
+        }
+    }
+    private void EnableAI()
+    {
+        if (m_lstTargetObjects == null || m_lstTargetObjects.Count <= 0)
+        {
+            return;
+        }
+        foreach (GameObject charObject in m_lstTargetObjects)
+        {
+            CharTransformContainer container = charObject.GetComponent<CharTransformContainer>();
+            if (container == null)
+            {
+                Debuger.LogError("No Container in " + charObject.ToString());
+                return;
+            }
+            Npc npc = null;
+            if (container.GetData() is Npc)
+            {
+                npc = (Npc)container.GetData();
+            }
+            if (null != npc)
+            {
+                npc.SetAIStatus(true);
+                npc.IsPlayerControlled = false;
+                npc.ResetGroup();
+            }
+        }
     }
     #endregion
 
