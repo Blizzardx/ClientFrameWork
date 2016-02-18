@@ -33,9 +33,8 @@ public class Func_1_Flag : FuncMethodsBase
             {
                 continue;
             }
-            PlayerCharacter playerChar = elem as PlayerCharacter;
             bool newValue = funcdata.ParamIntList[1] != 0;
-            playerChar.GetCharCounterData().SetFlag(funcdata.ParamIntList[0],newValue);
+            PlayerManager.Instance.GetCharCounterData().SetFlag(funcdata.ParamIntList[0], newValue);
         }
         return EFuncRet.Continue;
     }

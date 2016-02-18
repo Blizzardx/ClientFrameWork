@@ -32,7 +32,8 @@ namespace Config
     private int _skillType;
     private int _quality;
     private int _level;
-    private int _cd;
+    private int _beginCd;
+    private int _initCd;
     private int _addCd;
     private int _perLimitId;
     private int _perFuncId;
@@ -157,16 +158,29 @@ namespace Config
       }
     }
 
-    public int Cd
+    public int BeginCd
     {
       get
       {
-        return _cd;
+        return _beginCd;
       }
       set
       {
-        __isset.cd = true;
-        this._cd = value;
+        __isset.beginCd = true;
+        this._beginCd = value;
+      }
+    }
+
+    public int InitCd
+    {
+      get
+      {
+        return _initCd;
+      }
+      set
+      {
+        __isset.initCd = true;
+        this._initCd = value;
       }
     }
 
@@ -263,7 +277,8 @@ namespace Config
       public bool skillType;
       public bool quality;
       public bool level;
-      public bool cd;
+      public bool beginCd;
+      public bool initCd;
       public bool addCd;
       public bool perLimitId;
       public bool perFuncId;
@@ -350,9 +365,16 @@ namespace Config
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
+          case 81:
+            if (field.Type == TType.I32) {
+              BeginCd = iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
           case 90:
             if (field.Type == TType.I32) {
-              Cd = iprot.ReadI32();
+              InitCd = iprot.ReadI32();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -484,12 +506,20 @@ namespace Config
         oprot.WriteI32(Level);
         oprot.WriteFieldEnd();
       }
-      if (__isset.cd) {
-        field.Name = "cd";
+      if (__isset.beginCd) {
+        field.Name = "beginCd";
+        field.Type = TType.I32;
+        field.ID = 81;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteI32(BeginCd);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.initCd) {
+        field.Name = "initCd";
         field.Type = TType.I32;
         field.ID = 90;
         oprot.WriteFieldBegin(field);
-        oprot.WriteI32(Cd);
+        oprot.WriteI32(InitCd);
         oprot.WriteFieldEnd();
       }
       if (__isset.addCd) {
@@ -564,8 +594,10 @@ namespace Config
       sb.Append(Quality);
       sb.Append(",Level: ");
       sb.Append(Level);
-      sb.Append(",Cd: ");
-      sb.Append(Cd);
+      sb.Append(",BeginCd: ");
+      sb.Append(BeginCd);
+      sb.Append(",InitCd: ");
+      sb.Append(InitCd);
       sb.Append(",AddCd: ");
       sb.Append(AddCd);
       sb.Append(",PerLimitId: ");

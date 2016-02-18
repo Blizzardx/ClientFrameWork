@@ -29,6 +29,7 @@ namespace TerrainEditor
     private string _mapResName;
     private List<TerrainTriggerData> _triggerDataList;
     private List<TerrainNpcData> _npcDataList;
+    private PlayerInitPosData _playerInitPos;
 
     public int ID
     {
@@ -108,6 +109,19 @@ namespace TerrainEditor
       }
     }
 
+    public PlayerInitPosData PlayerInitPos
+    {
+      get
+      {
+        return _playerInitPos;
+      }
+      set
+      {
+        __isset.playerInitPos = true;
+        this._playerInitPos = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -120,6 +134,7 @@ namespace TerrainEditor
       public bool mapResName;
       public bool triggerDataList;
       public bool npcDataList;
+      public bool playerInitPos;
     }
 
     public TerrainEditorData() {
@@ -201,6 +216,14 @@ namespace TerrainEditor
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
+          case 70:
+            if (field.Type == TType.Struct) {
+              PlayerInitPos = new PlayerInitPosData();
+              PlayerInitPos.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
           default: 
             TProtocolUtil.Skip(iprot, field.Type);
             break;
@@ -276,6 +299,14 @@ namespace TerrainEditor
         }
         oprot.WriteFieldEnd();
       }
+      if (PlayerInitPos != null && __isset.playerInitPos) {
+        field.Name = "playerInitPos";
+        field.Type = TType.Struct;
+        field.ID = 70;
+        oprot.WriteFieldBegin(field);
+        PlayerInitPos.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
       oprot.WriteFieldStop();
       oprot.WriteStructEnd();
     }
@@ -294,6 +325,8 @@ namespace TerrainEditor
       sb.Append(TriggerDataList);
       sb.Append(",NpcDataList: ");
       sb.Append(NpcDataList);
+      sb.Append(",PlayerInitPos: ");
+      sb.Append(PlayerInitPos== null ? "<null>" : PlayerInitPos.ToString());
       sb.Append(")");
       return sb.ToString();
     }

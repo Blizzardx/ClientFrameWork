@@ -33,10 +33,9 @@ public class Func_2_Bit8 : FuncMethodsBase
             {
                 continue;
             }
-            PlayerCharacter playerChar = elem as PlayerCharacter;
             sbyte newValue = 0;
             OperationFunc.FuncOperatorValue((EFuncOperator)(funcdata.Oper), ref newValue, (sbyte)(funcdata.ParamIntList[1]));
-            playerChar.GetCharCounterData().SetBit8Count(funcdata.ParamIntList[0], newValue);
+            PlayerManager.Instance.GetCharCounterData().SetBit8Count(funcdata.ParamIntList[0], newValue);
         }
         return EFuncRet.Continue;
     }

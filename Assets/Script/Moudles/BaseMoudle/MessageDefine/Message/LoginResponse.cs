@@ -23,6 +23,44 @@ namespace NetWork.Auto
   #endif
   public partial class LoginResponse : TBase
   {
+    private NetWork.Auto.SystemInfo _failSystemInfo;
+    private NetWork.Auto.PlayerInfo _playerInfo;
+
+    public NetWork.Auto.SystemInfo FailSystemInfo
+    {
+      get
+      {
+        return _failSystemInfo;
+      }
+      set
+      {
+        __isset.failSystemInfo = true;
+        this._failSystemInfo = value;
+      }
+    }
+
+    public NetWork.Auto.PlayerInfo PlayerInfo
+    {
+      get
+      {
+        return _playerInfo;
+      }
+      set
+      {
+        __isset.playerInfo = true;
+        this._playerInfo = value;
+      }
+    }
+
+
+    public Isset __isset;
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public struct Isset {
+      public bool failSystemInfo;
+      public bool playerInfo;
+    }
 
     public LoginResponse() {
     }
@@ -39,6 +77,22 @@ namespace NetWork.Auto
         }
         switch (field.ID)
         {
+          case 10:
+            if (field.Type == TType.Struct) {
+              FailSystemInfo = new NetWork.Auto.SystemInfo();
+              FailSystemInfo.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 20:
+            if (field.Type == TType.Struct) {
+              PlayerInfo = new NetWork.Auto.PlayerInfo();
+              PlayerInfo.Read(iprot);
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
           default: 
             TProtocolUtil.Skip(iprot, field.Type);
             break;
@@ -51,12 +105,33 @@ namespace NetWork.Auto
     public void Write(TProtocol oprot) {
       TStruct struc = new TStruct("LoginResponse");
       oprot.WriteStructBegin(struc);
+      TField field = new TField();
+      if (FailSystemInfo != null && __isset.failSystemInfo) {
+        field.Name = "failSystemInfo";
+        field.Type = TType.Struct;
+        field.ID = 10;
+        oprot.WriteFieldBegin(field);
+        FailSystemInfo.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
+      if (PlayerInfo != null && __isset.playerInfo) {
+        field.Name = "playerInfo";
+        field.Type = TType.Struct;
+        field.ID = 20;
+        oprot.WriteFieldBegin(field);
+        PlayerInfo.Write(oprot);
+        oprot.WriteFieldEnd();
+      }
       oprot.WriteFieldStop();
       oprot.WriteStructEnd();
     }
 
     public override string ToString() {
       StringBuilder sb = new StringBuilder("LoginResponse(");
+      sb.Append("FailSystemInfo: ");
+      sb.Append(FailSystemInfo== null ? "<null>" : FailSystemInfo.ToString());
+      sb.Append(",PlayerInfo: ");
+      sb.Append(PlayerInfo== null ? "<null>" : PlayerInfo.ToString());
       sb.Append(")");
       return sb.ToString();
     }

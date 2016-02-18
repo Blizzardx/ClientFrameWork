@@ -13,6 +13,10 @@ public class Target_1_INCIRCLERANGE:TargetMethodBase
     {
         List<Ilife> res = new List<Ilife>();
 
+        if (thisUnit == null)
+        {
+            return res;
+        }
         Vector3 point = ((ITransformBehaviour) (thisUnit)).GetTransformData().GetPosition();
         float r = ((ITransformBehaviour)(thisUnit)).GetTransformData().GetScale().x;
         var lifeList = LifeManager.GetLifeList();

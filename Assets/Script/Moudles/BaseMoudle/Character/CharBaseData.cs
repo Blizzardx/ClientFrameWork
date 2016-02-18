@@ -68,19 +68,7 @@ namespace Moudles.BaseMoudle.Character
             }
         }
 
-        //hp
-        private int hp;
-
-        public int Hp
-        {
-            get { return hp; }
-            set
-            {
-                hp = value;
-                SetModify();
-            }
-        }
-
+       
         //level
         private short level;
 
@@ -94,28 +82,38 @@ namespace Moudles.BaseMoudle.Character
             }
         }
 
-        //attack
-        private int attack;
+        //talent map
+        private Dictionary<string, int> charTalentMap;
 
-        public int Attack
+        public Dictionary<string, int> CharTalentMap
         {
-            get { return attack; }
+            get { return charTalentMap; }
             set
             {
-                attack = value;
+                charTalentMap = value;
                 SetModify();
             }
         }
 
-        //money
-        private int gold;
+        private sbyte charRole;
 
-        public int Gold
+        public sbyte CharRole
         {
-            get { return gold; }
+            get { return charRole;}
             set
             {
-                gold = value;
+                charRole = value;
+                SetModify();
+            }
+        }
+
+        private byte[] charDetail;
+        public byte[] CharDeatail
+        {
+            get { return charDetail; }
+            set
+            {
+                charDetail = value;
                 SetModify();
             }
         }

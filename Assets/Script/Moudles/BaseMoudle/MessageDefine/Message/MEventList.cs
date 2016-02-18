@@ -23,6 +23,29 @@ namespace NetWork.Auto
   #endif
   public partial class MEventList : TBase
   {
+    private List<MEvent> _events;
+
+    public List<MEvent> Events
+    {
+      get
+      {
+        return _events;
+      }
+      set
+      {
+        __isset.events = true;
+        this._events = value;
+      }
+    }
+
+
+    public Isset __isset;
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public struct Isset {
+      public bool events;
+    }
 
     public MEventList() {
     }
@@ -39,6 +62,24 @@ namespace NetWork.Auto
         }
         switch (field.ID)
         {
+          case 10:
+            if (field.Type == TType.List) {
+              {
+                Events = new List<MEvent>();
+                TList _list0 = iprot.ReadListBegin();
+                for( int _i1 = 0; _i1 < _list0.Count; ++_i1)
+                {
+                  MEvent _elem2 = new MEvent();
+                  _elem2 = new MEvent();
+                  _elem2.Read(iprot);
+                  Events.Add(_elem2);
+                }
+                iprot.ReadListEnd();
+              }
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
           default: 
             TProtocolUtil.Skip(iprot, field.Type);
             break;
@@ -51,12 +92,30 @@ namespace NetWork.Auto
     public void Write(TProtocol oprot) {
       TStruct struc = new TStruct("MEventList");
       oprot.WriteStructBegin(struc);
+      TField field = new TField();
+      if (Events != null && __isset.events) {
+        field.Name = "events";
+        field.Type = TType.List;
+        field.ID = 10;
+        oprot.WriteFieldBegin(field);
+        {
+          oprot.WriteListBegin(new TList(TType.Struct, Events.Count));
+          foreach (MEvent _iter3 in Events)
+          {
+            _iter3.Write(oprot);
+          }
+          oprot.WriteListEnd();
+        }
+        oprot.WriteFieldEnd();
+      }
       oprot.WriteFieldStop();
       oprot.WriteStructEnd();
     }
 
     public override string ToString() {
       StringBuilder sb = new StringBuilder("MEventList(");
+      sb.Append("Events: ");
+      sb.Append(Events);
       sb.Append(")");
       return sb.ToString();
     }

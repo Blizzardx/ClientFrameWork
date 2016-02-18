@@ -23,18 +23,32 @@ namespace Config.Table
   #endif
   public partial class MissionStepConfigTable : TBase
   {
-    private Dictionary<int, List<Config.MissionStepConfig>> _missionStepConfigMap;
+    private Dictionary<int, List<Config.MissionStepConfig>> _missionStepByMissionIdConfigMap;
+    private Dictionary<int, Config.MissionStepConfig> _missionStepByStepIdConfigMap;
 
-    public Dictionary<int, List<Config.MissionStepConfig>> MissionStepConfigMap
+    public Dictionary<int, List<Config.MissionStepConfig>> MissionStepByMissionIdConfigMap
     {
       get
       {
-        return _missionStepConfigMap;
+        return _missionStepByMissionIdConfigMap;
       }
       set
       {
-        __isset.missionStepConfigMap = true;
-        this._missionStepConfigMap = value;
+        __isset.missionStepByMissionIdConfigMap = true;
+        this._missionStepByMissionIdConfigMap = value;
+      }
+    }
+
+    public Dictionary<int, Config.MissionStepConfig> MissionStepByStepIdConfigMap
+    {
+      get
+      {
+        return _missionStepByStepIdConfigMap;
+      }
+      set
+      {
+        __isset.missionStepByStepIdConfigMap = true;
+        this._missionStepByStepIdConfigMap = value;
       }
     }
 
@@ -44,7 +58,8 @@ namespace Config.Table
     [Serializable]
     #endif
     public struct Isset {
-      public bool missionStepConfigMap;
+      public bool missionStepByMissionIdConfigMap;
+      public bool missionStepByStepIdConfigMap;
     }
 
     public MissionStepConfigTable() {
@@ -65,7 +80,7 @@ namespace Config.Table
           case 1:
             if (field.Type == TType.Map) {
               {
-                MissionStepConfigMap = new Dictionary<int, List<Config.MissionStepConfig>>();
+                MissionStepByMissionIdConfigMap = new Dictionary<int, List<Config.MissionStepConfig>>();
                 TMap _map55 = iprot.ReadMapBegin();
                 for( int _i56 = 0; _i56 < _map55.Count; ++_i56)
                 {
@@ -84,7 +99,27 @@ namespace Config.Table
                     }
                     iprot.ReadListEnd();
                   }
-                  MissionStepConfigMap[_key57] = _val58;
+                  MissionStepByMissionIdConfigMap[_key57] = _val58;
+                }
+                iprot.ReadMapEnd();
+              }
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 2:
+            if (field.Type == TType.Map) {
+              {
+                MissionStepByStepIdConfigMap = new Dictionary<int, Config.MissionStepConfig>();
+                TMap _map62 = iprot.ReadMapBegin();
+                for( int _i63 = 0; _i63 < _map62.Count; ++_i63)
+                {
+                  int _key64;
+                  Config.MissionStepConfig _val65;
+                  _key64 = iprot.ReadI32();
+                  _val65 = new Config.MissionStepConfig();
+                  _val65.Read(iprot);
+                  MissionStepByStepIdConfigMap[_key64] = _val65;
                 }
                 iprot.ReadMapEnd();
               }
@@ -105,24 +140,40 @@ namespace Config.Table
       TStruct struc = new TStruct("MissionStepConfigTable");
       oprot.WriteStructBegin(struc);
       TField field = new TField();
-      if (MissionStepConfigMap != null && __isset.missionStepConfigMap) {
-        field.Name = "missionStepConfigMap";
+      if (MissionStepByMissionIdConfigMap != null && __isset.missionStepByMissionIdConfigMap) {
+        field.Name = "missionStepByMissionIdConfigMap";
         field.Type = TType.Map;
         field.ID = 1;
         oprot.WriteFieldBegin(field);
         {
-          oprot.WriteMapBegin(new TMap(TType.I32, TType.List, MissionStepConfigMap.Count));
-          foreach (int _iter62 in MissionStepConfigMap.Keys)
+          oprot.WriteMapBegin(new TMap(TType.I32, TType.List, MissionStepByMissionIdConfigMap.Count));
+          foreach (int _iter66 in MissionStepByMissionIdConfigMap.Keys)
           {
-            oprot.WriteI32(_iter62);
+            oprot.WriteI32(_iter66);
             {
-              oprot.WriteListBegin(new TList(TType.Struct, MissionStepConfigMap[_iter62].Count));
-              foreach (Config.MissionStepConfig _iter63 in MissionStepConfigMap[_iter62])
+              oprot.WriteListBegin(new TList(TType.Struct, MissionStepByMissionIdConfigMap[_iter66].Count));
+              foreach (Config.MissionStepConfig _iter67 in MissionStepByMissionIdConfigMap[_iter66])
               {
-                _iter63.Write(oprot);
+                _iter67.Write(oprot);
               }
               oprot.WriteListEnd();
             }
+          }
+          oprot.WriteMapEnd();
+        }
+        oprot.WriteFieldEnd();
+      }
+      if (MissionStepByStepIdConfigMap != null && __isset.missionStepByStepIdConfigMap) {
+        field.Name = "missionStepByStepIdConfigMap";
+        field.Type = TType.Map;
+        field.ID = 2;
+        oprot.WriteFieldBegin(field);
+        {
+          oprot.WriteMapBegin(new TMap(TType.I32, TType.Struct, MissionStepByStepIdConfigMap.Count));
+          foreach (int _iter68 in MissionStepByStepIdConfigMap.Keys)
+          {
+            oprot.WriteI32(_iter68);
+            MissionStepByStepIdConfigMap[_iter68].Write(oprot);
           }
           oprot.WriteMapEnd();
         }
@@ -134,8 +185,10 @@ namespace Config.Table
 
     public override string ToString() {
       StringBuilder sb = new StringBuilder("MissionStepConfigTable(");
-      sb.Append("MissionStepConfigMap: ");
-      sb.Append(MissionStepConfigMap);
+      sb.Append("MissionStepByMissionIdConfigMap: ");
+      sb.Append(MissionStepByMissionIdConfigMap);
+      sb.Append(",MissionStepByStepIdConfigMap: ");
+      sb.Append(MissionStepByStepIdConfigMap);
       sb.Append(")");
       return sb.ToString();
     }

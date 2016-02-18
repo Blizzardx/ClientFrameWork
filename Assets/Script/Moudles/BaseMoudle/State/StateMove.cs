@@ -16,7 +16,7 @@ public class StateMove : IState
     public override void DoEnter(object param)
     {
         CharTransformData data = (((ITransformBehaviour)(unit)).GetTransformData()) as CharTransformData;
-        data.PlayAnimation("Walk");
+        //data.DirectPlayAnimation("Walk");
     }
 
     public override bool CanExit()
@@ -26,6 +26,8 @@ public class StateMove : IState
 
     public override void DoExit()
     {
+        CharTransformData data = (((ITransformBehaviour)(unit)).GetTransformData()) as CharTransformData;
+        data.StopMove();
     }
 }
 

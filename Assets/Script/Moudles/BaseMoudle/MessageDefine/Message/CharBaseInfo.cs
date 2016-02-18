@@ -29,9 +29,9 @@ namespace NetWork.Auto
     private sbyte _age;
     private int _fame;
     private short _level;
-    private int _hp;
-    private int _atk;
-    private int _gold;
+    private Dictionary<string, int> _charTalentMap;
+    private sbyte _role;
+    private byte[] _charDeail;
 
     public int CharId
     {
@@ -111,42 +111,42 @@ namespace NetWork.Auto
       }
     }
 
-    public int Hp
+    public Dictionary<string, int> CharTalentMap
     {
       get
       {
-        return _hp;
+        return _charTalentMap;
       }
       set
       {
-        __isset.hp = true;
-        this._hp = value;
+        __isset.charTalentMap = true;
+        this._charTalentMap = value;
       }
     }
 
-    public int Atk
+    public sbyte Role
     {
       get
       {
-        return _atk;
+        return _role;
       }
       set
       {
-        __isset.atk = true;
-        this._atk = value;
+        __isset.role = true;
+        this._role = value;
       }
     }
 
-    public int Gold
+    public byte[] CharDeail
     {
       get
       {
-        return _gold;
+        return _charDeail;
       }
       set
       {
-        __isset.gold = true;
-        this._gold = value;
+        __isset.charDeail = true;
+        this._charDeail = value;
       }
     }
 
@@ -162,9 +162,9 @@ namespace NetWork.Auto
       public bool age;
       public bool fame;
       public bool level;
-      public bool hp;
-      public bool atk;
-      public bool gold;
+      public bool charTalentMap;
+      public bool role;
+      public bool charDeail;
     }
 
     public CharBaseInfo() {
@@ -225,22 +225,34 @@ namespace NetWork.Auto
             }
             break;
           case 70:
-            if (field.Type == TType.I32) {
-              Hp = iprot.ReadI32();
+            if (field.Type == TType.Map) {
+              {
+                CharTalentMap = new Dictionary<string, int>();
+                TMap _map0 = iprot.ReadMapBegin();
+                for( int _i1 = 0; _i1 < _map0.Count; ++_i1)
+                {
+                  string _key2;
+                  int _val3;
+                  _key2 = iprot.ReadString();
+                  _val3 = iprot.ReadI32();
+                  CharTalentMap[_key2] = _val3;
+                }
+                iprot.ReadMapEnd();
+              }
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 80:
-            if (field.Type == TType.I32) {
-              Atk = iprot.ReadI32();
+            if (field.Type == TType.Byte) {
+              Role = iprot.ReadByte();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 90:
-            if (field.Type == TType.I32) {
-              Gold = iprot.ReadI32();
+            if (field.Type == TType.String) {
+              CharDeail = iprot.ReadBinary();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -306,28 +318,36 @@ namespace NetWork.Auto
         oprot.WriteI16(Level);
         oprot.WriteFieldEnd();
       }
-      if (__isset.hp) {
-        field.Name = "hp";
-        field.Type = TType.I32;
+      if (CharTalentMap != null && __isset.charTalentMap) {
+        field.Name = "charTalentMap";
+        field.Type = TType.Map;
         field.ID = 70;
         oprot.WriteFieldBegin(field);
-        oprot.WriteI32(Hp);
+        {
+          oprot.WriteMapBegin(new TMap(TType.String, TType.I32, CharTalentMap.Count));
+          foreach (string _iter4 in CharTalentMap.Keys)
+          {
+            oprot.WriteString(_iter4);
+            oprot.WriteI32(CharTalentMap[_iter4]);
+          }
+          oprot.WriteMapEnd();
+        }
         oprot.WriteFieldEnd();
       }
-      if (__isset.atk) {
-        field.Name = "atk";
-        field.Type = TType.I32;
+      if (__isset.role) {
+        field.Name = "role";
+        field.Type = TType.Byte;
         field.ID = 80;
         oprot.WriteFieldBegin(field);
-        oprot.WriteI32(Atk);
+        oprot.WriteByte(Role);
         oprot.WriteFieldEnd();
       }
-      if (__isset.gold) {
-        field.Name = "gold";
-        field.Type = TType.I32;
+      if (CharDeail != null && __isset.charDeail) {
+        field.Name = "charDeail";
+        field.Type = TType.String;
         field.ID = 90;
         oprot.WriteFieldBegin(field);
-        oprot.WriteI32(Gold);
+        oprot.WriteBinary(CharDeail);
         oprot.WriteFieldEnd();
       }
       oprot.WriteFieldStop();
@@ -348,12 +368,12 @@ namespace NetWork.Auto
       sb.Append(Fame);
       sb.Append(",Level: ");
       sb.Append(Level);
-      sb.Append(",Hp: ");
-      sb.Append(Hp);
-      sb.Append(",Atk: ");
-      sb.Append(Atk);
-      sb.Append(",Gold: ");
-      sb.Append(Gold);
+      sb.Append(",CharTalentMap: ");
+      sb.Append(CharTalentMap);
+      sb.Append(",Role: ");
+      sb.Append(Role);
+      sb.Append(",CharDeail: ");
+      sb.Append(CharDeail);
       sb.Append(")");
       return sb.ToString();
     }

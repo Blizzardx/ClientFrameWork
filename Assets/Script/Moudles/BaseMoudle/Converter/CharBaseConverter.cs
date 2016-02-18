@@ -16,13 +16,13 @@ namespace Moudles.BaseMoudle.Converter
             info.CharId = data.CharId;
             info.CharName = data.CharName;
             info.Age = data.CharAge;
-            info.Atk = data.Attack;
             info.Fame = data.Fame;
-            info.Gold = data.Gold;
-            info.Hp = data.Hp;
             info.Level = data.Level;
             info.Gender = data.Gender;
-
+            //leo
+            info.CharTalentMap = data.CharTalentMap;
+            info.Role = data.CharRole;
+            info.CharDeail = data.CharDeatail;
             return info;
         }
 
@@ -33,13 +33,13 @@ namespace Moudles.BaseMoudle.Converter
             data.CharId = info.CharId;
             data.CharName = info.CharName;
             data.CharAge = info.Age;
-            data.Attack = info.Atk;
             data.Fame = info.Fame;
-            data.Gold = info.Gold;
-            data.Hp = info.Hp;
             data.Level = info.Level;
             data.Gender = info.Gender;
-
+            //leo
+            data.CharTalentMap = info.CharTalentMap;
+            data.CharRole = info.Role;
+            data.CharDeatail = info.CharDeail;
             data.Init = false;
             return data;
         }

@@ -26,12 +26,12 @@ namespace Config
     private int _id;
     private int _nameMessageId;
     private string _nameAudioId;
-    private int _nextMissionId;
-    private int _level;
-    private int _completeFuncId;
-    private int _desMessionId;
+    private int _desMessageId;
     private string _desAudioId;
     private int _acceptLimitId;
+    private int _completeLimitId;
+    private int _completeFuncId;
+    private int _nextMissionId;
 
     public int Id
     {
@@ -72,55 +72,16 @@ namespace Config
       }
     }
 
-    public int NextMissionId
+    public int DesMessageId
     {
       get
       {
-        return _nextMissionId;
+        return _desMessageId;
       }
       set
       {
-        __isset.nextMissionId = true;
-        this._nextMissionId = value;
-      }
-    }
-
-    public int Level
-    {
-      get
-      {
-        return _level;
-      }
-      set
-      {
-        __isset.level = true;
-        this._level = value;
-      }
-    }
-
-    public int CompleteFuncId
-    {
-      get
-      {
-        return _completeFuncId;
-      }
-      set
-      {
-        __isset.completeFuncId = true;
-        this._completeFuncId = value;
-      }
-    }
-
-    public int DesMessionId
-    {
-      get
-      {
-        return _desMessionId;
-      }
-      set
-      {
-        __isset.desMessionId = true;
-        this._desMessionId = value;
+        __isset.desMessageId = true;
+        this._desMessageId = value;
       }
     }
 
@@ -150,6 +111,45 @@ namespace Config
       }
     }
 
+    public int CompleteLimitId
+    {
+      get
+      {
+        return _completeLimitId;
+      }
+      set
+      {
+        __isset.completeLimitId = true;
+        this._completeLimitId = value;
+      }
+    }
+
+    public int CompleteFuncId
+    {
+      get
+      {
+        return _completeFuncId;
+      }
+      set
+      {
+        __isset.completeFuncId = true;
+        this._completeFuncId = value;
+      }
+    }
+
+    public int NextMissionId
+    {
+      get
+      {
+        return _nextMissionId;
+      }
+      set
+      {
+        __isset.nextMissionId = true;
+        this._nextMissionId = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -159,12 +159,12 @@ namespace Config
       public bool id;
       public bool nameMessageId;
       public bool nameAudioId;
-      public bool nextMissionId;
-      public bool level;
-      public bool completeFuncId;
-      public bool desMessionId;
+      public bool desMessageId;
       public bool desAudioId;
       public bool acceptLimitId;
+      public bool completeLimitId;
+      public bool completeFuncId;
+      public bool nextMissionId;
     }
 
     public MainMissionConfig() {
@@ -196,51 +196,51 @@ namespace Config
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 21:
+          case 30:
             if (field.Type == TType.String) {
               NameAudioId = iprot.ReadString();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 30:
-            if (field.Type == TType.I32) {
-              NextMissionId = iprot.ReadI32();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
           case 40:
             if (field.Type == TType.I32) {
-              Level = iprot.ReadI32();
+              DesMessageId = iprot.ReadI32();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 50:
-            if (field.Type == TType.I32) {
-              CompleteFuncId = iprot.ReadI32();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
-          case 60:
-            if (field.Type == TType.I32) {
-              DesMessionId = iprot.ReadI32();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
-          case 70:
             if (field.Type == TType.String) {
               DesAudioId = iprot.ReadString();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 80:
+          case 60:
             if (field.Type == TType.I32) {
               AcceptLimitId = iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 70:
+            if (field.Type == TType.I32) {
+              CompleteLimitId = iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 80:
+            if (field.Type == TType.I32) {
+              CompleteFuncId = iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 90:
+            if (field.Type == TType.I32) {
+              NextMissionId = iprot.ReadI32();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -277,47 +277,23 @@ namespace Config
       if (NameAudioId != null && __isset.nameAudioId) {
         field.Name = "nameAudioId";
         field.Type = TType.String;
-        field.ID = 21;
+        field.ID = 30;
         oprot.WriteFieldBegin(field);
         oprot.WriteString(NameAudioId);
         oprot.WriteFieldEnd();
       }
-      if (__isset.nextMissionId) {
-        field.Name = "nextMissionId";
-        field.Type = TType.I32;
-        field.ID = 30;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteI32(NextMissionId);
-        oprot.WriteFieldEnd();
-      }
-      if (__isset.level) {
-        field.Name = "level";
+      if (__isset.desMessageId) {
+        field.Name = "desMessageId";
         field.Type = TType.I32;
         field.ID = 40;
         oprot.WriteFieldBegin(field);
-        oprot.WriteI32(Level);
-        oprot.WriteFieldEnd();
-      }
-      if (__isset.completeFuncId) {
-        field.Name = "completeFuncId";
-        field.Type = TType.I32;
-        field.ID = 50;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteI32(CompleteFuncId);
-        oprot.WriteFieldEnd();
-      }
-      if (__isset.desMessionId) {
-        field.Name = "desMessionId";
-        field.Type = TType.I32;
-        field.ID = 60;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteI32(DesMessionId);
+        oprot.WriteI32(DesMessageId);
         oprot.WriteFieldEnd();
       }
       if (DesAudioId != null && __isset.desAudioId) {
         field.Name = "desAudioId";
         field.Type = TType.String;
-        field.ID = 70;
+        field.ID = 50;
         oprot.WriteFieldBegin(field);
         oprot.WriteString(DesAudioId);
         oprot.WriteFieldEnd();
@@ -325,9 +301,33 @@ namespace Config
       if (__isset.acceptLimitId) {
         field.Name = "acceptLimitId";
         field.Type = TType.I32;
-        field.ID = 80;
+        field.ID = 60;
         oprot.WriteFieldBegin(field);
         oprot.WriteI32(AcceptLimitId);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.completeLimitId) {
+        field.Name = "completeLimitId";
+        field.Type = TType.I32;
+        field.ID = 70;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteI32(CompleteLimitId);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.completeFuncId) {
+        field.Name = "completeFuncId";
+        field.Type = TType.I32;
+        field.ID = 80;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteI32(CompleteFuncId);
+        oprot.WriteFieldEnd();
+      }
+      if (__isset.nextMissionId) {
+        field.Name = "nextMissionId";
+        field.Type = TType.I32;
+        field.ID = 90;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteI32(NextMissionId);
         oprot.WriteFieldEnd();
       }
       oprot.WriteFieldStop();
@@ -342,18 +342,18 @@ namespace Config
       sb.Append(NameMessageId);
       sb.Append(",NameAudioId: ");
       sb.Append(NameAudioId);
-      sb.Append(",NextMissionId: ");
-      sb.Append(NextMissionId);
-      sb.Append(",Level: ");
-      sb.Append(Level);
-      sb.Append(",CompleteFuncId: ");
-      sb.Append(CompleteFuncId);
-      sb.Append(",DesMessionId: ");
-      sb.Append(DesMessionId);
+      sb.Append(",DesMessageId: ");
+      sb.Append(DesMessageId);
       sb.Append(",DesAudioId: ");
       sb.Append(DesAudioId);
       sb.Append(",AcceptLimitId: ");
       sb.Append(AcceptLimitId);
+      sb.Append(",CompleteLimitId: ");
+      sb.Append(CompleteLimitId);
+      sb.Append(",CompleteFuncId: ");
+      sb.Append(CompleteFuncId);
+      sb.Append(",NextMissionId: ");
+      sb.Append(NextMissionId);
       sb.Append(")");
       return sb.ToString();
     }

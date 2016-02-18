@@ -118,12 +118,12 @@ namespace NetWork.Auto
             if (field.Type == TType.List) {
               {
                 FlagList = new List<bool>();
-                TList _list0 = iprot.ReadListBegin();
-                for( int _i1 = 0; _i1 < _list0.Count; ++_i1)
+                TList _list5 = iprot.ReadListBegin();
+                for( int _i6 = 0; _i6 < _list5.Count; ++_i6)
                 {
-                  bool _elem2 = false;
-                  _elem2 = iprot.ReadBool();
-                  FlagList.Add(_elem2);
+                  bool _elem7 = false;
+                  _elem7 = iprot.ReadBool();
+                  FlagList.Add(_elem7);
                 }
                 iprot.ReadListEnd();
               }
@@ -135,12 +135,12 @@ namespace NetWork.Auto
             if (field.Type == TType.List) {
               {
                 Bit8CounterList = new List<sbyte>();
-                TList _list3 = iprot.ReadListBegin();
-                for( int _i4 = 0; _i4 < _list3.Count; ++_i4)
+                TList _list8 = iprot.ReadListBegin();
+                for( int _i9 = 0; _i9 < _list8.Count; ++_i9)
                 {
-                  sbyte _elem5 = 0;
-                  _elem5 = iprot.ReadByte();
-                  Bit8CounterList.Add(_elem5);
+                  sbyte _elem10 = 0;
+                  _elem10 = iprot.ReadByte();
+                  Bit8CounterList.Add(_elem10);
                 }
                 iprot.ReadListEnd();
               }
@@ -152,12 +152,12 @@ namespace NetWork.Auto
             if (field.Type == TType.List) {
               {
                 Bit32CounterList = new List<int>();
-                TList _list6 = iprot.ReadListBegin();
-                for( int _i7 = 0; _i7 < _list6.Count; ++_i7)
+                TList _list11 = iprot.ReadListBegin();
+                for( int _i12 = 0; _i12 < _list11.Count; ++_i12)
                 {
-                  int _elem8 = 0;
-                  _elem8 = iprot.ReadI32();
-                  Bit32CounterList.Add(_elem8);
+                  int _elem13 = 0;
+                  _elem13 = iprot.ReadI32();
+                  Bit32CounterList.Add(_elem13);
                 }
                 iprot.ReadListEnd();
               }
@@ -193,9 +193,9 @@ namespace NetWork.Auto
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.Bool, FlagList.Count));
-          foreach (bool _iter9 in FlagList)
+          foreach (bool _iter14 in FlagList)
           {
-            oprot.WriteBool(_iter9);
+            oprot.WriteBool(_iter14);
           }
           oprot.WriteListEnd();
         }
@@ -208,9 +208,9 @@ namespace NetWork.Auto
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.Byte, Bit8CounterList.Count));
-          foreach (sbyte _iter10 in Bit8CounterList)
+          foreach (sbyte _iter15 in Bit8CounterList)
           {
-            oprot.WriteByte(_iter10);
+            oprot.WriteByte(_iter15);
           }
           oprot.WriteListEnd();
         }
@@ -223,9 +223,9 @@ namespace NetWork.Auto
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.I32, Bit32CounterList.Count));
-          foreach (int _iter11 in Bit32CounterList)
+          foreach (int _iter16 in Bit32CounterList)
           {
-            oprot.WriteI32(_iter11);
+            oprot.WriteI32(_iter16);
           }
           oprot.WriteListEnd();
         }

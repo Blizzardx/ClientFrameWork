@@ -14,7 +14,7 @@ public class StateRun : IState
     public override void DoEnter(object param)
     {
         CharTransformData data = (((ITransformBehaviour)(unit)).GetTransformData()) as CharTransformData;
-        data.PlayAnimation("Run");
+        //data.DirectPlayAnimation("Run");
     }
     public override bool CanExit()
     {

@@ -5,7 +5,8 @@ public class CustomMain : Singleton<CustomMain>
 {
     public void Initialize()
     {
-        StageManager.Instance.ChangeState(GameStateType.TestProject1);
+        LimitFuncSceneManager.Instance.StartLogic();
+        StageManager.Instance.ChangeState(GameStateType.LoginState);
         //StageManager.Instance.ChangeState(GameStateType.TestProject2);
     }
     public void Quit()

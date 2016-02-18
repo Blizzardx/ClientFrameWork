@@ -14,6 +14,8 @@ namespace Moudles.BaseMoudle.Converter
         {
             dic.Add(typeof(CharBaseData), new CharBaseConverter());
             dic.Add(typeof(CharCounterData), new CharCounterConverter());
+            dic.Add(typeof(CharBagData), new CharBagConverter());
+            dic.Add(typeof(CharMissionData), new CharMissionConverter());
         }
 
         public ICharDataConverter FindConverter(System.Type businessObjectType)

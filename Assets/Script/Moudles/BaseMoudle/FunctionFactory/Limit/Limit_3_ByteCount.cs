@@ -19,7 +19,7 @@ public class Limit_3_ByteCount : LimitMethodsBase
             }
             
             int index = Limit.ParamIntList[0];
-            sbyte count = ((PlayerCharacter) (target[i])).GetCharCounterData().GetBit8Count(index);
+            sbyte count = PlayerManager.Instance.GetCharCounterData().GetBit8Count(index);
             if (!OperationFunc.LimitOperatorValue((ELimitOperator)Limit.Oper, count, Limit.ParamIntList[1]))
             {
                 return false;

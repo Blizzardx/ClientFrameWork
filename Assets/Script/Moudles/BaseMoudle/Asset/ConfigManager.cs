@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Resources;
+using System.Xml.Linq;
 using Assets.Scripts.Core.Utils;
 using Communication;
 using Config;
 using Config.Table;
 using TerrainEditor;
+using ActionEditor;
+using AdaptiveDifficulty;
 using Thrift.Protocol;
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
+using Thrift.Transport;
+using System.Text;
 
 public class ConfigManager :Singleton<ConfigManager>
 {
@@ -22,7 +28,7 @@ public class ConfigManager :Singleton<ConfigManager>
             return config as T;
         }
         T configInstance = default(T);
-        if (ResourceManager.Instance.DecodePersonalDataTemplate<T>(GetConfigPath() + path, ref configInstance))
+        if (ResourceManager.DecodePersonalDataTemplate<T>(GetConfigPath() + path, ref configInstance))
         {
             m_ConfigPool.Add(path, configInstance);
         }
@@ -62,6 +68,22 @@ public class ConfigManager :Singleton<ConfigManager>
     public const string ConfigPath_StageConfig          = "config/stageConfig_txtpkg.bytes";
     public const string ConfigPath_MainMissionConfig    = "config/mainMissionConfig_txtpkg.bytes";
     public const string ConfigPath_SkillConfig          = "config/skillConfig_txtpkg.bytes";
+    public const string ConfigPath_RatioGameConfig      = "config/ratioGameConfig_txtpkg.bytes";
+    public const string ConfigPath_ItemConfig           = "config/itemConfig_txtpkg.bytes";
+    public const string ConfigPath_AIConfig             = "config/aiConfig_txtpkg.bytes";
+	public const string ConfigPath_ArithmeticConfig     = "config/arithmeticConfig_txtpkg.bytes";
+	public const string ConfigPath_flightConfig			= "config/flightConfig_txtpkg.bytes";
+    public const string ConfigPath_RegularityConfig     = "config/regularityConfig_txtpkg.bytes";
+    public const string ConfigPath_RegularitySettingConfig     = "config/regularitySettingConfig_txtpkg.bytes";
+    public const string ConfigPath_ActionConfig         = "config/actionConfig_txtpkg.bytes";
+    public const string ConfigPath_DifficultyConfig = "config/difficultyConfig_txtpkg.bytes";
+    public const string ConfigPath_TalentConfig = "config/talentConfig_txtpkg.bytes";
+    public const string ConfigPath_DefaultUserTalentConfig = "config/defaultTalentConfig_txtpkg.bytes";
+    public const string ConfigPath_MusicGameConfig = "config/musicGameConfig_txtpkg.bytes";
+    public const string ConfigPath_MusicGameSettingConfig = "config/musicGameSettingConfig_txtpkg.bytes";
+    public const string ConfigPath_RunnerGameSettingConfig = "config/runnerGameSettingConfig_txtpkg.bytes";
+    public const string ConfigPath_LimitFuncSceneConfig = "config/limitFuncSceneConfig_txtpkg.bytes";
+    public const string ConfigPath_RunnerTrunkConfig = "config/runnerTrunkConfig_txtpkg.bytes";
     #endregion
 
     #region config handler
@@ -138,6 +160,12 @@ public class ConfigManager :Singleton<ConfigManager>
         config.TargetMap.TryGetValue(iTargetGroupId, out result);
         return result;
     }
+    public TerrainEditorDataArray GetTerrainEditorDataArray()
+    {
+        TerrainEditorDataArray config =
+            TryGetConfig<TerrainEditorDataArray>(ConfigPath_TerrainConfig);
+        return config;
+    }
     public TerrainEditorData GetTerrainEditorData(int terrainId)
     {
         TerrainEditorDataArray config =
@@ -151,6 +179,21 @@ public class ConfigManager :Singleton<ConfigManager>
             }
         }
         return null;
+    }
+	public ArithmeticConfigTable GetArithmeticConfigTable()
+	{
+		ArithmeticConfigTable config = TryGetConfig<ArithmeticConfigTable>(ConfigPath_ArithmeticConfig);
+		return config;
+	}
+	public FlightGameConfigTable GetFlightGameConfigTable()
+	{
+		FlightGameConfigTable config = TryGetConfig<FlightGameConfigTable>(ConfigPath_flightConfig);
+		return config;
+	}
+    public CharactorConfigTable GetCharactorConfigTable()
+    {
+        CharactorConfigTable config = TryGetConfig<CharactorConfigTable>(ConfigPath_CharactorConfig);
+        return config;
     }
     public CharactorConfig GetCharactorConfig(int id)
     {
@@ -169,6 +212,11 @@ public class ConfigManager :Singleton<ConfigManager>
     public NpcConfigTable GetNpcTable()
     {
         NpcConfigTable config = TryGetConfig<NpcConfigTable>(ConfigPath_NpcConfig);
+        return config;
+    }
+    public RatioGameConfigTable GetRatioGameConfig()
+    {
+        RatioGameConfigTable config = TryGetConfig<RatioGameConfigTable>(ConfigPath_RatioGameConfig);
         return config;
     }
     public string GetMessage(int id)
@@ -202,17 +250,26 @@ public class ConfigManager :Singleton<ConfigManager>
         }
         return res;
     }
-    public List<MissionStepConfig> GetMissionStepConfig(int id)
+    public List<MissionStepConfig> GetMissionStepConfigByMissioinId(int id)
     {
         MissionStepConfigTable config = TryGetConfig<MissionStepConfigTable>(ConfigPath_MissionStepConfig);
         List<MissionStepConfig> res = null;
-        if (!config.MissionStepConfigMap.TryGetValue(id, out res))
+        if (!config.MissionStepByMissionIdConfigMap.TryGetValue(id, out res))
         {
             Debuger.LogWarning("can't find target  mission step config " + id);
         }
         return res;
     }
-
+    public MissionStepConfig GetMissionStepConfigByStepId(int id)
+    {
+        MissionStepConfigTable config = TryGetConfig<MissionStepConfigTable>(ConfigPath_MissionStepConfig);
+        MissionStepConfig res = null;
+        if (!config.MissionStepByStepIdConfigMap.TryGetValue(id, out res))
+        {
+            Debuger.LogWarning("can't find target  mission step config " + id);
+        }
+        return res;
+    }
     public StageConfig GetStageConfig(int id)
     {
         StageConfigTable config = TryGetConfig<StageConfigTable>(ConfigPath_StageConfig);
@@ -223,13 +280,11 @@ public class ConfigManager :Singleton<ConfigManager>
         }
         return res;
     }
-
     public SkillConfigTable GetSkillConfigTable()
     {
         SkillConfigTable res = TryGetConfig<SkillConfigTable>(ConfigPath_SkillConfig);
         return res;
     }
-
     public SkillConfig GetSkillConfig(int id)
     {
         SkillConfigTable config = TryGetConfig<SkillConfigTable>(ConfigPath_SkillConfig);
@@ -240,6 +295,177 @@ public class ConfigManager :Singleton<ConfigManager>
         }
         return res;
     }
+    public ActionFileDataArray GetActionFileDataArray()
+    {
+        ActionFileDataArray config = TryGetConfig<ActionFileDataArray>(ConfigPath_ActionConfig);
+        if (config == null || config.DataList == null)
+        {
+            Debuger.LogWarning("can't find Action File DataArray");
+        }
+        return config;
+    }
+    public ActionFileData GetActionFileData(int id)
+    {
+        ActionFileDataArray config = TryGetConfig<ActionFileDataArray>(ConfigPath_ActionConfig);
+        if (config == null || config.DataList == null)
+        {
+            Debuger.LogWarning("can't find Action File DataArray");
+        }
+        ActionFileData res = null;
+        foreach (ActionFileData data in config.DataList)
+        {
+            if (data.ID == id)
+            {
+                res = data;
+            }
+        }
+        if (res == null)
+        {
+            Debuger.LogWarning("can't find Action File");
+        }
+        return res;
+    }
+    public ItemConfig GetItemConfig(int id)
+    {
+        ItemConfigTable config = TryGetConfig<ItemConfigTable>(ConfigPath_ItemConfig);
+        if (null == config || config.ItemConfigMap == null)
+        {
+            Debuger.LogWarning("Can't load item config");
+        }
+        ItemConfig res = null;
+        config.ItemConfigMap.TryGetValue(id, out res);
+        return res;
+    }
+    public XElement GetAIConfigTable()
+    {
+        AIConfigTable config = TryGetConfig<AIConfigTable>(ConfigPath_AIConfig);
+
+        return XElement.Parse(config.BtTreeXml);
+    }
+    public RegularityGameConfigTable GetRegularityGameConfig()
+    {
+        RegularityGameConfigTable config = TryGetConfig<RegularityGameConfigTable>(ConfigPath_RegularityConfig);
+
+        return config;
+    }
+    public RegularityGameSettingTable GetRegularityGameSetting()
+    {
+        RegularityGameSettingTable config = TryGetConfig<RegularityGameSettingTable>(ConfigPath_RegularitySettingConfig);
+        return config;
+    }    
+    public DifficultyControlDataMap GetDifficultyControlDataMap()
+    { 
+        DifficultyControlDataMap config = TryGetConfig<DifficultyControlDataMap>(ConfigPath_DifficultyConfig);
+        if (config == null || config.MapFileData == null)
+        {
+            Debug.LogWarning("can't find DifficultyControlDataMap");
+        }
+        return config;
+    }
+    public EventControlDataMap GetEventControlDataMap()
+    {
+        EventControlDataMap config = TryGetConfig<EventControlDataMap>(ConfigPath_TalentConfig);
+        if (config == null || config.MapFileData == null)
+        {
+            Debug.LogWarning("can't find EventControlDataMap");
+        }
+        return config;
+    }
+    public DefaultUserTalent GetDefaultUserTalent()
+    {
+        DefaultUserTalent config = TryGetConfig<DefaultUserTalent>(ConfigPath_DefaultUserTalentConfig);
+        if (config == null || config.MapTalent == null)
+        {
+            Debug.LogWarning("can't find DefaultUserTalent");
+        }
+        return config;
+    }
+    public MusicGameConfigTable GetMusicGameConfig()
+    {
+        MusicGameConfigTable config = TryGetConfig<MusicGameConfigTable>(ConfigPath_MusicGameConfig);
+        return config;
+    }
+    public MusicGameSettingTable GetMusicGameSettingTable()
+    {
+        MusicGameSettingTable config = TryGetConfig<MusicGameSettingTable>(ConfigPath_MusicGameSettingConfig);
+        return config;
+    }
+    public RunnerGameSettingTable GetRunnerGameSettingConfig()
+    {
+        RunnerGameSettingTable config = TryGetConfig<RunnerGameSettingTable>(ConfigPath_RunnerGameSettingConfig);
+        return config;
+    }
+    public LimitFuncSceneConfigTable GetLimitFuncSceneConfig()
+    {
+        LimitFuncSceneConfigTable config = TryGetConfig<LimitFuncSceneConfigTable>(ConfigPath_LimitFuncSceneConfig);
+        return config;
+    }
+    public RunnerTrunkTableConfig GetTrunkConfigTable()
+    {
+        TrunkConfigTable config = TryGetConfig<TrunkConfigTable>(ConfigPath_LimitFuncSceneConfig);
+        if(null == config || string.IsNullOrEmpty(config.TrunkConfigXml))
+        {
+            return null;
+        }
+        RunnerTrunkTableConfig res = XmlConfigBase.DeSerialize<RunnerTrunkTableConfig>(config.TrunkConfigXml);
+        return res;
+    }
+    public void InitBigConfigData()
+    {
+        TryGetConfig<FuncConfigTable>(ConfigManager.ConfigPath_FunctionGroupConfig);
+        TryGetConfig<ActionFileDataArray>(ConfigManager.ConfigPath_ActionConfig);
+    }
     #endregion
 
+    #region json to thrift test code
+    private void Test()
+    {
+        NpcConfigTable a = TryGetConfig<NpcConfigTable>(ConfigManager.ConfigPath_NpcConfig);
+        byte[] test = Serialize(a);
+
+        Encoding encoding = Encoding.ASCII;
+        string realjson = encoding.GetString(test);
+        FileUtils.WriteStringFile(Application.persistentDataPath + "/test.txt", realjson);
+
+        byte[] testcopy = encoding.GetBytes(realjson);
+
+        NpcConfigTable b = new NpcConfigTable();
+        DeSerialize(b, testcopy);
+
+        int c = 0;
+    }
+    public static byte[] Serialize(TBase tbase)
+    {
+        if (tbase == null)
+        {
+            return null;
+        }
+        using (Stream outputStream = new MemoryStream(64))
+        {
+            TStreamTransport transport = new TStreamTransport(null, outputStream);
+            TJSONProtocol protocol = new TJSONProtocol(transport);
+            tbase.Write(protocol);
+            byte[] bytes = new byte[outputStream.Length];
+            outputStream.Position = 0;
+            outputStream.Read(bytes, 0, bytes.Length);
+            return bytes;
+        }
+    }
+
+    public static void DeSerialize(TBase tbase, byte[] bytes)
+    {
+        if (tbase == null || bytes == null)
+        {
+            return;
+        }
+        using (Stream inputStream = new MemoryStream(64))
+        {
+            inputStream.Write(bytes, 0, bytes.Length);
+            inputStream.Position = 0;
+            TStreamTransport transport = new TStreamTransport(inputStream, null);
+            TProtocol protocol = new TJSONProtocol(transport);
+            tbase.Read(protocol);
+        }
+    }
+    #endregion
 }

@@ -66,15 +66,15 @@ namespace Config.Table
             if (field.Type == TType.Map) {
               {
                 SkillConfigMap = new Dictionary<int, Config.SkillConfig>();
-                TMap _map64 = iprot.ReadMapBegin();
-                for( int _i65 = 0; _i65 < _map64.Count; ++_i65)
+                TMap _map69 = iprot.ReadMapBegin();
+                for( int _i70 = 0; _i70 < _map69.Count; ++_i70)
                 {
-                  int _key66;
-                  Config.SkillConfig _val67;
-                  _key66 = iprot.ReadI32();
-                  _val67 = new Config.SkillConfig();
-                  _val67.Read(iprot);
-                  SkillConfigMap[_key66] = _val67;
+                  int _key71;
+                  Config.SkillConfig _val72;
+                  _key71 = iprot.ReadI32();
+                  _val72 = new Config.SkillConfig();
+                  _val72.Read(iprot);
+                  SkillConfigMap[_key71] = _val72;
                 }
                 iprot.ReadMapEnd();
               }
@@ -102,10 +102,10 @@ namespace Config.Table
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteMapBegin(new TMap(TType.I32, TType.Struct, SkillConfigMap.Count));
-          foreach (int _iter68 in SkillConfigMap.Keys)
+          foreach (int _iter73 in SkillConfigMap.Keys)
           {
-            oprot.WriteI32(_iter68);
-            SkillConfigMap[_iter68].Write(oprot);
+            oprot.WriteI32(_iter73);
+            SkillConfigMap[_iter73].Write(oprot);
           }
           oprot.WriteMapEnd();
         }

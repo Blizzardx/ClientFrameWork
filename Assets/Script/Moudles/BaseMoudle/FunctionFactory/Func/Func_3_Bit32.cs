@@ -32,10 +32,9 @@ public class Func_3_Bit32 : FuncMethodsBase
             {
                 continue;
             }
-            PlayerCharacter playerChar = elem as PlayerCharacter;
             int newValue = 0;
             OperationFunc.FuncOperatorValue((EFuncOperator)(funcdata.Oper), ref newValue, funcdata.ParamIntList[1]);
-            playerChar.GetCharCounterData().SetBit32Count(funcdata.ParamIntList[0], newValue);
+            PlayerManager.Instance.GetCharCounterData().SetBit32Count(funcdata.ParamIntList[0], newValue);
         }
         return EFuncRet.Continue;
     }

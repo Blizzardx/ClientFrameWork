@@ -30,6 +30,7 @@ namespace Config
     private int _age;
     private int _aiId;
     private int _clickFuncId;
+    private bool _isInGroup;
 
     public int Id
     {
@@ -122,6 +123,19 @@ namespace Config
       }
     }
 
+    public bool IsInGroup
+    {
+      get
+      {
+        return _isInGroup;
+      }
+      set
+      {
+        __isset.isInGroup = true;
+        this._isInGroup = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -135,6 +149,7 @@ namespace Config
       public bool age;
       public bool aiId;
       public bool clickFuncId;
+      public bool isInGroup;
     }
 
     public NpcConfig() {
@@ -197,6 +212,13 @@ namespace Config
           case 7:
             if (field.Type == TType.I32) {
               ClickFuncId = iprot.ReadI32();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 8:
+            if (field.Type == TType.Bool) {
+              IsInGroup = iprot.ReadBool();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -270,6 +292,14 @@ namespace Config
         oprot.WriteI32(ClickFuncId);
         oprot.WriteFieldEnd();
       }
+      if (__isset.isInGroup) {
+        field.Name = "isInGroup";
+        field.Type = TType.Bool;
+        field.ID = 8;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteBool(IsInGroup);
+        oprot.WriteFieldEnd();
+      }
       oprot.WriteFieldStop();
       oprot.WriteStructEnd();
     }
@@ -290,6 +320,8 @@ namespace Config
       sb.Append(AiId);
       sb.Append(",ClickFuncId: ");
       sb.Append(ClickFuncId);
+      sb.Append(",IsInGroup: ");
+      sb.Append(IsInGroup);
       sb.Append(")");
       return sb.ToString();
     }
