@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Thrift.Protocol;
+using Common.Sqlite;
+using Mono.Data.Sqlite;
 using Framework.Async;
 using Cache;
 
@@ -51,7 +53,7 @@ public class FlushDataTickTask : AbstractTickTask
         }
         if (updateList != null)
         {
-            CacheKeyInfo keyInfo = CacheKeyContants.CHAR_DATA_SNAPSHOT_KEY.BuildCacheInfo("");
+            CacheKeyInfo keyInfo = CacheKeyContants.CHAR_DATA_SNAPSHOT_KEY.BuildCacheInfo(PlayerManager.Instance.GetCharBaseData().CharId);
 
             CharacterDataSnapshot data = CacheManager.GetInsance().Get(keyInfo) as CharacterDataSnapshot;
 

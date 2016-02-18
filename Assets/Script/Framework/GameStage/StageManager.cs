@@ -48,9 +48,13 @@ public class StageManager : Singleton<StageManager>
             m_CurrentStage = Activator.CreateInstance(m_StageHandlerFactoryStore[pState],pState) as StageBase;
             m_StageHandlerStore.Add(pState, m_CurrentStage);
         }
+        Time.timeScale = 1.0f;
+
+        //send msg
+        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_CHANGE_SCENE, null));
 
         //load scene
-        SceneManager.Instance.LoadScene(m_StageSceneStore[pState], m_CurrentStage.StartStage,m_CurrentStage.PreLoadScene);
+        SceneManager.Instance.LoadScene(m_StageSceneStore[pState], m_CurrentStage.StartStage,m_CurrentStage.PreLoadScene,m_CurrentStage.InitStage);
     }
     public GameStateType GetCurrentGameStage()
     {

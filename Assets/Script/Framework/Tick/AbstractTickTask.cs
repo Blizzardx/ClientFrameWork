@@ -33,7 +33,8 @@ public abstract class AbstractTickTask : ITickTask
         }
         catch (Exception e)
         {
-			Debuger.LogError( e );
+
+
         }
 		if(lastTickTime < TimeManager.Instance.Now)
 		{

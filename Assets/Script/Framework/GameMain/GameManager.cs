@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Assets.Scripts.Core.Utils;
 using Assets.Scripts.Framework.Network;
 using UnityEngine;
@@ -8,6 +9,8 @@ using Moudles.BaseMoudle.Converter;
 using Cache;
 using NetWork.Auto;
 using NetWork;
+using Config;
+using GameConfigTools.Model;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -27,24 +30,25 @@ public class GameManager : Singleton<GameManager>
         MessageManager.Instance.Initialize();
         WindowManager.Instance.Initialize();
         SystemMsgHandler.Instance.RegisterSystemMsg();
-        ScriptManager.Instance.Initialize();
-        AudioManager.Instance.Initialize();
+       // ScriptManager.Instance.Initialize();
+        AudioPlayer.Instance.Initialize();
         ConverterManager.Instance.Initialize();
         FuncMethodDef.InitFuncMethod();
         LimitMethodDef.InitLimitMethod();
         TargetMethodDef.InitTargetMethod();
         ActionManager.Instance.Initialize();
-        //CustomMain.Instance.Initialize();
         // check asset
         AssetUpdateManager.Instance.CheckUpdate(() =>
         {
+            ConfigManager.Instance.InitBigConfigData();
+            AdaptiveDifficultyManager.Instance.Initialize();
             CustomMain.Instance.Initialize();
         });
-        Debuger.Log(Application.persistentDataPath + " "); 
     }
     public void Update()
     {
         TickTaskManager.Instance.Update();
+        Test();
     }
     public void OnAppQuit()
     {
@@ -78,5 +82,83 @@ public class GameManager : Singleton<GameManager>
         }
     }
     #endregion
-    
+
+    #region test
+    private void Test()
+    {
+        if (Application.platform == RuntimePlatform.Android && (Input.GetKeyDown(KeyCode.Escape)))
+        {
+            TipManager.Instance.Alert("", "你确定要退出游戏吗？", "确定", "取消", (res) =>
+            {
+                if (res)
+                {
+                    Application.Quit();
+                }
+            });
+        }
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            WindowBase window = WindowManager.Instance.GetWindow(WindowID.MissionDebugAttach);
+            if (null == window)
+            {
+                WindowManager.Instance.OpenWindow(WindowID.MissionDebugAttach);
+            }
+            else
+            {
+                if (window.IsOpen())
+                {
+                    window.Close();
+                }
+                else
+                {
+                    WindowManager.Instance.OpenWindow(WindowID.MissionDebugAttach);
+                }
+            }
+        } 
+        if(Input.GetKeyDown(KeyCode.C) || Input.touchCount == 3)
+        {
+            string filepath = ResourceManager.Instance.GetStreamAssetPath() + "/config.xml";
+
+            ResourceManager.Instance.LoadStreamingAssetsData(filepath, (www) =>
+            {
+                SysConfig tmp = XmlConfigBase.DeSerialize<SysConfig>(www.text);
+                Debuger.LogError("system config decode result : " + tmp == null);
+                if (tmp != null)
+                {
+                    Debuger.LogError(tmp.ServerConfigPath);
+                    Debuger.LogError(tmp.ClientConfigPath);
+                    Debuger.LogError(tmp.ExcelPath);
+                    Debuger.LogError(tmp.ConfigCenterUrl);
+                    Debuger.LogError(tmp.UploadUrl);
+
+                    Debuger.LogError("begin encode resoult");
+                    string res = XmlConfigBase.Serialize(tmp);
+                    Debuger.LogError("encode result:" + res);
+                    FileUtils.WriteStringFile(Application.persistentDataPath + "/tesw.xml", res);
+
+                    tmp = XmlConfigBase.DeSerialize<SysConfig>(res);
+                    Debuger.LogError("xxx system config decode result : " + tmp == null);
+                    if (tmp != null)
+                    {
+                        Debuger.LogError(tmp.ServerConfigPath);
+                        Debuger.LogError(tmp.ClientConfigPath);
+                        Debuger.LogError(tmp.ExcelPath);
+                        Debuger.LogError(tmp.ConfigCenterUrl);
+                        Debuger.LogError(tmp.UploadUrl);
+
+                        Debuger.LogError("begin encode resoult");
+                        res = XmlConfigBase.Serialize(tmp);
+                        Debuger.LogError("encode result:" + res);
+                        FileUtils.WriteStringFile(Application.persistentDataPath + "/tesw1.xml", res);
+                    }
+                }
+
+                
+            });
+
+             
+        }
+    }
+    #endregion
+
 }

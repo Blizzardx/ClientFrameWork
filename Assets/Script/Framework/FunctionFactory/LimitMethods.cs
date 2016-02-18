@@ -34,7 +34,7 @@ static public class LimitMethods
     {
         if (null == Target || 0 == iLimitGroupId)
         {
-            return false;
+            return true;
         }
 
         bool bResult = false;

@@ -7,8 +7,9 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
 {
     private string          m_strDefaultScene;
     private const int       m_TimeOut               = 30000;
-    private const int       m_LoadingSceneMinTime   = 3000;
+    private const int       m_LoadingSceneMinTime   = 2000;
     private Action          m_LoadFinishedCallBack;
+    private Action m_LoadInitCallBack;
     private AsyncOperation  m_SceneAsync;
     private int             m_nBeginLoadingTime;
     private int             m_nLoadingTotalTime;
@@ -20,7 +21,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         m_strDefaultScene = "MainCity";
         m_bIsBusy = false;
     }
-    public void LoadScene(string sceneName,Action FinishedCallBack,Action PreExcution)
+    public void LoadScene(string sceneName,Action FinishedCallBack,Action PreExcution,Action InitCallBack)
     {
         if (m_bIsBusy)
         {
@@ -37,7 +38,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
 
         //push to update store
         LifeTickTask.Instance.RegisterToUpdateList(BasicUpdate);
-
+        m_LoadInitCallBack = InitCallBack; 
         m_LoadFinishedCallBack = FinishedCallBack;
         WindowManager.Instance.CloseAllWindow();
         ClearScene();
@@ -73,6 +74,8 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         //log
         Debuger.Log("load scene " + m_strTargetLoadingSceneName);
 
+        m_LoadInitCallBack();
+
         //end loading
         EndLoadCheck();
     }
@@ -90,7 +93,7 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
         }
         else
         {
-            Invoke("EndLoad", ((m_LoadingSceneMinTime - m_nLoadingTotalTime)/1000.0f));
+            Invoke("EndLoad", ((m_LoadingSceneMinTime )/1000.0f));
         }
     }
     private void EndLoad()
@@ -109,7 +112,8 @@ public class SceneManager : SingletonTemplateMon<SceneManager>
             Debuger.Log("Load scene time out");
             m_bIsBusy = false;
             Action defaultExcution = () => { WindowManager.Instance.OpenWindow(WindowID.Loading);};
-            LoadScene(m_strDefaultScene, m_LoadFinishedCallBack, defaultExcution);
+            Action defaultInit = () => { };
+            LoadScene(m_strDefaultScene, m_LoadFinishedCallBack, defaultExcution, defaultInit);
         }
     }
     private void Awake()

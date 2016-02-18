@@ -22,7 +22,7 @@ public class TickTaskManager : Singleton<TickTaskManager>
         m_TickTaskStore.Add(new FlushDataTickTask());
         m_TickTaskStore.Add(new SyncDataTickTask());
         m_TickTaskStore.Add(new ActionTickTask());
-        m_TickTaskStore.Add(new CameraTickTask());
+        m_TickTaskStore.Add(new SkillCdTickTask());
     }
     public void Update()
     {

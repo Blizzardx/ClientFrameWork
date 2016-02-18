@@ -40,6 +40,7 @@ public class WindowManager : Singleton<WindowManager>
 {
 	public GameObject                                  UIWindowCameraRoot{get;private set;}
     private Camera                                      m_UICamera;
+    private UIRoot                                      m_UIRoot;
     private WindowBase                                  m_CurrentWindow;
     private List<Action>                                m_UpdateStore;
     private List<Action>                                m_RemoveingUpdateList;
@@ -56,7 +57,14 @@ public class WindowManager : Singleton<WindowManager>
     public void Initialize()
     {
         UIWindowCameraRoot          = ComponentTool.FindChild("UI_Root", null);
-        m_UICamera              = ComponentTool.FindChildComponent<Camera>("UI Root", UIWindowCameraRoot);
+        if (null == UIWindowCameraRoot)
+        {
+            Debuger.LogError("can't load ui root ");
+            return;
+        }
+
+        m_UIRoot = UIWindowCameraRoot.GetComponent<UIRoot>();
+        m_UICamera = ComponentTool.FindChildComponent<Camera>("Camera", UIWindowCameraRoot);
         m_UpdateStore           = new List<Action>();
         m_RemoveingUpdateList   = new List<Action>();
         m_bIsUpdateListBusy     = false;
@@ -258,6 +266,15 @@ public class WindowManager : Singleton<WindowManager>
         }
         WindowIndexStruct element = new WindowIndexStruct(id,path,layer,type);
         m_WindowIndexStore.Add(id,element);
+    }
+    public Camera GetUICamera()
+    {
+        return m_UICamera;
+    }
+
+    public UIRoot GetUIRoot()
+    {
+        return m_UIRoot;
     }
     #endregion
 

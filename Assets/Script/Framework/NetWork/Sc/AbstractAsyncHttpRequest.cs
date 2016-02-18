@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Thrift.Protocol;
+using UnityEngine;
 
 namespace NetWork
 {
@@ -13,9 +14,14 @@ namespace NetWork
         where RESP : TBase
     {
         private bool running = false;
+
+        public bool Running
+        {
+            get { return running; }
+        }
         private Header header = new Header();
         protected TBase req;
-        private ResponseMessage responseMessage;
+        protected ResponseMessage responseMessage;
         public AbstractAsyncHttpRequest(REQ req)
         {
             this.req = req;
@@ -38,7 +44,12 @@ namespace NetWork
 
         public AsyncState DoAsyncTask()
         {
+            if(AppManager.Instance.m_bIsShowDebugMsg)
+            {
+                Debuger.Log("send msg: " + req.ToString());
+            }
             responseMessage = HttpManager.Instance.PostMessage(header, req);
+            
             return AsyncState.AfterAsync;
         }
 
@@ -48,29 +59,73 @@ namespace NetWork
             if (IsBlock())
             {
                 //TODO 去掉loading
-                WindowManager.Instance.HideAllWindow();
+                WindowManager.Instance.HideWindow(WindowID.Loading);
 
             }
-
             if (responseMessage.Ex != null)
             {
+                MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK,null));
+
                 //TODO 异常处理
-
-
+                TipManager.Instance.Alert("提示", "登录已过期，请重新登录", "确定", "退出", (res) =>
+                {
+                    MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
+                    if (res)
+                    {
+                        StageManager.Instance.ChangeState(GameStateType.LoginState);
+                    }
+                    else
+                    {
+                        UnityEngine.Application.Quit();
+                    }
+                });
                 return AsyncState.Done;
             }
             if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                //TODO 状态码不正确
-
-
+                if((int)(responseMessage.StatusCode) == 403)
+                {
+                    MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK, null));
+                    //TODO 状态码不正确
+                    TipManager.Instance.Alert("提示", "登录已过期，请重新登录","重新登录", (res) =>
+                    {
+                        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
+                        if (res)
+                        {
+                            StageManager.Instance.ChangeState(GameStateType.LoginState);
+                        }
+                    });
+                }
+                else
+                {
+//                     MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK, null));
+//                     //TODO 状态码不正确
+//                     TipManager.Instance.Alert("提示", "网络异常，请重试", "确定", "重新登录", (res) =>
+//                     {
+//                         MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
+//                         if (!res)
+//                         {
+//                             StageManager.Instance.ChangeState(GameStateType.LoginState);
+//                         }
+//                     });
+                }
+                
                 return AsyncState.Done;
+            }
+
+            if (AppManager.Instance.m_bIsShowDebugMsg)
+            {
+                Debuger.Log("rec msg: " + responseMessage.Message.ToString());
+                for (int i = 0; responseMessage.EventList.Events != null && i < responseMessage.EventList.Events.Count; ++i)
+                {
+                    Debuger.Log("rec event: " + responseMessage.EventList.Events[i].ToString());
+                }
             }
 
             if (responseMessage.EventList != null)
             {
                 //统一事件处理
-
+                MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, responseMessage.EventList));
 
             }
 

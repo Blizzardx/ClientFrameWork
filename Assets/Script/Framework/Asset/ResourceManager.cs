@@ -21,7 +21,10 @@ public enum AssetType
     Prefab,
     EditorRes,
     Char,
-    Trigger
+    Trigger,
+    Effect,
+    Materials,
+    Model,
 }
 
 public enum LoadType
@@ -120,7 +123,7 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
 
         StartCoroutine(LoadWWW(path, callBackdef));
     }
-    public bool DecodePersonalDataTemplate<T>(string path, ref T template) where T : TBase, new()
+    public static bool DecodePersonalDataTemplate<T>(string path, ref T template) where T : TBase, new()
     {
         byte[] data = FileUtils.ReadByteFile(path);
 
@@ -176,7 +179,7 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         if (Application.platform == RuntimePlatform.Android)
         {
             // android
-            path = Application.streamingAssetsPath;//"jar:file://" + Application.dataPath + "!/assets";
+            path = "jar:file://" + Application.dataPath + "!/assets";
         }
         else if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
@@ -400,7 +403,18 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             case AssetType.Trigger:
                 path = "Model/Trigger/" + path;
                 break;
-
+            case AssetType.Effect:
+                path = "Item/Effect/" + path;
+                break;
+            case AssetType.Materials:
+                path = "Material/" + path;
+                break;
+            case AssetType.Texture:
+                path = "UI/Texture/" + path;
+                break;
+            case AssetType.Model:
+                path = "Model/" + path;
+                break;
             default:
             {
                 // do nothing
@@ -454,6 +468,11 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
     }
     private void Awake()
     {
+        if (_instance != null)
+        {
+            Destroy(this);
+            return;
+        }
         _instance = this;
     }
     #endregion

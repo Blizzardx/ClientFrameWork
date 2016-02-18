@@ -21,8 +21,8 @@ public class CollectionManager : Singleton<CollectionManager>
         BasicCollection();
 
         // try to reconnect
-        StageManager.Instance.ChangeState(GameStateType.ReConnect);
-        AudioManager.Instance.Destructor();
+        StageManager.Instance.ChangeState(GameStateType.ReConnectState);
+        AudioPlayer.Instance.Destructor();
     }
 
     private void BasicCollection()

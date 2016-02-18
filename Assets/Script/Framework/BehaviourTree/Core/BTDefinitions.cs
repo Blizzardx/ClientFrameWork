@@ -10,10 +10,10 @@ namespace BehaviourTree
 	/// </summary>
 	public enum EBTState
 	{
-		FAILD,
-		INACTIVE,
-		RUNNING,
-		SUCCESS,
+		False,
+		True,
+        Running,
+        UnReach,
 	}
 
 	/// <summary>
@@ -40,21 +40,23 @@ namespace BehaviourTree
 		public const string NODE_KEY = "key";
 		public const string NODE_VALUE = "value";
 
+        public const string NODE_TYPE_CHILDNODE = "childnode";
+        public const string NODE_TYPE_DECORATOR = "decorator";
+
 		public const string NODE_TYPE_SELECTOR = "selector";
 		public const string NODE_TYPE_SEQUENCE = "sequence";
 		public const string NODE_TYPE_PARALLEL = "parallel";
-		public const string NODE_TYPE_PRIORITY_SELECTOR = "prioritySelector";
-		
-		public const string NODE_TYPE_DECORATOR = "decorator";
+        public const string NODE_TYPE_PARALLEL_SELECTOR = "parallelSelector";
+	    public const string NODE_TYPE_PARALLEL_SEQUENCE = "parallelSequence";
+
 		public const string NODE_NAME_INVERTER = "inverter";
 		
 		
 		public const string NODE_TYPE_CONDITION = "condition";
-		public const string NODE_TYPE_CONDITION_TARGET = "targetId";
 		public const string NODE_TYPE_CONDITION_LIMIT = "limitId";
 		
 		public const string NODE_TYPE_ACTION = "action";
-		public const string NODE_NAME_MOVE = "move";
+        public const string NODE_NAME_MOVETO = "moveTo";
 		public const string NODE_NAME_PATROL = "patrol";
 		public const string NODE_NAME_SEEK = "seek";
 		public const string NODE_NAME_POSITION = "position";
@@ -73,6 +75,7 @@ namespace BehaviourTree
 		Owner,
 		RetreatPos,
 		SeekRange,
+        IsLock,
 	}
 
 	/// <summary>

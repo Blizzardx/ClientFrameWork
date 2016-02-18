@@ -84,7 +84,7 @@ public class WindowBase
     }
     public void Hide()
     {
-        WindowManager.Instance.CloseWindow(m_ID);
+        WindowManager.Instance.HideWindow(m_ID);
     }
     public void Close()
     {

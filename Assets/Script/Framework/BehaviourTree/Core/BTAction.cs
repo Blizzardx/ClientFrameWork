@@ -10,58 +10,40 @@ namespace BehaviourTree
 	/// </summary>
 	public abstract class BTAction : BTNode
 	{
-		protected EBTActionState m_eActionState = EBTActionState.Ready;
+	    protected EBTState m_CurrentStatus;
 
-		protected abstract bool Enter();
+	    public override EBTState Tick()
+	    {
+            if (m_CurrentStatus != EBTState.Running)
+            {
+                m_CurrentStatus = OnEnter();
+            }
+	        if (m_CurrentStatus == EBTState.Running)
+	        {
+	            m_CurrentStatus = OnRunning();
+	        }
+	        if (m_CurrentStatus != EBTState.Running)
+	        {
+                m_CurrentStatus = OnExit();
+	        }
 
-		protected virtual bool Waiting(){ return true;}
+            //mark current status
+	        CurrentStatus = m_CurrentStatus;
 
-		protected abstract EBTState Execute();
+	        return m_CurrentStatus;
+	    }
 
-		protected abstract void Exit();
+        protected abstract EBTState OnEnter();
+        protected abstract EBTState OnExit();
+        protected abstract EBTState OnRunning();
 
-//		public virtual void Resert()
-//		{
-//			m_eActionState = EBTActionState.Ready;
-//		}
-
-		public override EBTState Tick ()
-		{
-			EBTState rlt = EBTState.FAILD;
-			if( EBTActionState.Ready == m_eActionState )
-			{
-				if( !Enter() )
-				{
-					return rlt;
-				}
-				m_eActionState = EBTActionState.Waitting;
-			}
-
-			if(EBTActionState.Waitting == m_eActionState)
-			{
-				if(!Waiting())
-				{
-					return rlt;
-				}
-				m_eActionState = EBTActionState.Running;
-			}
-
-			if( EBTActionState.Running == m_eActionState )
-			{
-				rlt = Execute();
-				if( rlt != EBTState.RUNNING )
-				{
-					Exit();
-					m_eActionState = EBTActionState.Ready;
-				}
-			}
-
-			return rlt;
-		}
-
-		public override void OnEnd ()
-		{
-			m_eActionState = EBTActionState.Ready;
-		}
+        public override void OnEnd()
+        {
+            m_CurrentStatus = OnExit();
+            foreach (var elem in m_ChildrenLst)
+            {
+                elem.OnEnd();
+            }
+        }
 	}
 }

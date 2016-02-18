@@ -12,6 +12,10 @@ public class TimeManager : Singleton<TimeManager>
         TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
         Now = Convert.ToInt64(ts.TotalMilliseconds);
     }
+    public string CheckTime (long time)
+    {
+        return TimeUtil.TimeFormat(TimeUtil.GetDateTime(time));
+    }
     public void ResetTime()
     {
         Initialize();
@@ -37,6 +41,10 @@ public class TimeManager : Singleton<TimeManager>
 	{
 		return	Time.deltaTime;
 	}
+    public float GetRealDeltaTime()
+    {
+        return RealTime.deltaTime;
+    }
 	public void SetTimeScale( float fScale )
 	{
 		if( DoubleSpeed )
@@ -66,6 +74,9 @@ public class TimeManager : Singleton<TimeManager>
     public string GetCurrentTime()
     {
         return DateTime.Now.ToString("yyyy-M-d dddd HH:mm:ss");
-
+    }
+    public string GetCurrentTime(string formate)
+    {
+        return DateTime.Now.ToString(formate);
     }
 }

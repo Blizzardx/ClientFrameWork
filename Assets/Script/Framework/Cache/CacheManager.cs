@@ -92,9 +92,12 @@ namespace Cache
                 {
                     if(localCache.ContainsKey(realKey))
                     {
-                        return;
+                        localCache[realKey] = value;
                     }
-                    localCache.Add(realKey, value);
+                    else
+                    {
+                        localCache.Add(realKey, value);
+                    }
                 }
             }
         }
@@ -225,6 +228,43 @@ namespace Cache
             if (Directory.Exists(m_strCacheDir))
             {
                 Directory.Delete(m_strCacheDir,true);
+            }
+        }
+
+        public void Del(CacheKeyInfo keyInfo)
+        {
+            lock (this)
+            {
+                string realKey = string.Empty;
+                if (keyInfo.CacheKey.IsNativeFile)
+                {
+                    realKey = keyInfo.GetRealKey();
+                }
+                else
+                {
+                    realKey = keyInfo.GetRealKey() + ".cache";
+                }
+                bool saveDisk = keyInfo.CacheKey.SaveDiskPath != null;
+                if (saveDisk)
+                {
+                    string cacheFile = baseCacheDir + keyInfo.CacheKey.SaveDiskPath + "/" + realKey;
+                    if (File.Exists(cacheFile))
+                    {
+                        File.Delete(cacheFile);
+                    }
+                    cacheIndexManager.RemoveCacheIndex(cacheFile);
+                    if (fileCache.ContainsKey(realKey))
+                    {
+                        fileCache.Remove(realKey);
+                    }
+                }
+                else
+                {
+                    if (localCache.ContainsKey(realKey))
+                    {
+                        localCache.Remove(realKey);
+                    }
+                }
             }
         }
     }

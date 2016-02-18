@@ -11,13 +11,11 @@ public class FuncContext
 
 	public enum ContextKey {
 		ShowMsg,
-		AttackRandSeed,
-		SkillData,
-		BuffData,
-		TargetPoint,
-		AttackDamageList,
-		BuffTransferCount,
-		itemID,
+        TargetId,
+        LimitId,
+        FunctionId,
+        User,
+        Target,
 	}
 
 
@@ -29,7 +27,6 @@ public class FuncContext
 	public static FuncContext Create()
 	{
 		FuncContext context = new FuncContext ();
-		context.Put (ContextKey.ShowMsg, true);
 		return context;
 	}
 
@@ -53,4 +50,9 @@ public class FuncContext
 		}
 		return null;
 	}
+
+    public bool ContainsKey(ContextKey key)
+    {
+        return DIC.ContainsKey(key);
+    }
 }

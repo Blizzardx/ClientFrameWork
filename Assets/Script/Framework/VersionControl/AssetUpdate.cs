@@ -146,6 +146,7 @@ public class AssetUpdate : Singleton<AssetUpdate>
                 {
                     SaveLocalVersionConfig();
                     m_CompleteCallBack(true, "");
+                    Debuger.Log("on complete download all ");
                 }
             );
     }
@@ -187,16 +188,54 @@ public class AssetUpdate : Singleton<AssetUpdate>
 public class AssetUpdateManager : Singleton<AssetUpdateManager>
 {
     private Action m_CompleteCallBack;
+    private UIWindowAssetUdpate m_AssetUpdateWindow;
+    private bool m_bIsShowWindow;
 
-    public void CheckUpdate(Action doneCallBack)
+    public void CheckUpdate(Action doneCallBack,bool havWindow = true)
     {
+        m_bIsShowWindow = havWindow;
         m_CompleteCallBack = doneCallBack;
+        TryInitWindow();
         TryConnect();
     }
     private void TryConnect()
     {
-        if (Application.internetReachability == NetworkReachability.NotReachable)
+        if (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork)
         {
+            //使用的是网络运营商提供的网络，提示是否需要切换到wifi状态下//
+            if (m_bIsShowWindow)
+            {
+                TipManager.Instance.Alert("提示","当前不是wifi，确定要继续更新吗？","确定","取消", (res) =>
+                {
+                    if (res)
+                    {
+                        BeginCheck();
+                        return;
+                    }
+                    else
+                    {
+                        Application.Quit();
+                    }
+                });
+            }
+        }
+        else if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            if (m_bIsShowWindow)
+            {
+                TipManager.Instance.Alert("提示", "网络连接失败，请重试", "确定", "取消", (res) =>
+                {
+                    if (res)
+                    {
+                        BeginCheck();
+                        return;
+                    }
+                    else
+                    {
+                        Application.Quit();
+                    }
+                });
+            }
         }
         else if (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork)
         {
@@ -214,9 +253,14 @@ public class AssetUpdateManager : Singleton<AssetUpdateManager>
     private void OnProcess(float arg1, AssetFile arg2)
     {
         Debuger.Log("process: " + arg1 + " currentFile: " + arg2.Name);
+        if (m_bIsShowWindow)
+        {
+            m_AssetUpdateWindow.OnProcess(arg2.Name, arg1);
+        }
     }
     private void CheckResult(bool isSucceed,string errorTip)
     {
+        TryCloseWindow();
         if (isSucceed)
         {
             m_CompleteCallBack();
@@ -224,7 +268,37 @@ public class AssetUpdateManager : Singleton<AssetUpdateManager>
         }
         else
         {
+            if (m_bIsShowWindow)
+            {
+                TipManager.Instance.Alert("提示", "网络连接失败，请重试", "确定", "取消", (res) =>
+                {
+                    if (res)
+                    {
+                        BeginCheck();
+                        return;
+                    }
+                    else
+                    {
+                        Application.Quit();
+                    }
+                });
+            }
             Debuger.LogError(errorTip);
+        }
+    }
+    private void TryInitWindow()
+    {
+        if (null == m_AssetUpdateWindow && m_bIsShowWindow)
+        {
+            WindowManager.Instance.OpenWindow(WindowID.AssetUpdate);
+            m_AssetUpdateWindow = WindowManager.Instance.GetWindow(WindowID.AssetUpdate) as UIWindowAssetUdpate;
+        }
+    }
+    private void TryCloseWindow()
+    {
+        if (null != m_AssetUpdateWindow)
+        {
+            WindowManager.Instance.CloseWindow(WindowID.AssetUpdate);
         }
     }
     private void Retry()

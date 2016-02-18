@@ -25,11 +25,12 @@ namespace Cache
         {
             lock(this)
             {
+                buffer.Clear();
                 transcoder.Encode(buffer, value);
 
                 byte[] bytes = buffer.ToArray();
                 byte compress = 0;
-                if (canCompress && bytes.Length > COMPRESSION_LEN)
+                /*if (canCompress && bytes.Length > COMPRESSION_LEN)
                 {
                     using (MemoryStream ms = new MemoryStream())
                     {
@@ -40,7 +41,7 @@ namespace Cache
                         bytes = ms.ToArray();
                         compress = 1;
                     }
-                }
+                }*/
 
                 buffer.Clear();
 
@@ -50,7 +51,7 @@ namespace Cache
                 buffer.WriteBytes(bytes);
 
                 byte[] newBytes = buffer.ToArray();
-                buffer.Clear();
+                
                 return newBytes;
             }
         }
@@ -59,6 +60,7 @@ namespace Cache
         {
             lock(this)
             {
+                buffer.Clear();
                 if (isNativeFiile)
                 {
                     return null;
@@ -104,14 +106,7 @@ namespace Cache
                         }
                     }
                 }
-                try
-                {
-                    return transcoder.Decode(buffer);
-                }
-                finally
-                {
-                    buffer.Clear();
-                }
+                return transcoder.Decode(buffer);
             }
         }
 

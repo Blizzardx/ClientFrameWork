@@ -13,11 +13,14 @@ namespace NetWork
 {
     public class HttpManager : Singleton<HttpManager>
     {
-        private const string URL = "http://192.168.1.186:8080/cgz-game-web/game/faced.do";
-
+        private const string URL = "http://dev.cytxcn.com/mmAdv/game/faced.do";
+        //private const string URL = "http://192.168.1.200:8080/cgz-game-web/game/faced.do";
+        public const string CHAT_DOWNLOAD_URL = "http://dev.cytxcn.com/voice";
+        public const string CHAT_UPLOAD_URL = "http://dev.cytxcn.com/game-voice-upload-server/upload.do";
         public string Sk { get; set; }
 
         private long orderId = 0L;
+
 
         public long GetNextOrderId()
         {
@@ -104,7 +107,7 @@ namespace NetWork
 
             ByteBuffer buffer = ByteBuffer.Allocate(512);
 
-            buffer.WriteInt(MessageIdConstants.LOGIN);
+            buffer.WriteInt(ThriftMessageHelper.GetMessageId(message));
             buffer.WriteInt(headerBytes.Length);
             buffer.WriteBytes(headerBytes);
             buffer.WriteInt(messageBytes.Length);

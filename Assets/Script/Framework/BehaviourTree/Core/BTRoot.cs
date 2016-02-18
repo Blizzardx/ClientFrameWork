@@ -1,6 +1,4 @@
-﻿
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 namespace BehaviourTree
@@ -26,7 +24,7 @@ namespace BehaviourTree
 		{
 			if( m_ChildrenLst.Count < 1 )
 			{
-				return EBTState.FAILD;
+				return EBTState.False;
 			}
 			return m_ChildrenLst[0].Tick();
 		}

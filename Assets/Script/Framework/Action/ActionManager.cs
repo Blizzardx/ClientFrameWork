@@ -13,11 +13,38 @@ using System;
 using System.Collections.Generic;
 using ActionEditor;
 
+public class ActionParam
+{
+    private int _id;
+    private object _object;
+    public int Id
+    {
+        get
+        {
+            return _id;
+        }
+        set
+        {
+            this._id = value;
+        }
+    }
+    public object Object
+    {
+        get
+        {
+            return _object;
+        }
+        set
+        {
+            this._object = value;
+        }
+    }
+}
 public class ActionManager : Singleton<ActionManager>
 {
-    #region Field
+    private List<int> m_PlayedActionList = new List<int>();
     private List<ActionPlayer> m_lstAction = new List<ActionPlayer>();
-    #endregion
+    private const int m_iPlayedActionListMacCount = 1024;
 
     #region Public Interface
     public ActionPlayer GetAction(int instanceID)
@@ -41,23 +68,48 @@ public class ActionManager : Singleton<ActionManager>
         }
         return null;
     }
-    public int InsertAction(int iActionId, ActionFileData data)
+    public int InsertAction(int iActionId, ActionFileData data, ActionParam param)
     {
-        ActionPlayer action = new ActionPlayer(iActionId, data, null);
+        ActionPlayer action = new ActionPlayer(iActionId, data, param, null);
         m_lstAction.Add(action);
         return action.GetInstanceID();
-    } 
-    public int InsertAction(int iActionId, ActionFileData data, List<GameObject> affectedObjects)
+    }
+    public int InsertAction(int iActionId, ActionFileData data, ActionParam param, List<GameObject> affectedObjects)
     {
-        ActionPlayer action = new ActionPlayer(iActionId, data, affectedObjects);
+        ActionPlayer action = new ActionPlayer(iActionId, data, param, affectedObjects);
         m_lstAction.Add(action);
         return action.GetInstanceID();
-    } 
-    public int InsertAction(int iActionId, ActionFileData data, params GameObject[] affectedObjects)
+    }
+    public int InsertAction(int iActionId, ActionFileData data, ActionParam param, params GameObject[] affectedObjects)
     {
         List<GameObject> affectedOjectList = new List<GameObject>();
         affectedOjectList.AddRange(affectedObjects);
-        ActionPlayer action = new ActionPlayer(iActionId, data, affectedOjectList);
+        ActionPlayer action = new ActionPlayer(iActionId, data, param, affectedOjectList);
+        m_lstAction.Add(action);
+        return action.GetInstanceID();
+    }
+    public int PlayAction(int iActionId, ActionParam param)
+    {
+        ActionFileData data = ConfigManager.Instance.GetActionFileData(iActionId);
+        ActionPlayer action = new ActionPlayer(iActionId, data, param, null);
+        m_lstAction.Add(action);
+        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ACTION_START, param));
+        return action.GetInstanceID();
+    }
+    public int PlayAction(int iActionId, ActionParam param, List<GameObject> affectedObjects)
+    {
+        ActionFileData data = ConfigManager.Instance.GetActionFileData(iActionId);
+        ActionPlayer action = new ActionPlayer(iActionId, data, param, affectedObjects);
+        m_lstAction.Add(action);
+        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ACTION_START, param));
+        return action.GetInstanceID();
+    }
+    public int PlayAction(int iActionId, ActionParam param, params GameObject[] affectedObjects)
+    {
+        ActionFileData data = ConfigManager.Instance.GetActionFileData(iActionId);
+        List<GameObject> affectedOjectList = new List<GameObject>();
+        affectedOjectList.AddRange(affectedObjects);
+        ActionPlayer action = new ActionPlayer(iActionId, data, param, affectedOjectList);
         m_lstAction.Add(action);
         return action.GetInstanceID();
     }
@@ -85,16 +137,29 @@ public class ActionManager : Singleton<ActionManager>
     }
     public void ClearAction()
     {
+        if (null == m_lstAction)
+        {
+            return;
+        }
+        for (int i = 0; i < m_lstAction.Count; i++)
+        {
+            if (null == m_lstAction[i])
+            {
+                continue;
+            }
+            m_lstAction[i].Destory();
+        }
         m_lstAction.Clear();
     }
     public void Update()
-    { 
+    {
         if (null == m_lstAction || m_lstAction.Count <= 0)
-		{
-			return ;
-		}
-		
-		int nCount = m_lstAction.Count;
+        {
+            return;
+        }
+
+
+        int nCount = m_lstAction.Count;
 
         for (int i = nCount - 1; i >= 0; i--)
         {
@@ -103,6 +168,7 @@ public class ActionManager : Singleton<ActionManager>
             if (null == action)
             {
                 m_lstAction.RemoveAt(i);
+                AddToEndPlayList(action.GetActionId());
                 continue;
             }
 
@@ -113,12 +179,14 @@ public class ActionManager : Singleton<ActionManager>
             {
                 action.Destory();
                 m_lstAction.RemoveAt(i);
+                AddToEndPlayList(action.GetActionId());
                 continue;
             }
             if (action.IsFinish())
             {
                 action.Destory();
                 m_lstAction.RemoveAt(i);
+                AddToEndPlayList(action.GetActionId());
                 continue;
             }
         }
@@ -126,15 +194,42 @@ public class ActionManager : Singleton<ActionManager>
     public void Initialize()
     {
         MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnTriggerPlayAction);
+        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_SCENE, OnChangeScene);
     }
     public void Distructor()
     {
         MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnTriggerPlayAction);
+        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_CHANGE_SCENE, OnChangeScene);
+    }
+    public bool CheckActionIsPlayed(int id)
+    {
+        for (int i = 0; i < m_PlayedActionList.Count; ++i)
+        {
+            if (m_PlayedActionList[i] == id)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     #endregion
 
     #region System Functions
-
+    private void AddToEndPlayList(int id)
+    {
+        for (int i = 0; i < m_PlayedActionList.Count; ++i)
+        {
+            if (m_PlayedActionList[i] == id)
+            {
+                return;
+            }
+        }
+        m_PlayedActionList.Add(id);
+        while (m_PlayedActionList.Count > m_iPlayedActionListMacCount)
+        {
+            m_PlayedActionList.RemoveAt(0);
+        }
+    }
     private void OnTriggerPlayAction(MessageObject obj)
     {
         // trigger to play action
@@ -144,13 +239,18 @@ public class ActionManager : Singleton<ActionManager>
         }
 
         //get id
-        int id = (int) (obj.msgValue);
-        
+        int id = (int)(obj.msgValue);
+
         //get current scene gameobject
-        var objList = TransformContainer.GetSceneObjList();
-
+        var objList = LifeManager.GetSceneObjList();
+        ActionParam param = new ActionParam();
+        param.Id = id;
         //try play  action
-
+        PlayAction(id, param, objList);
+    }
+    private void OnChangeScene(MessageObject obj)
+    {
+        ClearAction();
     }
     #endregion
 }

@@ -5,13 +5,13 @@ namespace BehaviourTree
 {
 	public class AIAgent
 	{
-		private BTRoot m_Root;
+        private BTRoot m_Root;
+	    private bool m_bIsDebugMode;
 
 		public AIAgent( int iId )
 		{
 			m_Root = BehaviourTreeParser.Instance.CreateBehaviourTree( iId );
 		}
-
 		//
 		public void Active( bool bActive, Ilife Owner )
 		{
@@ -24,13 +24,13 @@ namespace BehaviourTree
 			{
 				m_Root.Active( new BTDatabase() );
                 m_Root.Database.SetData<Ilife>(EDataBaseKey.Owner, Owner);
+                m_Root.Database.SetData<bool>(EDataBaseKey.IsLock, false);
 			}
 			else
 			{
 				m_Root.active = false;
 			}
 		}
-
 		//
 		public bool IsActive()
 		{
@@ -40,7 +40,6 @@ namespace BehaviourTree
 			}
 			return false;
 		}
-
 		//
 		public void OnTick()
 		{
@@ -48,10 +47,12 @@ namespace BehaviourTree
 			{
 				return;
 			}
-
+		    if (m_bIsDebugMode)
+		    {
+		        m_Root.ResetStatus();
+		    }
 			m_Root.Tick();
 		}
-
 		public void OnResertAI()
 		{
 			if( null == m_Root || !m_Root.active )
@@ -61,5 +62,18 @@ namespace BehaviourTree
 			
 			m_Root.OnResertAI();
 		}
+	    public void SetDebugMode(bool status)
+	    {
+	        m_bIsDebugMode = status;
+	    }
+	    public int GetID()
+	    {
+	        return m_Root.ID;
+	    }
+
+	    public BTRoot GetRoot()
+	    {
+	        return m_Root;
+	    }
 	}
 }

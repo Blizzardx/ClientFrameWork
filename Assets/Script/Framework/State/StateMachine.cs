@@ -31,6 +31,11 @@ public class StateMachine
     }
     public bool TryEnterState(ELifeState newStateID, bool force,object param = null)
     {
+        if (null != m_CurrentState && m_CurrentState.GetState() == newStateID)
+        {
+            //do nothing
+            return true;
+        }
         IState newState = StateFactory(newStateID);
         if (null == newState)
         {
@@ -92,7 +97,10 @@ public class StateMachine
     }
     public void Distructor()
     {
-        m_StateUsingStore.Clear();
+        if (null != m_StateUsingStore)
+        {
+            m_StateUsingStore.Clear();
+        }
         m_CurrentState = null;
         MessageManager.Instance.UnregistMessage(m_nCurrentListenId,OnTriggerChangeState);
     }

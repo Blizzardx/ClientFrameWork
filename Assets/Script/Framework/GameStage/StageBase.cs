@@ -15,4 +15,9 @@ public abstract class StageBase
     {
         WindowManager.Instance.OpenWindow(WindowID.Loading);
     }
+
+    virtual public void InitStage()
+    {
+        
+    }
 }

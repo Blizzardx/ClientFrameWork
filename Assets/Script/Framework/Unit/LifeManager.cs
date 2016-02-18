@@ -14,10 +14,12 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-class LifeManager
+public class LifeManager
 {
     private static Dictionary<int, Ilife> m_LifeMap = new Dictionary<int,Ilife>();
-  
+
+    private static List<GameObject> m_SceneObjList = new List<GameObject>();
+
     public static void RegisterLife(int id, Ilife life)
     {
         if (m_LifeMap.ContainsKey(id))
@@ -45,6 +47,18 @@ class LifeManager
     public static Dictionary<int, Ilife> GetLifeList()
     {
         return m_LifeMap;
+    }
+    public static void AddToSceneObjList(GameObject obj)
+    {
+        m_SceneObjList.Add(obj);
+    }
+    public static void RemoveFromSceneObjList(GameObject obj)
+    {
+        m_SceneObjList.Remove(obj);
+    }
+    public static List<GameObject> GetSceneObjList()
+    {
+        return m_SceneObjList;
     }
 }
 
