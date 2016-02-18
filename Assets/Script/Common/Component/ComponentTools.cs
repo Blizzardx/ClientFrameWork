@@ -25,6 +25,7 @@ public class ComponentTool
         }
         else
         {
+            Debuger.LogWarning("can't load component : " + objName);
             return null;
         }
     }
@@ -42,6 +43,7 @@ public class ComponentTool
         }
         else
         {
+            Debuger.LogWarning("can't load gameObject : " + objName);
             return null;
         }
     }
@@ -75,5 +77,35 @@ public class ComponentTool
             }
             return null;
         }
-    } 
+    }
+    public static bool IsInRect(UIWidget des, UIWidget source,float scale = 1.0f)
+    {
+        float width = source.width * scale;
+        float height = source.height * scale;
+
+        if (des.transform.position.x > source.transform.position.x - width / 2 &&
+            des.transform.position.x < source.transform.position.x + width / 2 &&
+            des.transform.position.y > source.transform.position.y - height / 2 &&
+            des.transform.position.y < source.transform.position.y + height / 2)
+        {
+            return true;
+        }
+        return false;
+    }
+    public static bool IsRectCross(UIWidget des, UIWidget source, float scale = 1.0f)
+    {
+        float width = source.width * scale;
+        float height = source.height * scale;
+        float desWidth = des.width * scale;
+        float desHeight = des.height * scale;
+
+        if (des.transform.position.x + desWidth / 2 > source.transform.position.x - width / 2 &&
+            des.transform.position.x - desWidth / 2 < source.transform.position.x + width / 2 &&
+            des.transform.position.y + desHeight / 2 > source.transform.position.y - height / 2 &&
+            des.transform.position.y - desHeight / 2 < source.transform.position.y + height / 2)
+        {
+            return true;
+        }
+        return false;
+    }
 }

@@ -27,11 +27,11 @@ public class GlobalScripts : Singleton<GlobalScripts>
     #region Public Interface
     public void Initialize()
     {
-        //Reset();
+        Reset();
     }
     public void Reset()
     {
-        GameObject tempObj = GameObject.Find("SceneCamera");
+        GameObject tempObj = GameObject.Find("MainCamera");
         if (null != tempObj)
         {
             mGameCamera = tempObj.GetComponent<GameCamera>();

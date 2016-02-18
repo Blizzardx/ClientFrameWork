@@ -5,9 +5,9 @@ using System;
 public class MyUIDragDropItem : UIDragDropItem
 {
     private Action<bool> pressAction = null;
-    private Action dragStartAction = null;
+    private Action<MyUIDragDropItem> dragStartAction = null;
     private Action<Vector3> dragAction = null;
-    private Action dragEndAction = null;
+    private Action<MyUIDragDropItem> dragEndAction = null;
     private bool isPressed;
 
     public void RegisterPressAction(Action<bool> _action)
@@ -15,7 +15,7 @@ public class MyUIDragDropItem : UIDragDropItem
         pressAction = _action;
     }
 
-    public void RegisterDragStartAction(Action _action)
+    public void RegisterDragStartAction(Action<MyUIDragDropItem> _action)
     {
         dragStartAction = _action;
     }
@@ -25,7 +25,7 @@ public class MyUIDragDropItem : UIDragDropItem
         dragAction = _action;
     }
 
-    public void RegisterDragEndAction(Action _action)
+    public void RegisterDragEndAction(Action<MyUIDragDropItem> _action)
     {
         dragEndAction = _action;
     }
@@ -54,17 +54,19 @@ public class MyUIDragDropItem : UIDragDropItem
 
     protected override void OnDragDropStart()
     {
+        base.OnDragDropStart();
         mTouchID = UICamera.currentTouchID;
         mParent = mTrans.parent;
         mRoot = NGUITools.FindInParents<UIRoot>(mParent);
         if (dragStartAction != null)
         {
-            dragStartAction();
+            dragStartAction(this);
         }
     }
 
     protected override void OnDragDropMove(Vector3 delta)
     {
+        base.OnDragDropMove(delta);
         if (dragAction != null)
         {
             dragAction(delta);
@@ -73,10 +75,11 @@ public class MyUIDragDropItem : UIDragDropItem
 
     protected override void OnDragDropRelease(GameObject surface)
     {
+        base.OnDragDropRelease(surface);
         mTouchID = int.MinValue;
         if (dragEndAction != null)
         {
-            dragEndAction();
+            dragEndAction(this);
         }
     }
 }

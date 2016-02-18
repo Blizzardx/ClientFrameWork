@@ -36,7 +36,8 @@ class EditorCameraMovement : SingletonTemplateMon<EditorCameraMovement>
     void Awake()
     {
         _instance = this;
-        AudioManager.Instance.Initialize();
+        MessageManager.Instance.Initialize();
+        AudioPlayer.Instance.Initialize();
     }
 
     // Update is called once per frame
@@ -93,7 +94,7 @@ class EditorCameraMovement : SingletonTemplateMon<EditorCameraMovement>
             }
             if (Input.GetKey(KeyCode.R))
             {
-                GlobalScripts.Instance.mGameCamera.ResetCam();
+                //GlobalScripts.Instance.mGameCamera.ShakeCamera(1f, new Vector3(1, 1, 1));
             }
 
 

@@ -193,14 +193,14 @@ public class RegisterDictionaryTemplate<T>
                 else
                 {
                     //log error                        
-                    Debuger.LogError("null of call back fun" + id.ToString());
+                    Debuger.LogWarning("null of call back fun" + id.ToString());
                 }
             }
         }
         else
         {
             //empty msg list                    
-            Debuger.LogError("empty list  " + id.ToString());
+            Debuger.LogWarning("empty list  " + id.ToString());
         }
     }
     public void EndUpdate()

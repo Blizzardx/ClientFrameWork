@@ -100,6 +100,7 @@ namespace Assets.Scripts.Framework.Network
                 FileUtils.DeleteFile(fileElement.LocalPath);
                 FileUtils.EnsureFolder(fileElement.LocalPath);
                 File.Copy(m_strFileTmpName, fileElement.LocalPath);
+                Debuger.Log("complete download file : " + fileElement.LocalPath);
                 //File.Move(m_strFileTmpName, fileElement.LocalPath);
             }
             m_OnComplate(param);
@@ -201,6 +202,7 @@ namespace Assets.Scripts.Framework.Network
         }
         private void BeginDownload()
         {
+            m_bIsOneComplete = false;
             m_CallBack = new AssetDownloadCallBack();
             m_CallBack.Initialize(m_strTmpCache, OnProcess, OnComplate, OnError);
 

@@ -133,7 +133,7 @@ namespace Assets.Scripts.Core.Utils
             }
             else
             {
-                Debuger.LogWarning("LoadStringFile. Path Inexistent: " + path);
+                Debug.LogWarning("LoadStringFile. Path Inexistent: " + path);
             }
 
             return res;
@@ -171,6 +171,18 @@ namespace Assets.Scripts.Core.Utils
             fs.Write(bytes, 0, bytes.Length);
             fs.Close();
             fs.Dispose();
+        }
+        #endregion
+
+        #region string
+
+        public static bool IsEndof(string origin, string mark)
+        {
+            if (string.IsNullOrEmpty(origin))
+            {
+                return false;
+            }
+            return origin.EndsWith(mark);
         }
         #endregion
     }

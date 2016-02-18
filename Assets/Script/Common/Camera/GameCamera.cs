@@ -17,13 +17,20 @@ using System.Text;
 
 public class GameCamera : MonoBehaviour
 {
-    #region Property
-    public float m_fDistance = 15f;
-    public float m_fHeight = 9f;
-    public float m_fOffsetHeight = 0f;
-    public float m_fDistanceDamping = 2f;
-    public float m_fHeightDamping = 2f;
-    public float m_fOffsetHeightDamping = 2f;
+    [Range(0f, 20f)]
+    public float Distance = 15f;
+    [Range(0, 20f)]
+    public float Height = 9f;
+    [Range(0.1f, 10f)]
+    public float OffsetHeight = 0.5f;
+    [Range(0f, 359.9f)]
+    public float Rotation = 0f;
+    [Range(0f, 20f)]
+    public float PositonDamping = 2f;
+    [Range(0f, 20f)]
+    public float RotationDamping = 2f;
+    public Transform LookTarget = null;
+    public bool IsOverObstacle = true;
 
     public static bool OpenClick
     {
@@ -35,89 +42,255 @@ public class GameCamera : MonoBehaviour
         set { m_bLock = value; }
         get { return m_bLock; }
     }
-    #endregion
 
-    #region Field
-    private Transform m_LookTarget;
-    private Vector3 m_LastLookTargetPos;
-    private bool m_bLock = true;
-    private float m_fInitDistance;
-    private float m_fInitHeight;
-    private float m_fInitOffsetHeigh;
-    private float m_fInitDistanceDamping;
-    private float m_fInitHeightDamping;
-    private float m_fInitOffsetHeightDamping;
-    private Vector3 m_vLastLookAtPos;
+    private Vector3? m_EndPos = null;
+    private Quaternion? m_EndRot = null;
+    [SerializeField]
+    private bool m_bLock = false;
     private float m_fCurrDistance;
+    private float m_fCurrHeight;
     private float m_fCurrHeightOffset;
-    #endregion
+    private float m_fCurrRotation;
+    private Vector3 m_CurrentPos;
+    private Vector3 m_CurrentTargetPos;
+    private Quaternion m_CurrentRot;
+    //
+    private Material m_TransformMatrial;
+    private MeshRenderer m_LastMeshRender;
+    private Material m_LastMeshMaterial;
+    // Rotate
+    private bool m_bRotating = false;
+    private float m_fRotateAngle = 0f;
+    private float m_fRotateSpeed = 0f;
+    private float m_InitRotationDamping;
+    private float m_InitPositonDamping;
+    void Awake()
+    {
+
+    }
 
     #region MonoBehavior
     void Start()
     {
+        m_TransformMatrial = ResourceManager.Instance.LoadBuildInResource<Material>("Transparent", AssetType.Materials);
         //DontDestroyOnLoad(transform.parent);
-        m_fInitDistance = m_fDistance;
-        m_fInitHeight = m_fHeight;
-        m_fInitHeightDamping = m_fHeightDamping;
-        m_fInitDistanceDamping = m_fDistanceDamping;
-        m_fInitOffsetHeigh = m_fOffsetHeight;
-        m_fInitOffsetHeightDamping = m_fOffsetHeightDamping;
-
-        CameraTickTask.Instance.RegisterToUpdateList(BasicUpdate);
+        Distance = 8f;
+        Height = 6f;
+        OffsetHeight = 1f;
     }
     void OnDestroy()
     {
-        CameraTickTask.Instance.UnRegisterFromUpdateList(BasicUpdate);
     }
-    void BasicUpdate()
+
+    void FixedUpdate()
     {
+        if (m_bLock && null != LookTarget)
+        {
+            CameraFollow();
+        }
+        else if (!m_bLock && null != m_EndPos && null != m_EndRot)
+        {
+            CameraMove();
+        }
+    }
+
+    void Update()
+    {
+        // Change Rotate
+        if (m_bRotating)
+        {
+            if (m_fRotateAngle - Rotation> 1f)
+            {
+                Rotation += m_fRotateSpeed * Time.deltaTime;
+            }
+            else if (m_fRotateAngle - Rotation < -1f)
+            {
+                Rotation -= m_fRotateSpeed * Time.deltaTime;
+            }
+            else
+            {
+                // Reset
+                Rotation = m_fRotateAngle;
+                StopRotate();
+            }
+        }
+        // test
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            RotateWithTarget(90, 45f);
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            RotateWithTarget(-90, 45f);
+        }
+        if (Input.GetKey(KeyCode.Alpha3))
+        {
+            RotateWithTarget(360, 90);
+        }
+        if (Input.GetKey(KeyCode.Alpha4))
+        {
+            RotateWithTarget(-360, 90);
+        }
+        if (Input.GetKey(KeyCode.Alpha5))
+        {
+            RotateWithTarget(-720, 180);
+        }
+        // Check Click
         if (OpenClick)
         {
             CheckClick();
         }
 
-        if (LockCam && null != m_LookTarget)
+    }
+    private void CameraMove()
+    {
+        // Current
+        m_CurrentPos = transform.position;
+        m_CurrentRot = transform.rotation;
+        // Lerp
+        m_CurrentPos = Vector3.Lerp(m_CurrentPos, (Vector3)m_EndPos, PositonDamping * Time.deltaTime);
+        m_CurrentRot = Quaternion.Lerp(m_CurrentRot, (Quaternion)m_EndRot, RotationDamping * Time.deltaTime);
+        // Set
+        transform.position = m_CurrentPos;
+        transform.rotation = m_CurrentRot;
+    }
+    private void CameraFollow()
+    {
+        // Current
+        m_CurrentPos = transform.position;
+        m_CurrentTargetPos = transform.position + transform.forward * Distance;
+        // Expected
+        float expectedHeight = LookTarget.transform.position.y + Height;
+        Vector3 expectedPos = new Vector3(LookTarget.transform.position.x, expectedHeight, LookTarget.transform.position.z);
+        Vector3 expectedForward = new Vector3(1 * Mathf.Sin(Rotation * 3.14159f / 180f), 0, 1 * Mathf.Cos(Rotation * 3.14159f / 180f));
+        expectedPos -= expectedForward * Distance;
+        Vector3 expectedTargetPos = new Vector3(LookTarget.transform.position.x,
+                                                LookTarget.transform.position.y + OffsetHeight,
+                                                LookTarget.transform.position.z);
+        //CheckCollider(ref expectedPos);
+        RaycastHit hit;
+        if (Physics.Raycast(expectedTargetPos, expectedPos - expectedTargetPos, out hit, (expectedPos - expectedTargetPos).magnitude, 1 << LayerMask.NameToLayer("StaticEntity")))
         {
-            float fWantedHeight = m_LookTarget.position.y + m_fHeight;
-            float fWantedTargetHeight = m_LookTarget.position.y + m_fOffsetHeight;
-
-            float fCurrHeight = transform.parent.position.y;
-
-            fCurrHeight = Mathf.Lerp(fCurrHeight, fWantedHeight, m_fHeightDamping * Time.deltaTime);
-            m_fCurrHeightOffset = Mathf.Lerp(m_fCurrHeightOffset, fWantedTargetHeight, m_fInitOffsetHeightDamping * Time.deltaTime);
-            m_fCurrDistance = Mathf.Lerp(m_fCurrDistance, m_fDistance, m_fDistanceDamping * Time.deltaTime);
-
-            transform.parent.position = m_LookTarget.position;
-            transform.parent.position -= Vector3.forward * m_fCurrDistance;
-            transform.parent.position = new Vector3(transform.parent.position.x, fCurrHeight, transform.position.z);
-            Vector3 vLookAtPos = new Vector3(m_LookTarget.position.x, fWantedTargetHeight, m_LookTarget.position.z);
-            transform.parent.LookAt(vLookAtPos);
+            if (IsOverObstacle)
+            {
+                expectedPos = hit.point;
+            }
+            //Debug.Log(hit.point.ToString());
         }
+        if (Physics.Raycast(expectedTargetPos, expectedPos - expectedTargetPos, out hit, (expectedPos - expectedTargetPos).magnitude, 1 << LayerMask.NameToLayer("StaticEntity_Transparent")))
+        {
+            //change material
+            MeshRenderer meshRender = hit.transform.gameObject.GetComponent<MeshRenderer>();
+            if (null != meshRender && meshRender.material.shader != m_TransformMatrial.shader)
+            {
+                m_LastMeshRender = meshRender;
+                m_LastMeshMaterial = meshRender.material;
+                meshRender.material = m_TransformMatrial;
+                Debuger.Log("material name : " + m_LastMeshMaterial.name);
+            }
+        }
+        else if (Physics.Raycast(expectedTargetPos, expectedPos - expectedTargetPos, out hit, (expectedPos - expectedTargetPos).magnitude, 1 << LayerMask.NameToLayer("StaticEntity_MoveCamra")))
+        {
+            if (IsOverObstacle)
+            {
+                expectedPos = hit.point;
+            }
+        }
+        else
+        {
+            if (m_LastMeshRender != null && m_LastMeshRender.material.shader == m_TransformMatrial.shader)
+            {
+                m_LastMeshRender.material = m_LastMeshMaterial;
+                Debuger.Log("reset name : " + m_LastMeshRender.material.name);
+                m_LastMeshRender = null;
+            }
+        }
+
+        //Lerp
+        m_CurrentPos = Vector3.Lerp(m_CurrentPos, expectedPos, PositonDamping * Time.deltaTime);
+        //m_CurrentTargetPos = Vector3.MoveTowards(m_CurrentTargetPos, expectedTargetPos, RotationDamping * Time.deltaTime);
+        m_CurrentTargetPos = Vector3.Lerp(m_CurrentTargetPos, expectedTargetPos, RotationDamping * Time.deltaTime);
+        //Set
+        transform.position = m_CurrentPos;
+        transform.LookAt(m_CurrentTargetPos);
     }
     #endregion
 
     #region Public Interface
+    public Vector3 GetCurrentPosition()
+    {
+        return transform.position;
+    }
+    public Vector3 GetCurrentEuler()
+    {
+        return transform.eulerAngles;
+    }
+    public Quaternion GetCurrentQuaterion()
+    {
+        return transform.rotation;
+    }
     public void SetTarget(Transform trans, bool bRightNow = false)
     {
-        m_LookTarget = trans;
-        if (null != m_LookTarget && bRightNow)
+        LookTarget = trans;
+        if (null != LookTarget)
         {
-            m_fCurrDistance = m_fDistance;
-            m_fCurrHeightOffset = m_LookTarget.position.y + m_fOffsetHeight;
-            transform.parent.position = new Vector3(m_LookTarget.position.x, m_LookTarget.position.y + m_fHeight, m_LookTarget.position.z);
-            transform.parent.position -= Vector3.forward * m_fCurrDistance;
-            transform.parent.LookAt(new Vector3(m_LookTarget.position.x, m_fCurrHeightOffset, m_LookTarget.position.z));
+            if (bRightNow)
+            {
+                float expectedHeight = LookTarget.transform.position.y + Height;
+                Vector3 expectedPos = new Vector3(LookTarget.transform.position.x, expectedHeight, LookTarget.transform.position.z);
+                Vector3 expectedForward = new Vector3(1 * Mathf.Sin(Rotation * 3.14159f / 180f), 0, 1 * Mathf.Cos(Rotation * 3.14159f / 180f));
+                expectedPos -= expectedForward * Distance;
+                Vector3 expectedTargetPos = new Vector3(LookTarget.transform.position.x,
+                                                        LookTarget.transform.position.y + OffsetHeight,
+                                                        LookTarget.transform.position.z);
+                transform.position = expectedPos;
+                transform.LookAt(expectedTargetPos);
+            }
+
+            LockCam = true;
+        }
+    }
+    public void SetCameraPos(Vector3 vPos, bool bRightNow = false)
+    {
+        if (bRightNow)
+        {
+            transform.position = vPos;
+            m_EndPos = null;
+        }
+        else
+        {
+            m_EndPos = vPos;
+        }
+    }
+    public void SetCameraRot(Quaternion rot, bool bRightNow = false)
+    {
+        if (bRightNow)
+        {
+            transform.rotation = rot;
+            m_EndRot = null;
+        }
+        else
+        {
+            m_EndRot = rot;
+        }
+    }
+    public void SetCameraRot(Vector3 euler, bool bRightNow = false)
+    {
+        if (bRightNow)
+        {
+            transform.rotation = Quaternion.Euler(euler);
+            m_EndRot = null;
+        }
+        else
+        {
+            m_EndRot = Quaternion.Euler(euler);
         }
     }
     public void ResetCam()
     {
-        m_fDistance = m_fInitDistance;
-        m_fHeight = m_fInitHeight;
-        m_fOffsetHeight = m_fInitOffsetHeigh;
-        m_fDistanceDamping = m_fInitDistanceDamping;
-        m_fHeightDamping = m_fInitHeightDamping;
-        m_fOffsetHeightDamping = m_fInitOffsetHeightDamping;
-        LockCam = true;
+        m_EndPos = null;
+        m_EndRot = null;
+        LookTarget = null;
     }
     public void ShakeCamera(float fTime, Vector3 vAmount)
     {
@@ -125,15 +298,30 @@ public class GameCamera : MonoBehaviour
         hash.Add("time", fTime);
         hash.Add("amount", vAmount);
         hash.Add("islocal", true);
-        iTween.ShakePosition(gameObject, hash);
+        iTween.ShakePosition(transform.parent.gameObject, hash);
     }
-    public void SetCameraPos(Vector3 vPos)
+    public void RotateWithTarget(float angle, float speed)
     {
-        transform.parent.position = vPos;
+        if (null != LookTarget)
+        {
+            m_fRotateAngle = Rotation + angle;
+            m_fRotateSpeed = speed;
+            m_bRotating = true;
+            m_InitRotationDamping = RotationDamping;
+            m_InitPositonDamping = PositonDamping;
+        }
     }
-    public void SetCameraRot(Quaternion rot)
+    public void StopRotate()
     {
-        transform.parent.rotation = rot;
+        m_fRotateSpeed = 0f;
+        m_fRotateAngle = Rotation;
+        RotationDamping = m_InitRotationDamping;
+        PositonDamping = m_InitPositonDamping;
+        m_bRotating = false;
+    }
+    public bool CheckRoating ()
+    {
+        return m_bRotating;
     }
     #endregion
 
