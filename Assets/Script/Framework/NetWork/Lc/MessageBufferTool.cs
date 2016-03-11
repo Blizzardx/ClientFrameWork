@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using Communication;
 using NetFramework;
 using Thrift.Protocol;
@@ -105,11 +106,11 @@ public class MessageBufferTool
         }
 
         //push source byte stream
-        m_DecodingBuffer.InsertRange(m_DecodingBuffer.Count, m_RecieveBuffer);
-        /*for (int i = 0; i < size; ++i)
+        
+        for (int i = 0; i < size; ++i)
         {
             m_DecodingBuffer.Add(m_RecieveBuffer[i]);
-        }*/
+        }
 
         do
         {
