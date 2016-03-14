@@ -168,12 +168,15 @@ public class RegisterDictionaryTemplate<T>
 {
     private Dictionary<int, List<Action<T>>> m_CallbackStore;
     private Dictionary<int, List<Action<T>>> m_UnRegisterList;
+    private Dictionary<int, List<Action<T>>> m_RegisterList;
     private bool m_bIsProcessingList;
 
     public RegisterDictionaryTemplate()
     {
         m_CallbackStore = new Dictionary<int, List<Action<T>>>();
         m_UnRegisterList = new Dictionary<int, List<Action<T>>>();
+        m_RegisterList = new Dictionary<int, List<Action<T>>>();
+
         m_bIsProcessingList = false;
     }
     public void BeginUpdate()
@@ -214,57 +217,81 @@ public class RegisterDictionaryTemplate<T>
         {
             Debuger.LogError("msg call back can't be null !!!" + msgId.ToString());
         }
-        if (!m_CallbackStore.ContainsKey(msgId))
+        if(m_bIsProcessingList)
         {
-            m_CallbackStore.Add(msgId, new List<Action<T>>());
-            m_CallbackStore[msgId].Add(msgCallback);
-        }
-        else
-        {
-            for (int i = 0; i < m_CallbackStore[msgId].Count; ++i)
+            if(!m_RegisterList.ContainsKey(msgId))
             {
-                if (m_CallbackStore[msgId][i] == msgCallback)
-                {
-                    return;
-                }
-            }
-            m_CallbackStore[msgId].Add(msgCallback);
-        }
-    }
-    public void UnregistEvent(int msgId, Action<T> msgCallback)
-    {
-        if (m_CallbackStore.ContainsKey(msgId))
-        {
-            if (!m_bIsProcessingList)
-            {
-                m_CallbackStore[msgId].Remove(msgCallback);
+                m_RegisterList.Add(msgId, new List<Action<T>>());
+                m_RegisterList[msgId].Add(msgCallback);
             }
             else
             {
-                bool hasKey = false;
-                foreach (var elem in m_UnRegisterList)
+                for (int i = 0; i < m_RegisterList[msgId].Count; ++i)
                 {
-                    if (elem.Key == msgId)
+                    if (m_RegisterList[msgId][i] == msgCallback)
                     {
-                        hasKey = true;
-                        var tmpList = elem.Value;
-                        for (int i = 0; i < tmpList.Count; ++i)
+                        return;
+                    }
+                }
+                m_RegisterList[msgId].Add(msgCallback);
+            }
+        }
+        else
+        {
+            if (!m_CallbackStore.ContainsKey(msgId))
+            {
+                m_CallbackStore.Add(msgId, new List<Action<T>>());
+                m_CallbackStore[msgId].Add(msgCallback);
+            }
+            else
+            {
+                for (int i = 0; i < m_CallbackStore[msgId].Count; ++i)
+                {
+                    if (m_CallbackStore[msgId][i] == msgCallback)
+                    {
+                        return;
+                    }
+                }
+                m_CallbackStore[msgId].Add(msgCallback);
+            }
+        }
+        
+    }
+    public void UnregistEvent(int msgId, Action<T> msgCallback)
+    {
+        if (m_bIsProcessingList)
+        {
+            bool hasKey = false;
+            foreach (var elem in m_UnRegisterList)
+            {
+                if (elem.Key == msgId)
+                {
+                    hasKey = true;
+                    var tmpList = elem.Value;
+                    for (int i = 0; i < tmpList.Count; ++i)
+                    {
+                        if (tmpList[i] == msgCallback)
                         {
-                            if (tmpList[i] == msgCallback)
-                            {
-                                return;
-                            }
+                            return;
                         }
                     }
                 }
-                // add to remove store
-                if (!hasKey)
-                {
-                    m_UnRegisterList.Add(msgId, new List<Action<T>>());
-                }
-                m_UnRegisterList[msgId].Add(msgCallback);
+            }
+            // add to remove store
+            if (!hasKey)
+            {
+                m_UnRegisterList.Add(msgId, new List<Action<T>>());
+            }
+            m_UnRegisterList[msgId].Add(msgCallback);
+        }
+        else
+        {
+            if (m_CallbackStore.ContainsKey(msgId))
+            {
+                m_CallbackStore[msgId].Remove(msgCallback);
             }
         }
+        
     }
     public void UnregistAllEvent(int msgId)
     {
@@ -283,16 +310,47 @@ public class RegisterDictionaryTemplate<T>
     }
     private void DoUnregister()
     {
+        // handler add first
+        if (m_RegisterList.Count != 0)
+        {
+            foreach (var elem in m_RegisterList)
+            {
+                List<Action<T>> tmpList = null;
+                if (m_CallbackStore.TryGetValue(elem.Key, out tmpList))
+                {
+                    foreach(var tmpElem in elem.Value)
+                    {
+                        for(int i=0;i<tmpList.Count;++i)
+                        {
+                            if(tmpList[i] == tmpElem)
+                            {
+                                continue;
+                            }
+                        }
+                        tmpList.Add(tmpElem);
+                    }
+                }
+                else
+                {
+                    m_CallbackStore.Add(elem.Key,elem.Value);
+                }
+            }
+        }
+        m_RegisterList.Clear();
+
+        //handler remove
         if (m_UnRegisterList.Count != 0)
         {
             foreach (var elem in m_UnRegisterList)
             {
                 var tmpList = elem.Value;
-                var msgList = m_CallbackStore[elem.Key];
-
-                for (int i = 0; i < tmpList.Count; ++i)
+                List<Action<T>> msgList = null;
+                if(m_CallbackStore.TryGetValue(elem.Key,out msgList))
                 {
-                    msgList.Remove(tmpList[i]);
+                    for (int i = 0; i < tmpList.Count; ++i)
+                    {
+                        msgList.Remove(tmpList[i]);
+                    }
                 }
             }
             m_UnRegisterList.Clear();
