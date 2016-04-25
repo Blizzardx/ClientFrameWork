@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Thrift.Protocol;
-using Common.Sqlite;
-using Mono.Data.Sqlite;
 using Framework.Async;
 using Cache;
 

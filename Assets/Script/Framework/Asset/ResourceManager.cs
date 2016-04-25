@@ -280,8 +280,8 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
             if (isAssetBundle)
             {
                 byte[] data = FileUtils.ReadByteFile(realPath);
-                AssetBundleCreateRequest a = AssetBundle.CreateFromMemory(data);
-                request = a;
+                //AssetBundleCreateRequest a = AssetBundle.LoadFromMemoryAsync(data);
+                request = null;// a;
             }
             else
             {

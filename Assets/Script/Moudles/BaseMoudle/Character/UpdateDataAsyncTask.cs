@@ -1,7 +1,5 @@
-﻿using Common.Sqlite;
-using Communication;
+﻿using Communication;
 using Framework.Async;
-using Mono.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,12 +36,12 @@ namespace Moudles.BaseMoudle.Character
                     {
                         continue;
                     }
-                    string sql = string.Format("replace into {0}(id, data) values((@id) ,(@data))");
-                    SqliteCommand cmd = SqliteDbAccess.Instance.CreateSqliteCommand();
-                    cmd.CommandText = sql;
-                    cmd.Parameters.Add(new SqliteParameter("@id", tbase.GetType().FullName));
-                    cmd.Parameters.Add(new SqliteParameter("@data", bytes));
-                    int n = cmd.ExecuteNonQuery();
+                    //string sql = string.Format("replace into {0}(id, data) values((@id) ,(@data))");
+                    //SqliteCommand cmd = SqliteDbAccess.Instance.CreateSqliteCommand();
+                    //cmd.CommandText = sql;
+                    //cmd.Parameters.Add(new SqliteParameter("@id", tbase.GetType().FullName));
+                    //cmd.Parameters.Add(new SqliteParameter("@data", bytes));
+                    int n = 0;// cmd.ExecuteNonQuery();
                     if (n == 0)
                     {
                         Debuger.LogError(string.Format("{0} update fail.", tbase.GetType().FullName));

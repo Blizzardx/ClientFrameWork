@@ -1,6 +1,4 @@
-﻿using System;
-using Pathfinding;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 public class TransformDataBase
 {

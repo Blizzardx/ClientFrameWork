@@ -10,7 +10,6 @@
 //========================================================================
 
 using System;
-using Pathfinding;
 using UnityEngine;
 using System.Collections.Generic;
 
