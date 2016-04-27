@@ -101,7 +101,6 @@ public class UIList:MonoBehaviour
                 m_ChildElementList[i].m_ObjectRoot.SetActive(false);
             }
         }
-
         m_Grid.Reposition();
     }
     public void SetSelectedIndex(int index)
@@ -112,6 +111,14 @@ public class UIList:MonoBehaviour
             m_ChildElementList[i].m_Handler.OnSelected();
         }
         m_nCurrentSelectedIndex = index;
+    }
+    public UIListItemBase GetItem(int index)
+    {
+        if(index <0 || index >= m_ChildElementList.Count)
+        {
+            return null;
+        }
+        return m_ChildElementList[index].m_Handler;
     }
     public object GetSelected()
     {

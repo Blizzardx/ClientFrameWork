@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Mime;
-using Assets.Scripts.Core.Utils;
 using NetWork;
 using UnityEngine;
+using Assets.Scripts.Core.Utils;
 
 namespace Assets.Scripts.Framework.Network
 {
@@ -65,7 +63,7 @@ namespace Assets.Scripts.Framework.Network
             m_OnComplate = OnComplate;
             m_OnError = OnError;
             m_lCurrentLength = 0L;
-            m_lLength = 0L;
+            m_lLength = 0L; 
         }
         public void OnPrepare(long length, FileStream continueFileStream, object param)
         {
@@ -76,12 +74,13 @@ namespace Assets.Scripts.Framework.Network
             }
             m_lLength = length;
             // create tmp file
-            m_strFileTmpName = m_strDataPath + TimeManager.Instance.Now.ToString() + (m_MarkIndex++).ToString();
+            m_strFileTmpName = m_strDataPath + Time.time + (m_MarkIndex++).ToString();
             FileUtils.EnsureFolder(m_strFileTmpName);
             m_CurrentFileStream = continueFileStream == null ? new FileStream(m_strFileTmpName, FileMode.Create) : continueFileStream;
         }
         public void OnProcess(byte[] buffer, object param)
         {
+            Debug.Log("onprocess file ");
             AssetFile fileElement = param as AssetFile;
             if (fileElement.IsSaveToFile)
             {
@@ -93,6 +92,7 @@ namespace Assets.Scripts.Framework.Network
         }
         public void OnComplate(object param)
         {
+            Debug.Log("OnComplate file ");
             AssetFile fileElement = param as AssetFile;
             if (fileElement.IsSaveToFile)
             {
@@ -107,6 +107,7 @@ namespace Assets.Scripts.Framework.Network
         }
         public void OnError(object param, Exception e)
         {
+            Debug.Log("OnError file ");
             AssetFile fileElement = param as AssetFile;
             if (fileElement.IsSaveToFile && m_CurrentFileStream != null)
             {
@@ -154,6 +155,7 @@ namespace Assets.Scripts.Framework.Network
                 onCompleteCallBack == null 
                 )
             {
+                Debug.LogError("return");
                 return;
             }
 
