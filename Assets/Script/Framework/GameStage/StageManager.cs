@@ -51,7 +51,7 @@ public class StageManager : Singleton<StageManager>
         Time.timeScale = 1.0f;
 
         //send msg
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_CHANGE_SCENE, null));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_CHANGE_SCENE, null));
 
         //load scene
         SceneManager.Instance.LoadScene(m_StageSceneStore[pState], m_CurrentStage.StartStage,m_CurrentStage.PreLoadScene,m_CurrentStage.InitStage);

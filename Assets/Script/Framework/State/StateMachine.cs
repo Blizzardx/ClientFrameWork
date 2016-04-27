@@ -18,7 +18,7 @@ public class StateMachine
     {
         m_lifeInstance = lifeInstance;
         m_nCurrentListenId = registerClientMsgId;
-        MessageManager.Instance.RegistMessage(registerClientMsgId, OnTriggerChangeState);
+        MessageDispatcher.Instance.RegistMessage(registerClientMsgId, OnTriggerChangeState);
         //m_CurrentCharStateConflictMap = ConfigManager.Instance.GetStateConflicMap(uid);
     }
     static public void RegisterState(ELifeState state, Type type)
@@ -102,7 +102,7 @@ public class StateMachine
             m_StateUsingStore.Clear();
         }
         m_CurrentState = null;
-        MessageManager.Instance.UnregistMessage(m_nCurrentListenId,OnTriggerChangeState);
+        MessageDispatcher.Instance.UnregistMessage(m_nCurrentListenId,OnTriggerChangeState);
     }
     #endregion
 

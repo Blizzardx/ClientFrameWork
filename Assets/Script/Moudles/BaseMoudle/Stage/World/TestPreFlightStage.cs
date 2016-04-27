@@ -20,7 +20,7 @@ public class TestPreFlightStage : StageBase
         m_PlayerChar.GetTransformData().SetPosition(TerrainManager.Instance.GetPlayerInitPos().Pos.GetVector3());
         m_PlayerChar.GetTransformData().SetRotation(TerrainManager.Instance.GetPlayerInitPos().Rot.GetVector3());
 
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
 
         //trigger enter scene
         DoEnterScene();
@@ -31,7 +31,7 @@ public class TestPreFlightStage : StageBase
     }
     public override void EndStage()
     {
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
         PlayerManager.Instance.ClearPlayer();
         //clear map instance
         TerrainManager.Instance.CloseTerrain();
@@ -43,7 +43,7 @@ public class TestPreFlightStage : StageBase
     }
     private void StartFuncMethod()
     {
-       MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_PLAY_ACTION, 1800001));
+       MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_PLAY_ACTION, 1800001));
     }
 
     private void OnActionFinish(MessageObject obj)

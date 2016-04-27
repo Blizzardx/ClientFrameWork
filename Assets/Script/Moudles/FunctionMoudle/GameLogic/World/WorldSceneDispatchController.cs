@@ -52,7 +52,7 @@ public class WorldSceneDispatchController : LogicBase<WorldSceneDispatchControll
             {
                 WindowManager.Instance.OpenWindow(WindowID.Loading);
                 //m_ProcessData.m_Type = GameStateType.Copenhagen01State;
-                MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, 0));
+                MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, 0));
                 //SaveParam();
             }
             else
@@ -91,17 +91,17 @@ public class WorldSceneDispatchController : LogicBase<WorldSceneDispatchControll
     }
     private void RegisterMsg()
     {
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnActionStart);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_TO_NODE_GAME, OnChangeToNodeGame);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, OnChangetoWorldGame);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnActionStart);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_TO_NODE_GAME, OnChangeToNodeGame);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, OnChangetoWorldGame);
     }
     private void UnRegisterMsg()
     {
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_CHANGE_TO_NODE_GAME, OnChangeToNodeGame);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, OnChangetoWorldGame);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_CHANGE_TO_NODE_GAME, OnChangeToNodeGame);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, OnChangetoWorldGame);
     }
     private void OnActionStart(MessageObject obj)
     {

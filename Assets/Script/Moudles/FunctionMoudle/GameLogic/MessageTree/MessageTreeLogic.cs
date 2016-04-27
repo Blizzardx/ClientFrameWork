@@ -466,13 +466,13 @@ public class MessageTreeLogic : Singleton<MessageTreeLogic>
     private void EnterBuy()
     {
         LifeTickTask.Instance.RegisterToUpdateList(Update);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, OnEventListResponse);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, OnEventListResponse);
         m_bIsEnalbeChat = true;
     }
     private void ExitBuy()
     {
         LifeTickTask.Instance.UnRegisterFromUpdateList(Update);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, OnEventListResponse);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, OnEventListResponse);
         m_bIsEnalbeChat = false;
     }
     public void OnBuyResponse(BuyResponse resp)
@@ -546,7 +546,7 @@ public class MessageTreeLogic : Singleton<MessageTreeLogic>
     private void EnterSell()
     {
         LifeTickTask.Instance.RegisterToUpdateList(Update);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, OnEventListResponse);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, OnEventListResponse);
         m_bIsEnalbeChat = true;
 
         //notic ui
@@ -558,7 +558,7 @@ public class MessageTreeLogic : Singleton<MessageTreeLogic>
     private void ExitSell()
     {
         LifeTickTask.Instance.UnRegisterFromUpdateList(Update);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, OnEventListResponse);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, OnEventListResponse);
         m_bIsEnalbeChat = false;
     }
     public void OnSellResponse(SellResponse resp)

@@ -6,12 +6,12 @@ public class LimitFuncSceneManager :LogicBase<LimitFuncSceneManager>
 {
     public override void EndLogic()
     {
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, TriggerSceneState);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, TriggerSceneState);
     }
 
     public override void StartLogic()
     {
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, TriggerSceneState);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, TriggerSceneState);
     }
 
     private void TriggerSceneState(MessageObject obj)

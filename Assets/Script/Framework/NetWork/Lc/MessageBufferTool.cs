@@ -207,7 +207,7 @@ public class MessageBufferTool
         ThriftSerialize.DeSerialize(message, messageBody);
 
         //broad cast
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(messageId, message));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(messageId, message));
 
         Debuger.Log("Rec msg:" + message.GetType().Name);
 

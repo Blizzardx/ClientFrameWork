@@ -30,12 +30,12 @@ public class UIWindowMissionDebugAttach : WindowBase
     public override void OnOpen(object param)
     {
         base.OnOpen(param);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_MISSION_COUNTER_CHANGE, OnMissionCounterChange);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_MISSION_COUNTER_CHANGE, OnMissionCounterChange);
         RefreshStatus();
     }
     public override void OnClose()
     {
-        base.OnClose(); MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_MISSION_COUNTER_CHANGE, OnMissionCounterChange);
+        base.OnClose(); MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_MISSION_COUNTER_CHANGE, OnMissionCounterChange);
     }
     private void OnMissionCounterChange(MessageObject obj)
     {

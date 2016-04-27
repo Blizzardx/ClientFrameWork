@@ -93,13 +93,13 @@ namespace MusicGame
             {
                 m_LaunchPositions.Add(launchroot.transform.GetChild(i).gameObject);
             }
-            MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ENABLE_BLOCK, OnEnableBlock);
-            MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_DISABLE_BLOCK, OnDisableBlock);
+            MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ENABLE_BLOCK, OnEnableBlock);
+            MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_DISABLE_BLOCK, OnDisableBlock);
         }
         void OnDestroy()
         {
-            MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ENABLE_BLOCK, OnEnableBlock);
-            MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_DISABLE_BLOCK, OnDisableBlock);
+            MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ENABLE_BLOCK, OnEnableBlock);
+            MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_DISABLE_BLOCK, OnDisableBlock);
         }
         void Update()
         {

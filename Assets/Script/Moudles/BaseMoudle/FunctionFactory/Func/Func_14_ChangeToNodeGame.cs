@@ -20,7 +20,7 @@ public class Func_14_ChangeToNodeGame : FuncMethodsBase
         {
             int id = funcdata.ParamIntList[0];
 
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_NODE_GAME, id));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_NODE_GAME, id));
 
             if(funcdata.ParamIntList.Count > 2)
             {

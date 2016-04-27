@@ -36,7 +36,6 @@ class EditorCameraMovement : SingletonTemplateMon<EditorCameraMovement>
     void Awake()
     {
         _instance = this;
-        MessageManager.Instance.Initialize();
         AudioPlayer.Instance.Initialize();
     }
 

@@ -46,11 +46,11 @@ public class SkillManager
         m_PlayingSkill = new Dictionary<int, SkillConfig>();
         m_LockedTargetList = new Dictionary<int, Ilife>();
 
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinished);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinished);
     }
     public void Destructor()
     {
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinished);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinished);
         SkillCdTickTask.Instance.UnRegisterFromUpdateList(Update);
         m_ListenerList = null;
     }

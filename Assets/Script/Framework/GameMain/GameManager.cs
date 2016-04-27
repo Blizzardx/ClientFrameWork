@@ -27,7 +27,6 @@ public class GameManager : Singleton<GameManager>
         TickTaskManager.Instance.InitializeTickTaskSystem();
         StageManager.Instance.Initialize();
         SceneManager.Instance.Initialize();
-        MessageManager.Instance.Initialize();
         WindowManager.Instance.Initialize();
         SystemMsgHandler.Instance.RegisterSystemMsg();
        // ScriptManager.Instance.Initialize();

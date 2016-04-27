@@ -13,6 +13,6 @@ public class MessageTickTask : AbstractTickTask
     }
     protected override void Beat()
     {
-        MessageManager.Instance.Update();
+        MessageDispatcher.Instance.Update();
     }
 }

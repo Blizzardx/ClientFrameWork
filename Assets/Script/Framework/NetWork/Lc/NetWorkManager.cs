@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using NetWork;
 using Thrift.Protocol;
 using UnityEngine;
 using System.Collections;
+using NetWork;
 
 public class NetWorkManager : Singleton<NetWorkManager>
 {
@@ -24,19 +24,16 @@ public class NetWorkManager : Singleton<NetWorkManager>
     private const int           DEFAULT_SEND_SIZE       = 32 * 1024;
 
     #region public interface
-
-    public NetWorkManager()
-    {
-        Initialize();
-    }
+    
     public void Connect(string ip, int port)
     {
         if (null != m_Socket)
         {
             Close();
         }
+        Initialize();
         m_Socket                    = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        m_Socket.Blocking           = false;
+        m_Socket.Blocking           = true;
         m_Socket.ReceiveBufferSize  = DEFAULT_RECEIVE_SIZE;
         m_Socket.SendBufferSize     = DEFAULT_SEND_SIZE;
         m_Socket.ReceiveTimeout     = 30000;
@@ -57,11 +54,11 @@ public class NetWorkManager : Singleton<NetWorkManager>
             return m_Status;
         }
     }
-    public void SendMsgToServer(object msgValue)
+    public void SendMsgToServer(TBase msgValue)
     {
         if (CheckSocketStatus())
         {
-            PingTickTask.ResetSendMsgTime();
+            //PingTickTask.ResetSendMsgTime();
             m_BufferTool.EncodeGamePackage(msgValue);
             Send();
         }
@@ -106,7 +103,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         }
         catch (Exception)
         {
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
+            //MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
         }
        
     }
@@ -125,7 +122,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         if (client.Connected)
         {
             Debug.Log("Connected");
-            PingTickTask.Instance.SetPingStatus(true);
+            //PingTickTask.Instance.SetPingStatus(true);
         }
         else
         {
@@ -140,7 +137,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         {
             int size = m_Socket.EndReceive(ar);
             m_BufferTool.RecieveMsg(size);
-            Debuger.Log("size = " + size);
+            Debug.Log("size = " + size);
 
             if (CheckSocketStatus())
             {
@@ -150,7 +147,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         catch (Exception)
         {
             // 
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
+            //MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
         }
         
     }
@@ -167,7 +164,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         if (!res)
         {
             // 
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
+            //MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
         }
         return res;
     }

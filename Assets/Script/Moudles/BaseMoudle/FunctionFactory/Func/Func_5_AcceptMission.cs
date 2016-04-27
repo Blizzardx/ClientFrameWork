@@ -25,7 +25,7 @@ public class Func_5_AcceptMission : FuncMethodsBase
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         int missionId = funcdata.ParamIntList[0];
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ACCEPT_MISSION, missionId));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_ACCEPT_MISSION, missionId));
         return EFuncRet.Continue;
     }
 }

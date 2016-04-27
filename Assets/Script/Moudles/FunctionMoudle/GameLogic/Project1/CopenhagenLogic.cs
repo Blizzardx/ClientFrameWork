@@ -53,17 +53,17 @@ public class CopenhagenLogic: LogicBase<CopenhagenLogic>
 	}
     private void RegisterMsg()
     {
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_HIT_LIFE, OnHitLife);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_HIT_TERRAIN, OnHitTerrain);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_HIT_LIFE, OnHitLife);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_HIT_TERRAIN, OnHitTerrain);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
     }
     private void UnRegisterMsg()
     {
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_HIT_LIFE, OnHitLife);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_HIT_TERRAIN, OnHitTerrain);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_HIT_LIFE, OnHitLife);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_HIT_TERRAIN, OnHitTerrain);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
     }
     private void OnHitLife(MessageObject msg)
     {

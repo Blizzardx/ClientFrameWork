@@ -27,7 +27,6 @@ public class TerrainEditorRuntime : SingletonTemplateMon<TerrainEditorRuntime>
         LogManager.Instance.Initialize(true, true);
         ResourceManager.Instance.Initialize();
         TickTaskManager.Instance.InitializeTickTaskSystem();
-        MessageManager.Instance.Initialize();
         ConverterManager.Instance.Initialize();
         AssetUpdateManager.Instance.CheckUpdate(() =>
         {

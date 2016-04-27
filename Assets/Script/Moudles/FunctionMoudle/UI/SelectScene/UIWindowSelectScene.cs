@@ -128,7 +128,7 @@ public class UIWindowSelectScene : WindowBase
         {
             return;
         }
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, m_iIndex));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, m_iIndex));
         m_iIndex = -1;
     }
     private void OnClickWorldGame(GameObject go)
@@ -153,7 +153,7 @@ public class UIWindowSelectScene : WindowBase
             case 8:
             case 9:
             case 10:
-                MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, index));
+                MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, index));
                 break;
                 
             case 11:
@@ -182,7 +182,7 @@ public class UIWindowSelectScene : WindowBase
             case 6:
             case 7:
             case 8:
-                MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_NODE_GAME, index));
+                MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_NODE_GAME, index));
                 break;
                 
         }

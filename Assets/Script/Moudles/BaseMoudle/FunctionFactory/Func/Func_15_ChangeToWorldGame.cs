@@ -20,7 +20,7 @@ public class Func_15_ChangeToWorldGame : FuncMethodsBase
         {
             int id = funcdata.ParamIntList[0];
 
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, id));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_CHANGE_TO_WORLD_GAME, id));
         }
         catch (Exception)
         {

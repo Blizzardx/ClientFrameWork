@@ -136,10 +136,10 @@ public class LoginLogic : LogicBase<LoginLogic>
         WorldSceneDispatchController.Instance.StartLogic();
         WorldSceneDispatchController.Instance.EnterWorldScene();
 
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, GameLogicSceneType.Login));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, GameLogicSceneType.Login));
         if(m_bIsCreateChar)
         {
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, GameLogicSceneType.CreateChar));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, GameLogicSceneType.CreateChar));
             m_bIsCreateChar = false;
         }
     }

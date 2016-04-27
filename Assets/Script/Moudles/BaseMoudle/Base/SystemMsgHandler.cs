@@ -10,8 +10,8 @@ public class SystemMsgHandler:Singleton<SystemMsgHandler>
 
     public void RegisterSystemMsg()
     {
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_CLOSE, SocketClosed);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_TIMEOUT, SocketConnetTimeOut);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_CLOSE, SocketClosed);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_SOCKET_TIMEOUT, SocketConnetTimeOut);
         //MessageManager.Instance.RegistMessage(MessageIdConstants.SC_SYSTEM_INFO, SystemInfo);
     }
     #endregion

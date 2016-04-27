@@ -64,12 +64,12 @@ namespace NetWork
             }
             if (responseMessage.Ex != null)
             {
-                MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK,null));
+                MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK,null));
 
                 //TODO 异常处理
                 TipManager.Instance.Alert("提示", "登录已过期，请重新登录", "确定", "退出", (res) =>
                 {
-                    MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
+                    MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
                     if (res)
                     {
                         StageManager.Instance.ChangeState(GameStateType.LoginState);
@@ -85,11 +85,11 @@ namespace NetWork
             {
                 if((int)(responseMessage.StatusCode) == 403)
                 {
-                    MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK, null));
+                    MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK, null));
                     //TODO 状态码不正确
                     TipManager.Instance.Alert("提示", "登录已过期，请重新登录","重新登录", (res) =>
                     {
-                        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
+                        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
                         if (res)
                         {
                             StageManager.Instance.ChangeState(GameStateType.LoginState);
@@ -98,11 +98,11 @@ namespace NetWork
                 }
                 else
                 {
-//                     MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK, null));
+//                     MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_ENABLE_BLOCK, null));
 //                     //TODO 状态码不正确
 //                     TipManager.Instance.Alert("提示", "网络异常，请重试", "确定", "重新登录", (res) =>
 //                     {
-//                         MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
+//                         MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_DISABLE_BLOCK, null));
 //                         if (!res)
 //                         {
 //                             StageManager.Instance.ChangeState(GameStateType.LoginState);
@@ -125,7 +125,7 @@ namespace NetWork
             if (responseMessage.EventList != null)
             {
                 //统一事件处理
-                MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, responseMessage.EventList));
+                MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_MESSAGE_EVENT_LIST, responseMessage.EventList));
 
             }
 

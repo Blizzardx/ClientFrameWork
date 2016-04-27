@@ -49,8 +49,8 @@ public class TerrainManager : Singleton<TerrainManager>
         GameCamera.OpenClick = true;
         m_bIsActive = true;
         m_ActionState = new List<int>();
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStar);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStar);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
     }
     public void CloseTerrain()
     {
@@ -59,8 +59,8 @@ public class TerrainManager : Singleton<TerrainManager>
         GameCamera.OpenClick = false;
         TerrainTickTask.Instance.UnRegisterFromUpdateList(Update);
         TerrainTickTask.Instance.SetStatus(false);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStar);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStar);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
     }
     public PlayerInitPosData GetPlayerInitPos()
     {

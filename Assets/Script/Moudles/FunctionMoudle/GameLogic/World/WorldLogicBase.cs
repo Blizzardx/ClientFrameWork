@@ -112,20 +112,20 @@ public abstract class WorldLogicBase
         if(WorldSceneDispatchController.Instance.GetParam().m_ActionId != -1)
         {
             //trigger to play action
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_PLAY_ACTION, WorldSceneDispatchController.Instance.GetParam().m_ActionId));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_PLAY_ACTION, WorldSceneDispatchController.Instance.GetParam().m_ActionId));
         }
 
         DoResumeScene();
     }
     protected void RegisterMsg()
     {
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish); 
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish); 
     }
     protected void UnRegisterMsg()
     {
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_START, OnActionStart);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACTION_FININSH, OnActionFinish);
     }
     protected void OnActionStart(MessageObject msg)
     {

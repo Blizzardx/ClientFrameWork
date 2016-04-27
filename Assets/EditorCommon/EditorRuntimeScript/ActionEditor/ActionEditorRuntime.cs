@@ -46,7 +46,6 @@ public class ActionEditorRuntime : SingletonTemplateMon<ActionEditorRuntime>
         LogManager.Instance.Initialize(true, true);
         ResourceManager.Instance.Initialize();
         TickTaskManager.Instance.InitializeTickTaskSystem();
-        MessageManager.Instance.Initialize();
         ConverterManager.Instance.Initialize();
         WindowManager.Instance.Initialize();
         FuncMethodDef.InitFuncMethod();

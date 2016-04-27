@@ -25,7 +25,7 @@ public class Func_6_PlayAction : FuncMethodsBase
 
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_PLAY_ACTION,funcdata.ParamIntList[0]));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_PLAY_ACTION,funcdata.ParamIntList[0]));
         return EFuncRet.Continue;
     }
 }

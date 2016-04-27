@@ -69,16 +69,16 @@ public class Npc : IStateMachineBehaviour, ITransformBehaviour, IAIBehaviour
         m_AIAgent = new AIAgent(m_NpcBaseInfo.AiId);
 
         LifeTickTask.Instance.RegisterToUpdateList(Update);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_HIT_TERRAIN, OnHitTerrain);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_HIT_LIFE, OnHitLife);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_HIT_TERRAIN, OnHitTerrain);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_HIT_LIFE, OnHitLife);
 
         LifeManager.RegisterLife(m_iId, this);
     }
     public void Distructor()
     {
         m_CharTransformData.Distructor();
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_HIT_TERRAIN, OnHitTerrain);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_HIT_LIFE, OnHitLife);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_HIT_TERRAIN, OnHitTerrain);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_HIT_LIFE, OnHitLife);
         LifeTickTask.Instance.UnRegisterFromUpdateList(Update);
         LifeManager.UnRegisterLife(m_iId);
     }

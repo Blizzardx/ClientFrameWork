@@ -28,7 +28,7 @@ public class DataBindManager : Singleton<DataBindManager>
         m_TypeHandlerStore = new Dictionary<DataBindType, Action<object, object>>();
         m_MessageHandlerStore = new Dictionary<int, Action<object>>();
 
-        MessageManager.Instance.RegisterAllMessageListener(MessageCallBack);
+        MessageDispatcher.Instance.RegisterAllMessageListener(MessageCallBack);
         DataBindDefine.Instance.RegisterBindTypeHandler();
         DataBindDefine.Instance.RegisterBindMessageHandler();
     }

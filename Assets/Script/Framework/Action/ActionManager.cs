@@ -93,7 +93,7 @@ public class ActionManager : Singleton<ActionManager>
         ActionFileData data = ConfigManager.Instance.GetActionFileData(iActionId);
         ActionPlayer action = new ActionPlayer(iActionId, data, param, null);
         m_lstAction.Add(action);
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ACTION_START, param));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_ACTION_START, param));
         return action.GetInstanceID();
     }
     public int PlayAction(int iActionId, ActionParam param, List<GameObject> affectedObjects)
@@ -101,7 +101,7 @@ public class ActionManager : Singleton<ActionManager>
         ActionFileData data = ConfigManager.Instance.GetActionFileData(iActionId);
         ActionPlayer action = new ActionPlayer(iActionId, data, param, affectedObjects);
         m_lstAction.Add(action);
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ACTION_START, param));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_ACTION_START, param));
         return action.GetInstanceID();
     }
     public int PlayAction(int iActionId, ActionParam param, params GameObject[] affectedObjects)
@@ -193,13 +193,13 @@ public class ActionManager : Singleton<ActionManager>
     }
     public void Initialize()
     {
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnTriggerPlayAction);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_SCENE, OnChangeScene);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnTriggerPlayAction);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_SCENE, OnChangeScene);
     }
     public void Distructor()
     {
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnTriggerPlayAction);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_CHANGE_SCENE, OnChangeScene);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_PLAY_ACTION, OnTriggerPlayAction);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_CHANGE_SCENE, OnChangeScene);
     }
     public bool CheckActionIsPlayed(int id)
     {

@@ -212,8 +212,8 @@ public class ActionPlayer
             }
             ResetInitInfo();
             m_lstActionFrames.Clear();
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_ACTION_FININSH, m_ActionParam));
-            MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, GameLogicSceneType.ActionEnd));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_ACTION_FININSH, m_ActionParam));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, GameLogicSceneType.ActionEnd));
             //EnableAI();
             if(null != m_AffectedObject)
             {

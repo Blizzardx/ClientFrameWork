@@ -54,13 +54,13 @@ public class MissionManager : Singleton<MissionManager>
             }
         }
 
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_ACCEPT_MISSION, TriggerAcceptMission);
-        MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, TriggerSceneState);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_ACCEPT_MISSION, TriggerAcceptMission);
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, TriggerSceneState);
     }
     public void Destuctor()
     {
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACCEPT_MISSION, TriggerAcceptMission);
-        MessageManager.Instance.UnregistMessage(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, TriggerSceneState);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_ACCEPT_MISSION, TriggerAcceptMission);
+        MessageDispatcher.Instance.UnregistMessage(ClientCustomMessageDefine.C_GAMELOGIC_SCENE_TRIGGER, TriggerSceneState);
     }
     public void TryAcceptMission(int id)
     {
@@ -281,7 +281,7 @@ public class MissionManager : Singleton<MissionManager>
         //rewrite counter
         PlayerManager.Instance.GetMissionData().MissionList = m_MissionInfoList;
 
-        MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_MISSION_COUNTER_CHANGE,null));
+        MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_MISSION_COUNTER_CHANGE,null));
     }
     #endregion
 

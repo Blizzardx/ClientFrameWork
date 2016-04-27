@@ -337,13 +337,13 @@ public class GameCamera : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, 100f, Lifelayer.value))
                 {
-                    MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_HIT_LIFE, hit.transform));
+                    MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_HIT_LIFE, hit.transform));
                     return;
                 }
                 LayerMask Terrainlayer = 1 << LayerMask.NameToLayer("Terrain");
                 if (Physics.Raycast(ray, out hit, 100f, Terrainlayer.value))
                 {
-                    MessageManager.Instance.AddToMessageQueue(new MessageObject(ClientCustomMessageDefine.C_HIT_TERRAIN, hit.point));
+                    MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_HIT_TERRAIN, hit.point));
                     return;
                 }
             }

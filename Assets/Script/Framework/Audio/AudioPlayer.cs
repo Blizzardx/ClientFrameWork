@@ -52,10 +52,7 @@ public class AudioPlayer:Singleton<AudioPlayer>
 
         InitAudioPool();
 
-        if (null != MessageManager.Instance)
-        {
-            MessageManager.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_SCENE, OnChangeScene);
-        }
+        MessageDispatcher.Instance.RegistMessage(ClientCustomMessageDefine.C_CHANGE_SCENE, OnChangeScene);
     }
     public void PlayAudio(string resource,Vector3 postion,bool isLoop,Action<string> onFinishedCallBack = null)
     {

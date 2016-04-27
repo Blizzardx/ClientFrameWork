@@ -16,19 +16,22 @@ public class MessageObject
         this.msgId = msgId;
     }
 }
-public class MessageManager : Singleton<MessageManager>
+public class MessageDispatcher : Singleton<MessageDispatcher>
 {
     private MessageQueue                                        m_MsgList;
     private RegisterListTemplate<MessageObject>                 m_AllMessageListenerList; 
     private RegisterDictionaryTemplate<MessageObject>           m_MsgCallList; 
 
-    public void Initialize()
+    public MessageDispatcher()
     {
-        m_MsgCallList = new RegisterDictionaryTemplate<MessageObject>();
+        m_MsgCallList           = new RegisterDictionaryTemplate<MessageObject>();
         m_MsgList               = new MessageQueue();
         m_AllMessageListenerList = new RegisterListTemplate<MessageObject>();
 
         m_MsgList.Initialize();
+
+        // test code  -- add Update() to update list 
+
     }
     public void Update()
     {
@@ -54,11 +57,11 @@ public class MessageManager : Singleton<MessageManager>
         catch (Exception e)
         {
             //log error
-            Debuger.LogError("Wrong msg callback" + errorId + "error log: " + e.Message);
+            Debug.LogError("Wrong msg callback" + errorId + "error log: " + e.Message);
         }
         m_MsgCallList.EndUpdate();
     }
-    public void AddToMessageQueue(MessageObject msgBody)
+    public void BroadcastMessage(MessageObject msgBody)
     {
         if (!m_MsgCallList.IsContainsKey(msgBody.msgId))
         {
