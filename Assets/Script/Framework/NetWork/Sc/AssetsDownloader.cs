@@ -74,7 +74,7 @@ namespace Assets.Scripts.Framework.Network
             }
             m_lLength = length;
             // create tmp file
-            m_strFileTmpName = m_strDataPath + Time.time + (m_MarkIndex++).ToString();
+            m_strFileTmpName = m_strDataPath + DateTime.Now + (m_MarkIndex++).ToString();
             FileUtils.EnsureFolder(m_strFileTmpName);
             m_CurrentFileStream = continueFileStream == null ? new FileStream(m_strFileTmpName, FileMode.Create) : continueFileStream;
         }
