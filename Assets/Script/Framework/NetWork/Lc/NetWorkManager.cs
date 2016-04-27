@@ -141,6 +141,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
 
             if (CheckSocketStatus())
             {
+                m_Status = SocketStatus.Reciving;
                 m_Socket.BeginReceive(m_BufferTool.GetRecieveBuffer(), 0, MessageBufferTool.MAXLength, SocketFlags.None, ReceiveEventHandle, m_Socket);
             }
         }
