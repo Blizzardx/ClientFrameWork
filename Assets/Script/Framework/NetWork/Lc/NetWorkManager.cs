@@ -58,7 +58,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
     {
         if (CheckSocketStatus())
         {
-            //PingTickTask.ResetSendMsgTime();
+            PingTickTask.ResetSendMsgTime();
             m_BufferTool.EncodeGamePackage(msgValue);
             Send();
         }
@@ -103,7 +103,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         }
         catch (Exception)
         {
-            //MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
         }
        
     }
@@ -122,7 +122,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         if (client.Connected)
         {
             Debug.Log("Connected");
-            //PingTickTask.Instance.SetPingStatus(true);
+            PingTickTask.Instance.SetPingStatus(true);
         }
         else
         {
@@ -147,7 +147,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         catch (Exception)
         {
             // 
-            //MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
         }
         
     }
@@ -164,7 +164,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         if (!res)
         {
             // 
-            //MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
+            MessageDispatcher.Instance.BroadcastMessage(new MessageObject(ClientCustomMessageDefine.C_SOCKET_CLOSE, null));
         }
         return res;
     }
