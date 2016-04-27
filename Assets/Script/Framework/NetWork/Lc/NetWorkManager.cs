@@ -60,7 +60,7 @@ public class NetWorkManager : Singleton<NetWorkManager>
         {
             PingTickTask.ResetSendMsgTime();
             m_BufferTool.EncodeGamePackage(msgValue);
-            Send();
+            Send(msgValue);
         }
     }
     public bool IsConnected()
@@ -85,14 +85,14 @@ public class NetWorkManager : Singleton<NetWorkManager>
         m_BufferTool.Initialize();
         m_BufferTool.RegisterMessage(ThriftMessageHelper.Get_REQ_ID_MSG(), ThriftMessageHelper.Get_REQ_MSG_ID());
     }
-    private void Send()
+    private void Send(TBase msgValue)
     {
         if (m_Status == SocketStatus.Idle || m_Status == SocketStatus.Closing)
         {
             return;
         }
         m_Status = SocketStatus.Sending;
-        m_Socket.BeginSend(m_BufferTool.GetSendBuffer(), 0, m_BufferTool.GetSendBufferSize(), 0, SendEventHandle, m_Socket);
+        m_Socket.BeginSend(m_BufferTool.GetSendBuffer(), 0, m_BufferTool.GetSendBufferSize(), 0, SendEventHandle, msgValue);
     }
     private void Receive()
     {
@@ -153,9 +153,20 @@ public class NetWorkManager : Singleton<NetWorkManager>
     }
     private void SendEventHandle(IAsyncResult ar)
     {
-        Socket client = (Socket)ar.AsyncState;
+        TBase message = ar.AsyncState as TBase;
 
-        client.EndSend(ar);
+        try
+        {
+            int sendSize = m_Socket.EndSend(ar);
+            if (sendSize <= 0)
+            {
+                //MessageDispatcher.Instance.BroadcastMessage(new SendFailMessage(message, null));
+            }
+        }
+        catch (Exception e)
+        {
+            //MessageDispatcher.Instance.BroadcastMessage(new SendFailMessage(message, e));
+        }
         m_Status = SocketStatus.Reciving;
     }
     private bool CheckSocketStatus()
