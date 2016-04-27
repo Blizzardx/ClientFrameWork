@@ -19,28 +19,28 @@ using System.Collections.Generic;
 
 public class MessageBufferTool
 {
-    readonly static public int              MAXLength               = 2048 ;
-    readonly static public int              MaxMsgBufferSize        = 256;
-    private byte[]                          m_RecieveBuffer         ;
-    private byte[]                          m_SendBuffer            ;
-    private int                             m_SendBufferSize;
-    private Dictionary<int, Type>           m_MessageMapIdToType;
-    private Dictionary<Type, int>           m_MessageMapTypeToId;
-    private bool                            m_bIsWaitingPkgComplete;
-    private int                             m_nCurrentDecodeIndex;
-    private List<byte>                      m_DecodingBuffer; 
- 
+    readonly static public int MAXLength = 2048;
+    readonly static public int MaxMsgBufferSize = 256;
+    private byte[] m_RecieveBuffer;
+    private byte[] m_SendBuffer;
+    private int m_SendBufferSize;
+    private Dictionary<int, Type> m_MessageMapIdToType;
+    private Dictionary<Type, int> m_MessageMapTypeToId;
+    private bool m_bIsWaitingPkgComplete;
+    private int m_nCurrentDecodeIndex;
+    private List<byte> m_DecodingBuffer;
+
     #region public interface
     public void Initialize()
     {
-        m_RecieveBuffer         = new byte[MAXLength];
-        m_SendBuffer            = new byte[MAXLength];
-        m_DecodingBuffer        = new List<byte>(MAXLength);
-        m_SendBufferSize        = 0;
-        m_MessageMapIdToType    = new Dictionary<int, Type>();
-        m_MessageMapTypeToId    = new Dictionary<Type, int>();
+        m_RecieveBuffer = new byte[MAXLength];
+        m_SendBuffer = new byte[MAXLength];
+        m_DecodingBuffer = new List<byte>(MAXLength);
+        m_SendBufferSize = 0;
+        m_MessageMapIdToType = new Dictionary<int, Type>();
+        m_MessageMapTypeToId = new Dictionary<Type, int>();
         m_bIsWaitingPkgComplete = false;
-        m_nCurrentDecodeIndex   = 0;
+        m_nCurrentDecodeIndex = 0;
     }
     public byte[] GetSendBuffer()
     {
@@ -64,38 +64,46 @@ public class MessageBufferTool
     }
     public void EncodeGamePackage(object messageBody)
     {
-        // clear send buffer
-        ResetSendBuffer();
-
-        //
-        int messageId = 0;
-        if (!m_MessageMapTypeToId.TryGetValue(messageBody.GetType(), out messageId))
+        try
         {
-            Debuger.LogError("Can't encode message " + messageId);
-            return;
+            // clear send buffer
+            ResetSendBuffer();
+
+            //
+            int messageId = 0;
+            if (!m_MessageMapTypeToId.TryGetValue(messageBody.GetType(), out messageId))
+            {
+                Debug.LogError("Can't encode message " + messageId);
+                return;
+            }
+
+            // push message id
+            Array.Copy(ByteArrayUtil.intToBytes(messageId), 0, m_SendBuffer, m_SendBufferSize, 4);
+            m_SendBufferSize += 4;
+
+            // push prefix
+            m_SendBufferSize += 4;
+
+            //push header (default length = 0,body = null)
+            Array.Copy(ByteArrayUtil.shortToByteArray(0), 0, m_SendBuffer, m_SendBufferSize, 2);
+            m_SendBufferSize += 2;
+
+            // push message body length
+            TBase Message = messageBody as TBase;
+            byte[] tmpSendBody = ThriftSerialize.Serialize(Message);
+            Array.Copy(ByteArrayUtil.intToBytes(tmpSendBody.Length), 0, m_SendBuffer, m_SendBufferSize, 4);
+            m_SendBufferSize += 4;
+
+            Array.Copy(tmpSendBody, 0, m_SendBuffer, m_SendBufferSize, tmpSendBody.Length);
+            m_SendBufferSize += tmpSendBody.Length;
+
+            Debug.Log("Send msg:" + messageBody.ToString());
         }
-
-        // push message id
-        Array.Copy(ByteArrayUtil.intToBytes(messageId),0,m_SendBuffer,m_SendBufferSize,4);
-        m_SendBufferSize += 4;
-
-        // push prefix
-        m_SendBufferSize += 4;
-
-        //push header (default length = 0,body = null)
-        Array.Copy(ByteArrayUtil.shortToByteArray(0),0, m_SendBuffer, m_SendBufferSize,2);
-        m_SendBufferSize += 2;
-
-        // push message body length
-        TBase Message = messageBody as TBase;
-        byte[] tmpSendBody = ThriftSerialize.Serialize(Message);
-        Array.Copy(ByteArrayUtil.intToBytes(tmpSendBody.Length),0,m_SendBuffer, m_SendBufferSize,4);
-        m_SendBufferSize += 4;
-
-        Array.Copy(tmpSendBody, 0, m_SendBuffer, m_SendBufferSize, tmpSendBody.Length);
-        m_SendBufferSize += tmpSendBody.Length;
-
-        Debuger.Log("Send msg:" + messageBody.GetType().ToString());
+        catch (Exception e)
+        {
+            Debug.LogError("Error on encode game package ");
+            Debug.LogException(e);
+        }
     }
     public void RecieveMsg(int size)
     {
@@ -106,7 +114,7 @@ public class MessageBufferTool
         }
 
         //push source byte stream
-        
+        //m_DecodingBuffer.InsertRange(m_DecodingBuffer.Count, m_RecieveBuffer);
         for (int i = 0; i < size; ++i)
         {
             m_DecodingBuffer.Add(m_RecieveBuffer[i]);
@@ -117,7 +125,7 @@ public class MessageBufferTool
             m_nCurrentDecodeIndex = DecodeGamePackage(m_nCurrentDecodeIndex, size);
 
         } while (!m_bIsWaitingPkgComplete && m_nCurrentDecodeIndex < size && m_nCurrentDecodeIndex != -1);
-        
+
         if (m_nCurrentDecodeIndex != -1)
         {
             m_DecodingBuffer.RemoveRange(0, m_nCurrentDecodeIndex);
@@ -137,7 +145,7 @@ public class MessageBufferTool
     #endregion
 
     #region system function
-    private int DecodeGamePackage(int index,int size)
+    private int DecodeGamePackage(int index, int size)
     {
         m_bIsWaitingPkgComplete = false;
 
@@ -200,7 +208,7 @@ public class MessageBufferTool
         Type tmpType;
         if (!m_MessageMapIdToType.TryGetValue(messageId, out tmpType))
         {
-            Debuger.LogError("Can't decode message " + messageId);
+            Debug.LogError("Can't decode message " + messageId);
             return -1;
         }
         message = Activator.CreateInstance(tmpType) as TBase;
@@ -209,7 +217,7 @@ public class MessageBufferTool
         //broad cast
         MessageDispatcher.Instance.BroadcastMessage(new MessageObject(messageId, message));
 
-        Debuger.Log("Rec msg:" + message.GetType().Name);
+        Debug.Log("Rec msg:" + message.ToString());
 
         return index;
     }
