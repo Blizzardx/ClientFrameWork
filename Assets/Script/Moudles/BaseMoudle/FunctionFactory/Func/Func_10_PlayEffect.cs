@@ -19,10 +19,6 @@ using Common.Auto;
 
 public class Func_10_PlayEffect : FuncMethodsBase
 {
-    public Func_10_PlayEffect(int id)
-        : base(id)
-    {
-    }
 
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {

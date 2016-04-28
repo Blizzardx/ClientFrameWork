@@ -18,11 +18,6 @@ using System.Text;
 
 public class Func_1_Flag : FuncMethodsBase
 {
-    public Func_1_Flag(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         List<Ilife> target = Target.GetTarget((EFuncTarget) (funcdata.Target));

@@ -17,10 +17,6 @@ using System.Text;
 
 public class Limit_19_NpcIsControlled : LimitMethodsBase
 {
-    public Limit_19_NpcIsControlled(int id)
-        : base(id)
-    {
-    }
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         List<Ilife> target = Target.GetTarget(EFuncTarget.EFT_User);

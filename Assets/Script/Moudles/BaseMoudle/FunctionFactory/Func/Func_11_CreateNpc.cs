@@ -19,10 +19,6 @@ using System.Text;
 
 public class Func_11_CreateNpc : FuncMethodsBase
 {
-    public Func_11_CreateNpc(int id)
-        : base(id)
-    {
-    }
 
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {

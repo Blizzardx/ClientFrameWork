@@ -49,7 +49,7 @@ public class TerrainTrigger :  ITransformBehaviour
                     {
                         FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.ExitFuncMethodId, null);
                     }
-                    HandleTarget.CollectionHandlerTargetInstance(tmpTarget);
+
                 }
                 m_CurrentTargetList.Clear();
             }
@@ -68,7 +68,6 @@ public class TerrainTrigger :  ITransformBehaviour
                 {
                     FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.EnterFuncMethodId, null);
                 }
-                HandleTarget.CollectionHandlerTargetInstance(tmpTarget);
             }
             
             if( !m_CurrentTargetList.Contains(targetList[i]))
@@ -82,7 +81,6 @@ public class TerrainTrigger :  ITransformBehaviour
                     {
                         FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.EnterFuncMethodId, null);
                     }
-                    HandleTarget.CollectionHandlerTargetInstance(tmpTarget);
                 }
             }
             else
@@ -100,12 +98,10 @@ public class TerrainTrigger :  ITransformBehaviour
                 Debuger.Log("trigger exit " + elem.GetInstanceId());
                 FuncMethods.HandleFuncExec(tmpTarget, m_NodeData.ExitFuncMethodId, null);
             }
-            HandleTarget.CollectionHandlerTargetInstance(tmpTarget);
         }
         ResetCurrentTargetList(targetList);
 
         //collection target instance
-        HandleTarget.CollectionHandlerTargetInstance(target);
 
         return true;
     }

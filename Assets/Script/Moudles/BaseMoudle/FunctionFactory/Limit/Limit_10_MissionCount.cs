@@ -18,11 +18,6 @@ using System.Text;
 
 public class Limit_10_MissionCount : LimitMethodsBase
 {
-    public Limit_10_MissionCount(int id)
-        : base(id)
-    {
-    }
-
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         int missionCount = MissionManager.Instance.GetMissionCounter(Limit.ParamIntList[0]);

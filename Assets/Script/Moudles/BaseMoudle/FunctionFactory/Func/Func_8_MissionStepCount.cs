@@ -18,11 +18,6 @@ using System.Text;
 
 public class Func_8_MissionStepCount : FuncMethodsBase
 {
-    public Func_8_MissionStepCount(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         int missionStep = MissionManager.Instance.GetMissionStepCounter(funcdata.ParamIntList[0]);

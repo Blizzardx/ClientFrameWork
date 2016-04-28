@@ -104,14 +104,12 @@ public class MissionElement
                 {
                     FuncMethods.HandleFuncExec(target, elemStep.SceneFuncId, null);
                 }
-                HandleTarget.CollectionHandlerTargetInstance(target);
             }
             HandleTarget target1 = HandleTarget.GetHandleTarget(null);
             if (LimitMethods.HandleLimitExec(target1, elemStep.CompleteLimitId, null))
             {
                 FuncMethods.HandleFuncExec(target1, elemStep.CompleteFuncId, null);
             }
-            HandleTarget.CollectionHandlerTargetInstance(target1);
         }
 
         bool isMissionComplete = false;
@@ -121,7 +119,6 @@ public class MissionElement
             isMissionComplete = true;
             FuncMethods.HandleFuncExec(target2, m_CurrentMission.CompleteFuncId, null);
         }
-        HandleTarget.CollectionHandlerTargetInstance(target2);
 
         if (isMissionComplete)
         {

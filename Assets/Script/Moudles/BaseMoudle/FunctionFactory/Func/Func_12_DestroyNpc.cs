@@ -20,11 +20,6 @@ using System.Text;
 
 public class Func_12_DestroyNpc : FuncMethodsBase
 {
-    public Func_12_DestroyNpc(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         try

@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 public class Limit_4_IntCount : LimitMethodsBase
 {
-    public Limit_4_IntCount(int id) : base(id)
-    {
-    }
-
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         List<Ilife> target = Target.GetTarget((EFuncTarget)(Limit.Target));

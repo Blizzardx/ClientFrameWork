@@ -18,11 +18,6 @@ using System.Text;
 
 public class Limit_17_DistanceWithPlayer : LimitMethodsBase
 {
-    public Limit_17_DistanceWithPlayer(int id)
-        : base(id)
-    {
-    }
-
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         List<Ilife> target = Target.GetTarget((EFuncTarget)(Limit.Target));

@@ -9,11 +9,6 @@ using System.Text;
 
 public class Func_15_ChangeToWorldGame : FuncMethodsBase
 {
-    public Func_15_ChangeToWorldGame(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         try

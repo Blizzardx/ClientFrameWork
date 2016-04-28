@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 public class Limit_2_Flag : LimitMethodsBase
 {
-    public Limit_2_Flag(int id) : base(id)
-    {
-    }
-
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         List<Ilife> target = Target.GetTarget((EFuncTarget)(Limit.Target));

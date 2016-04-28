@@ -2,6 +2,7 @@
  *	功能函数类
  */
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Config;
 
 public enum EFuncRet
@@ -18,9 +19,35 @@ public abstract class FuncMethodsBase
     {
         return m_iId;
     }
-
-    public FuncMethodsBase(int id)
+    public FuncMethodsBase()
     {
+        DecodeId();
+    }
+    private void DecodeId()
+    {
+        m_iId = -1;
+        string name = this.GetType().ToString();
+        if (!name.StartsWith("Func_"))
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
+
+        // 
+        var tmpname = name.Substring(5);
+        int index = tmpname.LastIndexOf("_");
+        if (index < 0)
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
+        tmpname = tmpname.Substring(0, index);
+        int id = 0;
+        if (!int.TryParse(tmpname, out id))
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
         m_iId = id;
     }
     public  abstract EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata,FuncContext context);
@@ -28,10 +55,18 @@ public abstract class FuncMethodsBase
 static public class FuncMethods
 {
     static Dictionary<int, FuncMethodsBase> FuncExec;
-    static public void InitFuncMethods(Dictionary<int, FuncMethodsBase> dataSource)
-	{
-	    FuncExec = dataSource;
-	}
+    static public void InitFuncMethods(List<FuncMethodsBase> dataSource)
+    {
+        FuncExec = new Dictionary<int, FuncMethodsBase>();
+        foreach (var elem in dataSource)
+        {
+            if (elem.GetId() == -1)
+            {
+                continue;
+            }
+            FuncExec.Add(elem.GetId(), elem);
+        }
+    }
     static public int HandleFuncExec(HandleTarget Target, int iFuncGroupId, FuncContext context)
 	{
 		if( null == Target || 0 == iFuncGroupId)
@@ -69,7 +104,7 @@ static public class FuncMethods
 			}
 			else if (EFuncRet.Error == eRet)
 			{
-				Debuger.LogWarning("HandleFuncExec is error, id : " + ExecData.Id.ToString());
+				UnityEngine.Debug.LogWarning("HandleFuncExec is error, id : " + ExecData.Id.ToString());
 			}
 		}
 		

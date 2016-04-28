@@ -18,11 +18,6 @@ using System.Text;
 
 public class Limit_15_CheckMissionAvailable : LimitMethodsBase
 {
-    public Limit_15_CheckMissionAvailable(int id)
-        : base(id)
-    {
-    }
-
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         return MissionManager.Instance.CheckMissionAvailable(Limit.ParamIntList[0]);

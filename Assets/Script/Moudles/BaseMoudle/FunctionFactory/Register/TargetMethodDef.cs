@@ -2,17 +2,19 @@
 using UnityEngine;
 public class TargetMethodDef 
 {
-    static Dictionary<int, TargetMethodBase> TargetExec;
+    static List<TargetMethodBase> TargetExec;
 
     static public void InitTargetMethod()
     {
         //Limit Array
-        TargetExec = new Dictionary<int, TargetMethodBase>
+        TargetExec = new List<TargetMethodBase>
 		{
-			{0,new Target_0_NONE(0)},
-            {1,new Target_1_INCIRCLERANGE(1)}
+			new Target_0_NONE(),
+            new Target_1_INCIRCLERANGE(),
 		};
 
         TargetMethods.InitTargetMethods(TargetExec);
+        TargetExec.Clear();
+        TargetExec = null;
     }
 }

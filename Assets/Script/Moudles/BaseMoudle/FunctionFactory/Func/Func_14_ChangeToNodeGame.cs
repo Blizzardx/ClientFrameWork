@@ -9,11 +9,6 @@ using System.Text;
 
 public class Func_14_ChangeToNodeGame : FuncMethodsBase
 {
-    public Func_14_ChangeToNodeGame(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         try

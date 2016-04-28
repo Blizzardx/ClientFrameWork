@@ -18,11 +18,6 @@ using System.Text;
 
 public class Limit_14_PlayedAction : LimitMethodsBase
 {
-    public Limit_14_PlayedAction(int id)
-        : base(id)
-    {
-    }
-
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         return ActionManager.Instance.CheckActionIsPlayed(Limit.ParamIntList[0]);

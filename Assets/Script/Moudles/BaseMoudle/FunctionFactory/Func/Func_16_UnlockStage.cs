@@ -7,11 +7,6 @@ using System.Text;
 
 public class Func_16_UnlockStage : FuncMethodsBase
 {
-    public Func_16_UnlockStage(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         try

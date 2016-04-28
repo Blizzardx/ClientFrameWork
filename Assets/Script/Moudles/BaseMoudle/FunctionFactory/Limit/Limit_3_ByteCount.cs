@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 public class Limit_3_ByteCount : LimitMethodsBase
 {
-    public Limit_3_ByteCount(int id) : base(id)
-    {
-    }
-
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         List<Ilife> target = Target.GetTarget((EFuncTarget)(Limit.Target));

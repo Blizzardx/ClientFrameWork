@@ -14,8 +14,35 @@ public abstract class LimitMethodsBase
         return m_iId;
     }
 
-    public LimitMethodsBase(int id)
+    public LimitMethodsBase()
     {
+        DecodeId();
+    }
+    private void DecodeId()
+    {
+        m_iId = -1;
+        string name = this.GetType().ToString();
+        if (!name.StartsWith("Limit_"))
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
+
+        // 
+        var tmpname = name.Substring(6);
+        int index = tmpname.LastIndexOf("_");
+        if (index < 0)
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
+        tmpname = tmpname.Substring(0, index);
+        int id = 0;
+        if (!int.TryParse(tmpname, out id))
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
         m_iId = id;
     }
     public abstract bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context); 
@@ -24,10 +51,18 @@ static public class LimitMethods
 {
     static Dictionary<int, LimitMethodsBase> LimitExec;
 
-    static public void InitLimitMethods(Dictionary<int, LimitMethodsBase> sourceData)
-	{
-	    LimitExec = sourceData;
-	}
+    static public void InitLimitMethods(List<LimitMethodsBase> sourceData)
+    {
+        LimitExec = new Dictionary<int, LimitMethodsBase>();
+        foreach (var elem in sourceData)
+        {
+            if (elem.GetId() == -1)
+            {
+                continue;
+            }
+            LimitExec.Add(elem.GetId(), elem);
+        }
+    }
 	
 	//Limit Exec Func
     static public bool HandleLimitExec(HandleTarget Target, int iLimitGroupId, FuncContext context)

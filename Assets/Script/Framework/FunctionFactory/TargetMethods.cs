@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design.Serialization;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using Config;
 
@@ -11,9 +10,35 @@ public abstract class TargetMethodBase
     {
         return m_iId;
     }
-
-    public TargetMethodBase(int id)
+    public TargetMethodBase()
     {
+        DecodeId();
+    }
+    private void DecodeId()
+    {
+        m_iId = -1;
+        string name = this.GetType().ToString();
+        if (!name.StartsWith("Target_"))
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
+
+        // 
+        var tmpname = name.Substring(7);
+        int index = tmpname.LastIndexOf("_");
+        if (index < 0)
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
+        tmpname = tmpname.Substring(0, index);
+        int id = 0;
+        if (!int.TryParse(tmpname, out id))
+        {
+            UnityEngine.Debug.LogError("Function method with wrong name " + name);
+            return;
+        }
         m_iId = id;
     }
     public abstract List<Ilife> GetTargetList(Ilife thisUnit, TargetData data, FuncContext context);
@@ -27,30 +52,9 @@ public enum EFuncTarget
 public class HandleTarget
 {
     #region memory pool
-    private static LinkedList<HandleTarget> m_HandlerTargetCollectionPool   = new LinkedList<HandleTarget>();
-    private static HandleTarget CreateHandlerTarget()
-    {
-        HandleTarget instance = null;
-        if (m_HandlerTargetCollectionPool.Count == 0)
-        {
-            // creat buffer
-            for (int i = 0;i<20;++i)
-            {
-                m_HandlerTargetCollectionPool.AddLast(new HandleTarget());
-            }
-
-            instance = new HandleTarget();
-        }
-        else
-        {
-            instance = m_HandlerTargetCollectionPool.Last.Value;
-            m_HandlerTargetCollectionPool.RemoveLast();
-        }
-        return instance;
-    }
     public static HandleTarget GetHandleTarget(Ilife userTarget, params Ilife[] targetList)
     {
-        HandleTarget instance = CreateHandlerTarget();
+        HandleTarget instance = new HandleTarget();
         instance.m_lstUser.Add(userTarget);
         if (null != targetList)
         {
@@ -64,18 +68,11 @@ public class HandleTarget
     }
     public static  HandleTarget GetHandleTarget(Ilife userTarget, List<Ilife> targetList)
     {
-        HandleTarget instance = CreateHandlerTarget();
+        HandleTarget instance = new HandleTarget();
         instance.m_lstUser.Add(userTarget);
         instance.m_lstTarget = targetList;
 
         return instance;
-    }
-    public static void CollectionHandlerTargetInstance(HandleTarget instance)
-    {
-        instance.m_lstTarget.Clear();
-        instance.m_lstUser.Clear();
-
-        m_HandlerTargetCollectionPool.AddLast(instance);
     }
     private HandleTarget()
     {
@@ -134,9 +131,17 @@ public class HandleTarget
 public static class TargetMethods
 {
     static Dictionary<int, TargetMethodBase> TargetExec;
-    static public void InitTargetMethods(Dictionary<int, TargetMethodBase> dataSource)
+    static public void InitTargetMethods(List<TargetMethodBase> dataSource)
     {
-        TargetExec = dataSource;
+        TargetExec = new Dictionary<int, TargetMethodBase>();
+        foreach (var elem in dataSource)
+        {
+            if (elem.GetId() == -1)
+            {
+                continue;
+            }
+            TargetExec.Add(elem.GetId(), elem);
+        }
     }
     public static HandleTarget GetTargetList(Ilife srcLife, int iTargetGroupId, FuncContext context)
     {

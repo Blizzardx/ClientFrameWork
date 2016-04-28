@@ -5,10 +5,6 @@ using System.Collections.Generic;
 
 public class Target_1_INCIRCLERANGE:TargetMethodBase
 {
-    public Target_1_INCIRCLERANGE(int id) : base(id)
-    {
-    }
-
     public override List<Ilife> GetTargetList(Ilife thisUnit, TargetData data, FuncContext context)
     {
         List<Ilife> res = new List<Ilife>();

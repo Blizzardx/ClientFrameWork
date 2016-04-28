@@ -17,11 +17,6 @@ using System.Linq;
 using System.Text;
 public class Func_13_SetDictateGame: FuncMethodsBase
 {
-    public Func_13_SetDictateGame(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         try

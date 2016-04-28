@@ -18,11 +18,6 @@ using System.Text;
 
 public class Func_7_MissionCount : FuncMethodsBase
 {
-    public Func_7_MissionCount(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         int missioncount = MissionManager.Instance.GetMissionCounter(funcdata.ParamIntList[0]);

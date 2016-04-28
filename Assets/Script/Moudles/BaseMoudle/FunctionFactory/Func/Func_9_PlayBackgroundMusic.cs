@@ -18,11 +18,6 @@ using System.Text;
 
 public class Func_9_PlayBackgroundMusic : FuncMethodsBase
 {
-    public Func_9_PlayBackgroundMusic(int id)
-        : base(id)
-    {
-    }
-
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         AudioPlayer.Instance.PlayAudio(funcdata.ParamStringList[0], Vector3.zero,false);

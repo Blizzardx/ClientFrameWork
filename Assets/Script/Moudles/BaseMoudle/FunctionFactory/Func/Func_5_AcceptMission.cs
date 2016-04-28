@@ -18,10 +18,6 @@ using System.Text;
 
 public class Func_5_AcceptMission : FuncMethodsBase
 {
-    public Func_5_AcceptMission(int id)
-        : base(id)
-    {
-    }
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         int missionId = funcdata.ParamIntList[0];

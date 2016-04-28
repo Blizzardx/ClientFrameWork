@@ -18,10 +18,6 @@ using System.Text;
 
 public class Func_3_Bit32 : FuncMethodsBase
 {
-    public Func_3_Bit32(int id)
-        : base(id)
-    {
-    }
     public override EFuncRet FuncExecHandler(HandleTarget Target, FuncData funcdata, FuncContext context)
     {
         List<Ilife> target = Target.GetTarget((EFuncTarget)(funcdata.Target));

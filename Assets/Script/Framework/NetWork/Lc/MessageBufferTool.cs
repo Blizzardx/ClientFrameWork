@@ -209,7 +209,8 @@ public class MessageBufferTool
         if (!m_MessageMapIdToType.TryGetValue(messageId, out tmpType))
         {
             Debug.LogError("Can't decode message " + messageId);
-            return -1;
+            //return -1;
+            return index;
         }
         message = Activator.CreateInstance(tmpType) as TBase;
         ThriftSerialize.DeSerialize(message, messageBody);

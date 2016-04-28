@@ -19,10 +19,6 @@ using System.Text;
 
 public class Limit_18_IsPlayer : LimitMethodsBase
 {
-    public Limit_18_IsPlayer(int id)
-        : base(id)
-    {
-    }
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         List<Ilife> target = Target.GetTarget((EFuncTarget)(Limit.Target));

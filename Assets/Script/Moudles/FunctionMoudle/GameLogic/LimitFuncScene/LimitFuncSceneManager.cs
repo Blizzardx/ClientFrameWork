@@ -39,7 +39,6 @@ public class LimitFuncSceneManager :LogicBase<LimitFuncSceneManager>
                     {
                         FuncMethods.HandleFuncExec(target, elem.Value[i].FuncId, null);
                     }
-                    HandleTarget.CollectionHandlerTargetInstance(target);
                 }
             }
         }

@@ -18,11 +18,6 @@ using System.Text;
 
 public class Limit_11_MissionStepCount : LimitMethodsBase
 {
-    public Limit_11_MissionStepCount(int id)
-        : base(id)
-    {
-    }
-
     public override bool LimitExecHandler(HandleTarget Target, LimitData Limit, FuncContext context)
     {
         int missionStepCount = MissionManager.Instance.GetMissionStepCounter(Limit.ParamIntList[0]);
