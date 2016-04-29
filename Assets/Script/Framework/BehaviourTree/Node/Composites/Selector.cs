@@ -19,16 +19,7 @@ namespace BehaviourTree
 	        }
 	        do
 	        {
-	            m_CurrentStatus = m_ChildrenLst[m_iCurrentIndex].Tick();
-
-                //mark status
-                SetChildElementStatus(EBTState.UnReach, m_iCurrentIndex);
-
-	            if (m_CurrentStatus != EBTState.False)
-	            {
-	                break;
-	            }
-
+	            bool isBreak = false;
 	            for (; m_iCurrentIndex < m_ChildrenLst.Count; ++m_iCurrentIndex)
 	            {
 	                m_CurrentStatus = m_ChildrenLst[m_iCurrentIndex].Tick();
@@ -38,13 +29,16 @@ namespace BehaviourTree
 
 	                if (m_CurrentStatus != EBTState.False)
 	                {
-	                    break;
+	                    isBreak = true;
+                        break;
 	                }
 	            }
-	            
+	            if (isBreak)
+	            {
+	                break;
+	            }
 	            m_iCurrentIndex = 0;
 	            m_CurrentStatus = EBTState.False;
-	            break;
 	        } while (false);
 
             for (int i = m_iCurrentIndex; i < m_ChildrenLst.Count; ++i)
