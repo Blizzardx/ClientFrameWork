@@ -281,6 +281,7 @@ namespace NetWork
             }
         }
 
+
         public bool Download(string url, out Exception error, out List<byte> byteBuffer, FileStream fileStream)
         {
             bool res = true;
@@ -317,16 +318,19 @@ namespace NetWork
                             break;
                         }
                     }
-                    if (null != fileStream)
-                    {
-                        fileStream.Close();
-                    }
                 }
             }
             catch (Exception e)
             {
                 error = e;
                 res = false;
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    fileStream.Close();
+                }
             }
             return res;
         }
