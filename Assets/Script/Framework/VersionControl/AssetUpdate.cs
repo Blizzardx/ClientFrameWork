@@ -9,18 +9,18 @@ using System.Collections.Generic;
 
 public class AssetUpdate : Singleton<AssetUpdate>
 {
-    private string                  m_strRemoteAssetServerURL;
-    private const string            m_strVersionConfigName      = "version_txtpkg.bytes";
-    private VersionConfig           m_RemoteVersionConfig;
-    private VersionConfig           m_LocalVersionConfig;
-    private List<AssetFile>         m_DownloadList; 
-    private Action<bool, string>    m_CompleteCallBack;
+    private string m_strRemoteAssetServerURL;
+    private const string m_strVersionConfigName = "version_txtpkg.bytes";
+    private VersionConfig m_RemoteVersionConfig;
+    private VersionConfig m_LocalVersionConfig;
+    private List<AssetFile> m_DownloadList;
+    private Action<bool, string> m_CompleteCallBack;
     private Action<float, AssetFile> m_ProcessCallBack;
-    private int                     m_iCountingIndex;
-    private const int               m_iTriggerSaveRate = 5;
-    private Dictionary<string, string>  m_NameKeytoSignMap;
+    private int m_iCountingIndex;
+    private const int m_iTriggerSaveRate = 5;
+    private Dictionary<string, string> m_NameKeytoSignMap;
 
-    public void CheckUpdate(Action<bool,string> CallBack,Action<float,AssetFile> processCallBack)
+    public void CheckUpdate(Action<bool, string> CallBack, Action<float, AssetFile> processCallBack)
     {
         m_CompleteCallBack = CallBack;
         m_ProcessCallBack = processCallBack;
@@ -36,13 +36,13 @@ public class AssetUpdate : Singleton<AssetUpdate>
     }
     private void DownloadRemoteVersionConfig()
     {
-        AssetFile remoteVersionFile = new AssetFile(m_strVersionConfigName,"",m_strRemoteAssetServerURL + m_strVersionConfigName);
+        AssetFile remoteVersionFile = new AssetFile(m_strVersionConfigName, "", m_strRemoteAssetServerURL + m_strVersionConfigName);
 
         List<AssetFile> tmpDownloadList = new List<AssetFile>();
         tmpDownloadList.Add(remoteVersionFile);
 
         //trigger download remote versin config
-        AssetsDownloader.Instance.BeginDownload(
+        AssetsDownloader_Sync.Instance.BeginDownload(
             tmpDownloadList,
             (file, fileInfo) =>
             {
@@ -55,8 +55,8 @@ public class AssetUpdate : Singleton<AssetUpdate>
             },
             (process, fileInfo) =>
             {
-                
-            }, 
+
+            },
             () =>
             {
                 if (null == m_RemoteVersionConfig || m_RemoteVersionConfig.VersionList == null)
@@ -126,12 +126,12 @@ public class AssetUpdate : Singleton<AssetUpdate>
     }
     private void BeginDownload()
     {
-        AssetsDownloader.Instance.BeginDownload
-            (   m_DownloadList,
+        AssetsDownloader_Sync.Instance.BeginDownload
+            (m_DownloadList,
                 (filedata, fileInfo) =>
                 {
                     AddToLocalVersionConfigList(fileInfo);
-                    ++ m_iCountingIndex;
+                    ++m_iCountingIndex;
                     TrySave();
                 },
                 (e, fileData) =>
@@ -191,7 +191,7 @@ public class AssetUpdateManager : Singleton<AssetUpdateManager>
     private UIWindowAssetUdpate m_AssetUpdateWindow;
     private bool m_bIsShowWindow;
 
-    public void CheckUpdate(Action doneCallBack,bool havWindow = true)
+    public void CheckUpdate(Action doneCallBack, bool havWindow = true)
     {
         m_bIsShowWindow = havWindow;
         m_CompleteCallBack = doneCallBack;
@@ -205,7 +205,7 @@ public class AssetUpdateManager : Singleton<AssetUpdateManager>
             //使用的是网络运营商提供的网络，提示是否需要切换到wifi状态下//
             if (m_bIsShowWindow)
             {
-                TipManager.Instance.Alert("提示","当前不是wifi，确定要继续更新吗？","确定","取消", (res) =>
+                TipManager.Instance.Alert("提示", "当前不是wifi，确定要继续更新吗？", "确定", "取消", (res) =>
                 {
                     if (res)
                     {
@@ -248,7 +248,7 @@ public class AssetUpdateManager : Singleton<AssetUpdateManager>
     }
     private void BeginCheck()
     {
-        AssetUpdate.Instance.CheckUpdate(CheckResult,OnProcess);
+        AssetUpdate.Instance.CheckUpdate(CheckResult, OnProcess);
     }
     private void OnProcess(float arg1, AssetFile arg2)
     {
@@ -258,11 +258,11 @@ public class AssetUpdateManager : Singleton<AssetUpdateManager>
             m_AssetUpdateWindow.OnProcess(arg2.Name, arg1);
         }
     }
-    private void CheckResult(bool isSucceed,string errorTip)
+    private void CheckResult(bool isSucceed, string errorTip)
     {
-        TryCloseWindow();
         if (isSucceed)
         {
+            TryCloseWindow();
             m_CompleteCallBack();
             return;
         }

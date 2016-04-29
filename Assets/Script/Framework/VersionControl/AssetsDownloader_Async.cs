@@ -7,58 +7,20 @@ using UnityEngine;
 
 namespace Assets.Scripts.Framework.Network
 {
-    public class AssetFile
-    {
-        public enum AssetFileType
-        {
-            NONE = 0,
-            TEXT = 1,
-            BYTE = 2
-        }
-        public string Url;
-        public string LocalPath;
-        public AssetFileType Type;
-        public string Name;
-        public bool IsSaveToFile;
-
-        public bool Exists
-        {
-            get
-            {
-                return File.Exists(this.LocalPath);
-            }
-        }
-        public AssetFile(string name, string localPath, string url)
-        {
-            Name = name;
-            Url = url;
-            LocalPath = localPath;
-
-            if (LocalPath.IndexOf(".txt") > 0 || LocalPath.IndexOf(".xml") > 0)
-            {
-                Type = AssetFileType.TEXT;
-            }
-            else
-            {
-                Type = AssetFileType.BYTE;
-            }
-            IsSaveToFile = !string.IsNullOrEmpty(LocalPath);
-        }
-    }
     public class AssetDownloadCallBack : HttpManager.DownloadCallback
     {
-        private Action<byte[], object, long, long> m_OnProcess;
-        private Action<object> m_OnComplate;
-        private Action<Exception, object> m_OnError;
-        private FileStream m_CurrentFileStream;
-        private long m_lCurrentLength;
+        private Action<byte[], object, long, long>  m_OnProcess;
+        private Action<object>                      m_OnComplate;
+        private Action<Exception, object>           m_OnError;
+        private FileStream                          m_CurrentFileStream;
+        private long                                m_lCurrentLength;
         private long m_lLength;
-        private string m_strFileTmpName;
+        private string                              m_strFileTmpName;
         private string m_strDataPath;
         private static long m_MarkIndex = 0;
         private bool m_bIsStoped;
 
-        public void Initialize(string dataPath, Action<byte[], object, long, long> onProcess, Action<object> OnComplate, Action<Exception, object> OnError)
+        public void Initialize(string dataPath,Action<byte[], object,long,long> onProcess,Action<object> OnComplate,Action<Exception,object> OnError)
         {
             m_bIsStoped = false;
             m_strDataPath = dataPath;
@@ -66,7 +28,7 @@ namespace Assets.Scripts.Framework.Network
             m_OnComplate = OnComplate;
             m_OnError = OnError;
             m_lCurrentLength = 0L;
-            m_lLength = 0L;
+            m_lLength = 0L; 
         }
         public void OnPrepare(long length, FileStream continueFileStream, object param)
         {
@@ -99,7 +61,7 @@ namespace Assets.Scripts.Framework.Network
             }
             m_lCurrentLength += buffer.Length;
             //call back process and save to file
-            m_OnProcess(buffer, param, m_lCurrentLength, m_lLength);
+            m_OnProcess(buffer, param,m_lCurrentLength,m_lLength);
         }
         public void OnComplate(object param)
         {
@@ -141,25 +103,25 @@ namespace Assets.Scripts.Framework.Network
             m_bIsStoped = true;
         }
     }
-    public class AssetsDownloader : Singleton<AssetsDownloader>
+    public class AssetsDownloader_Async:Singleton<AssetsDownloader_Async>
     {
         //成功完成回调，如果资源为存储型，则byte[]为空
-        private Action<byte[], AssetFile> m_OnSucceedCompleteCallBack;
+        private Action<byte[], AssetFile>       m_OnSucceedCompleteCallBack;
         //错误回调
-        private Action<Exception, AssetFile> m_OnErrorCallBack;
+        private Action<Exception, AssetFile>    m_OnErrorCallBack;
         //进度回调，分别为当前进度和当前正在下载的文件名
-        private Action<float, AssetFile> m_OnProcessCallBack;
-        private Action m_OnAllCompleteCallBack;
-        private int m_iCurrentIndex;
-        private List<AssetFile> m_CurrentDownloadList;
-        private AssetDownloadCallBack m_CallBack;
-        private bool m_bIsBusy;
-        private float m_fCurrentProcess;
-        private float m_fLastProcess;
-        private bool m_bHaveError;
-        private Exception m_ErrorException;
-        private bool m_bIsOneComplete;
-        private List<byte> m_CurrentDownloadBuffer;
+        private Action<float, AssetFile>        m_OnProcessCallBack;
+        private Action                          m_OnAllCompleteCallBack;
+        private int                             m_iCurrentIndex;
+        private List<AssetFile>                 m_CurrentDownloadList;
+        private AssetDownloadCallBack           m_CallBack;
+        private bool                            m_bIsBusy;
+        private float                           m_fCurrentProcess;
+        private float                           m_fLastProcess;
+        private bool                            m_bHaveError;
+        private Exception                       m_ErrorException;
+        private bool                            m_bIsOneComplete;
+        private List<byte>                      m_CurrentDownloadBuffer;
         private string m_strTmpCache;
 
         //time out controller
@@ -167,19 +129,19 @@ namespace Assets.Scripts.Framework.Network
         private int m_iCurrentDuringTime = 0;
 
         public void BeginDownload
-            (List<AssetFile> downloadList,           //下载列表
-            Action<byte[], AssetFile> onOneCompleteCallBack,  //单个完成进度回调
-            Action<Exception, AssetFile> onOneErrorCallBack,     //单个错误回调
-            Action<float, AssetFile> onProcessCallBack,      //进度回调 当前进度 和 当前下载文件
-            Action onCompleteCallBack)
+            (List<AssetFile>                downloadList,           //下载列表
+            Action<byte[], AssetFile>       onOneCompleteCallBack,  //单个完成进度回调
+            Action<Exception, AssetFile>    onOneErrorCallBack,     //单个错误回调
+            Action<float, AssetFile>        onProcessCallBack,      //进度回调 当前进度 和 当前下载文件
+            Action                          onCompleteCallBack)      
         {
-            if (m_bIsBusy ||
-                downloadList == null ||
-                downloadList.Count == 0 ||
+            if (m_bIsBusy || 
+                downloadList == null || 
+                downloadList.Count == 0 || 
                 onOneCompleteCallBack == null ||
                 onOneErrorCallBack == null ||
                 onProcessCallBack == null ||
-                onCompleteCallBack == null
+                onCompleteCallBack == null 
                 )
             {
                 Debug.LogError("return");
@@ -210,7 +172,7 @@ namespace Assets.Scripts.Framework.Network
             m_bIsBusy = true;
             DownloadTickTask.Instance.RegisterToUpdateList(MainThreadUpdate);
         }
-        private void OnProcess(byte[] buffer, object param, long curLength, long length)
+        private void OnProcess(byte[] buffer, object param,long curLength,long length)
         {
             AssetFile downloadElement = param as AssetFile;
             //call back process and save to file
@@ -224,7 +186,7 @@ namespace Assets.Scripts.Framework.Network
         {
             m_bIsOneComplete = true;
         }
-        private void OnError(Exception e, object param)
+        private void OnError( Exception e,object param)
         {
             m_ErrorException = e;
             m_bHaveError = true;
@@ -258,7 +220,7 @@ namespace Assets.Scripts.Framework.Network
             m_bHaveError = false;
             DownloadTickTask.Instance.UnRegisterFromUpdateList(MainThreadUpdate);
         }
-        private void UpdateProcess(long length, long currentLength)
+        private void UpdateProcess(long length,long currentLength)
         {
             //process = (index + buffersize/length)/downloadlist.cout;
             m_fCurrentProcess = (float)(((double)(m_iCurrentIndex) + (double)(currentLength) / (double)(length)) /
@@ -296,7 +258,7 @@ namespace Assets.Scripts.Framework.Network
                 //on one complete
                 m_OnSucceedCompleteCallBack(buffer, m_CurrentDownloadList[m_iCurrentIndex]);
 
-                ++m_iCurrentIndex;
+                ++ m_iCurrentIndex;
                 if (m_iCurrentIndex >= m_CurrentDownloadList.Count)
                 {
                     Clear();
@@ -316,7 +278,6 @@ namespace Assets.Scripts.Framework.Network
                 Clear();
             }
         }
-
         private bool IsTimeout()
         {
             return m_iCurrentDuringTime > m_iTimeout;
@@ -327,7 +288,7 @@ namespace Assets.Scripts.Framework.Network
         }
         private void UpdateTime()
         {
-            m_iCurrentDuringTime += (int)(Time.deltaTime * 1000.0f);
+            m_iCurrentDuringTime += (int) (Time.time*1000.0f);
         }
     }
 }

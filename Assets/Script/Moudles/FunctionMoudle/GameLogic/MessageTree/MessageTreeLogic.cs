@@ -799,7 +799,7 @@ public class MessageTreeLogic : Singleton<MessageTreeLogic>
         tmpDownloadList.Add(remoteVersionFile);
 
         //trigger download remote versin config
-        AssetsDownloader.Instance.BeginDownload(
+        AssetsDownloader_Sync.Instance.BeginDownload(
             tmpDownloadList,
             (file, fileInfo) =>
             {

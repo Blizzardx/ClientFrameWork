@@ -281,6 +281,55 @@ namespace NetWork
             }
         }
 
+        public bool Download(string url, out Exception error, out List<byte> byteBuffer, FileStream fileStream)
+        {
+            bool res = true;
+            error = null;
+            byteBuffer = new List<byte>();
+            try
+            {
+                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+                request.Method = "GET";
+                request.Timeout = 10000;
+                request.ReadWriteTimeout = 10000;
+                var response = request.GetResponse();
+                using (Stream stream = response.GetResponseStream())
+                {
+                    int size = 0;
+                    while (true)
+                    {
+                        byte[] tmpBytebuffer = new byte[1024];
+                        size = stream.Read(tmpBytebuffer, 0, tmpBytebuffer.Length);
+
+                        if (null != fileStream)
+                        {
+                            fileStream.Write(tmpBytebuffer, 0, size);
+                        }
+                        else
+                        {
+                            for (int i = 0; i < size; ++i)
+                            {
+                                byteBuffer.Add(tmpBytebuffer[i]);
+                            }
+                        }
+                        if (size < tmpBytebuffer.Length)
+                        {
+                            break;
+                        }
+                    }
+                    if (null != fileStream)
+                    {
+                        fileStream.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                error = e;
+                res = false;
+            }
+            return res;
+        }
         #endregion
     }
 }
