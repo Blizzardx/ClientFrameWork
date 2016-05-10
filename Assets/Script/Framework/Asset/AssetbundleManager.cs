@@ -21,6 +21,8 @@ public class AssetbundleManager : MonoSingleton<AssetbundleManager>
     private AssetBundleManifest                     m_Manifest;
     private readonly string                         m_strDataPath           = Application.dataPath + "/BuildAb/";
     private readonly string                         m_strManifestDataPath   = Application.dataPath + "/BuildAb/BuildAb";
+    //private LRU_K<string>                           m_LruMgr;
+    //private Queue<string>                           m_RemovingBundleList;
 
     public AssetbundleManager()
     {
@@ -29,6 +31,8 @@ public class AssetbundleManager : MonoSingleton<AssetbundleManager>
         m_LoadedBundleMap = new Dictionary<string, AssetBundle>();
         m_AssetCallBackMap = new Dictionary<string, Action<Object>>();
         m_LoadedAssetMap = new Dictionary<string, Object>();
+        //m_LruMgr = new LRU_K<string>(3, 20, OnRemovingBundle);
+        //m_RemovingBundleList = new Queue<string>();
     }
     public void Clear()
     {
@@ -67,6 +71,9 @@ public class AssetbundleManager : MonoSingleton<AssetbundleManager>
     }
     public void LoadAsset(string bundleName, string assetName,Action<Object> callBack)
     {
+        // mark this bundle and asset
+        //m_LruMgr.Access(bundleName);
+
         AssetBundleLoadInfo asset = new AssetBundleLoadInfo();
         asset.m_strBundleName = bundleName;
         asset.m_strAssetName = assetName;
@@ -215,6 +222,19 @@ public class AssetbundleManager : MonoSingleton<AssetbundleManager>
             m_CurrentLoadingBundleList.Enqueue(m_CurrentLoadingAsset.m_strBundleName);
             BeginLoadAssetBundle();
         }
-
+        //if (m_RemovingBundleList.Count > 0)
+        //{
+        //    // do release bundle
+        //    int index = 3;
+        //    while (index <= 0 || m_RemovingBundleList.Count <= 0)
+        //    {
+        //        ReleaseAssetBundle(m_RemovingBundleList.Dequeue());
+        //        -- index;
+        //    }
+        //}
+    }
+    private void OnRemovingBundle(string key)
+    {
+        //m_RemovingBundleList.Enqueue(key);
     }
 }

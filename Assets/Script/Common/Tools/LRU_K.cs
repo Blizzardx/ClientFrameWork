@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 public class LRU_K<T>
 {
@@ -25,6 +26,7 @@ public class LRU_K<T>
     }
     public void Access(T k)
     {
+        List<T> removingList = new List<T>();
         var it = m_LruList.First;
         while (it != null)
         {
@@ -42,7 +44,7 @@ public class LRU_K<T>
                         // trigger to remove
                         var removeElem = m_LruList.Last.Value;
                         m_LruList.RemoveLast();
-                        OnRemove(removeElem.key);
+                        removingList.Add(removeElem.key);
                     }
                 }
                 break;
@@ -53,6 +55,23 @@ public class LRU_K<T>
         elem.key = k;
         elem.index = 1;
         m_LruList.AddLast(elem);
+
+        for (int i = 0; i < removingList.Count; ++i)
+        {
+            OnRemove(removingList[i]);
+        }
+    }
+    public void Clear()
+    {
+        m_LruList.Clear();
+    }
+    public void ResetK(int k)
+    {
+        m_iK = k;
+    }
+    public void ResetCount(int count)
+    {
+        m_iCount = count;
     }
     private void OnRemove(T key)
     {
