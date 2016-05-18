@@ -185,5 +185,18 @@ namespace Assets.Scripts.Core.Utils
             return origin.EndsWith(mark);
         }
         #endregion
+
+        #region other
+
+        public static long GetFileLength(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return 0;
+            }
+            FileInfo fileInfo = new FileInfo(path);
+            return fileInfo.Length;
+        }
+        #endregion
     }
 }
