@@ -1,8 +1,50 @@
+//unity before version 5 is old
+//#define USE_OLD_UNITY 
+
 using UnityEngine;
 //using System;
 using System.Collections;
 using System.Collections.Generic;
 
+
+
+[System.Serializable]
+public class Images
+{
+	public Texture2D   	clearImage;
+	public Texture2D   	collapseImage;
+	public Texture2D   	clearOnNewSceneImage;
+	public Texture2D   	showTimeImage;
+	public Texture2D   	showSceneImage;
+	public Texture2D   	userImage;
+	public Texture2D   	showMemoryImage;
+	public Texture2D   	softwareImage;
+	public Texture2D   	dateImage;
+	public Texture2D   	showFpsImage;
+	public Texture2D   	showGraphImage;
+	public Texture2D   	graphImage;
+	public Texture2D   	infoImage;
+	public Texture2D    searchImage;
+	public Texture2D   	closeImage;
+	
+	public Texture2D   	buildFromImage;
+	public Texture2D   	systemInfoImage;
+	public Texture2D   	graphicsInfoImage;
+	public Texture2D   	backImage;
+	public Texture2D   	cameraImage;
+	
+	public Texture2D   	logImage;
+	public Texture2D   	warningImage;
+	public Texture2D   	errorImage;
+
+	public Texture2D 	barImage;
+	public Texture2D	button_activeImage;
+	public Texture2D	even_logImage;
+	public Texture2D 	odd_logImage;
+	public Texture2D	selectedImage;
+
+	public GUISkin		reporterScrollerSkin;
+}
 //just drop this script to empty game object on first scene you game start at, this all what you have to do
 //no coding is required 
 //then you can view logs , warnings , errors and exceptions inside your game
@@ -64,7 +106,7 @@ public class Reporter : MonoBehaviour {
 	List<Log> currentLog = new List<Log>();
 	
 	//used to check if the new coming logs is already exist or new one
-	Dictionary<string , Log> logsDic = new Dictionary<string , Log>();
+	MultiKeyDictionary<string,string, Log> logsDic = new MultiKeyDictionary<string, string, Log>();
 	//to save memory
 	Dictionary<string , string > cachedString = new Dictionary<string, string>();
 
@@ -78,7 +120,7 @@ public class Reporter : MonoBehaviour {
 
 	bool showTime ;
 
-	bool showScene ;
+	bool showScene;
 
 	bool showMemory ;
 
@@ -108,7 +150,13 @@ public class Reporter : MonoBehaviour {
 	
 	//maximum number of allowed logs to view
 	//public int maxAllowedLog = 1000 ;
-	
+
+	bool showClearOnNewSceneLoadedButton = true ;
+	bool showTimeButton = true;
+	bool showSceneButton = true;
+	bool showMemButton = true;
+	bool showFpsButton = true;
+	bool showSearchText = true;
 	
 	string buildDate;
 	string logDate ;
@@ -147,7 +195,8 @@ public class Reporter : MonoBehaviour {
 	static bool created = false ;
 	//public delegate void OnLogHandler( string condition, string stacktrace, LogType type );
 	//public event OnLogHandler OnLog ;
-	
+
+	public Images images;
 	// gui
 	GUIContent 	clearContent ;
 	GUIContent 	collapseContent ;
@@ -161,6 +210,7 @@ public class Reporter : MonoBehaviour {
 	GUIContent 	showFpsContent ;
 	GUIContent 	graphContent ;
 	GUIContent 	infoContent ;
+	GUIContent 	searchContent ;
 	GUIContent 	closeContent ;
 
 
@@ -170,12 +220,8 @@ public class Reporter : MonoBehaviour {
 	GUIContent 	backContent ;
 
 	GUIContent 	cameraContent ;
-
-
-	Texture2D 	logIcon ;
-	Texture2D 	warningIcon ;
-	Texture2D 	errorIcon ;
 	
+
 	GUIContent 	logContent ;
 	GUIContent 	warningContent ;
 	GUIContent 	errorContent ;
@@ -192,6 +238,9 @@ public class Reporter : MonoBehaviour {
 	GUIStyle   	selectedLogFontStyle ;
 	GUIStyle   	stackLabelStyle ;
 	GUIStyle   	scrollerStyle ;
+	GUIStyle   	searchStyle ;
+	GUIStyle   	sliderBackStyle ;
+	GUIStyle   	sliderThumbStyle ;
 	GUISkin 	toolbarScrollerSkin ;
 	GUISkin 	logScrollerSkin ;
 	GUISkin 	graphScrollerSkin ;
@@ -201,14 +250,17 @@ public class Reporter : MonoBehaviour {
 	public int numOfCircleToShow = 1 ;
 	string[] scenes ;
 	string   currentScene ;
-
+	string   filterText="";
 
 	string deviceModel ;
 	string deviceType ;
 	string deviceName ;
 	string graphicsMemorySize ;
+	#if !USE_OLD_UNITY
 	string maxTextureSize ;
+	#endif
 	string systemMemorySize ;
+
 	void Awake()
 	{
 		if( !Initialized )
@@ -251,8 +303,14 @@ public class Reporter : MonoBehaviour {
 			}
 			scenes = new string[ Application.levelCount ];
 			currentScene = Application.loadedLevelName;
-			DontDestroyOnLoad( gameObject );
+			//DontDestroyOnLoad( gameObject );
+#if USE_OLD_UNITY
 			Application.RegisterLogCallback (new Application.LogCallback (CaptureLog));
+			Application.RegisterLogCallbackThreaded (new Application.LogCallback (CaptureLogThread));
+#else
+			//Application.logMessageReceived += CaptureLog ;
+			Application.logMessageReceivedThreaded += CaptureLogThread ;
+#endif
 			created = true ;
 			//addSample();
 		}
@@ -263,48 +321,94 @@ public class Reporter : MonoBehaviour {
 			return;
 		}
 
-		int paddingX = (int)(size.x*0.2f) ;
-		int paddingY = (int)(size.y*0.2f) ;
+
 		//initialize gui and styles for gui porpose
 
-		clearContent 	= new GUIContent("",getImage("clear",size.x,size.y),"Clear logs");
-		collapseContent = new GUIContent("",getImage("collapse",size.x,size.y),"Collapse logs");
-		clearOnNewSceneContent = new GUIContent("",getImage("clearOnSceneLoaded",size.x,size.y),"Clear logs on new scene loaded");
-		showTimeContent = new GUIContent("",getImage("timer_1",size.x,size.y),"Show Hide Time");
-		showSceneContent = new GUIContent("",getImage("UnityIcon",size.x,size.y),"Show Hide Scene");
-		showMemoryContent = new GUIContent("",getImage("memory",size.x,size.y),"Show Hide Memory");
-		softwareContent = new GUIContent("",getImage("software",size.x,size.y),"Software");
-		dateContent = new GUIContent("",getImage("date",size.x,size.y),"Date");
-		showFpsContent = new GUIContent("",getImage("fps",size.x,size.y),"Show Hide fps");
-		graphContent = new GUIContent("",getImage("chart",size.x,size.y),"Show Graph");
-		infoContent = new GUIContent("",getImage("info",size.x,size.y),"Information about application");
-		closeContent = new GUIContent("",getImage("close",size.x,size.y),"Hide logs");
-		userContent = new GUIContent("",getImage("user",size.x,size.y),"User");
+		clearContent 	= new GUIContent("",images.clearImage,"Clear logs");
+		collapseContent = new GUIContent("",images.collapseImage,"Collapse logs");
+		clearOnNewSceneContent = new GUIContent("",images.clearOnNewSceneImage,"Clear logs on new scene loaded");
+		showTimeContent = new GUIContent("",images.showTimeImage,"Show Hide Time");
+		showSceneContent = new GUIContent("",images.showSceneImage,"Show Hide Scene");
+		showMemoryContent = new GUIContent("",images.showMemoryImage,"Show Hide Memory");
+		softwareContent = new GUIContent("",images.softwareImage,"Software");
+		dateContent = new GUIContent("",images.dateImage,"Date");
+		showFpsContent = new GUIContent("",images.showFpsImage,"Show Hide fps");
+		graphContent = new GUIContent("",images.showGraphImage,"Show Graph");
+		infoContent = new GUIContent("",images.infoImage,"Information about application");
+		searchContent = new GUIContent("",images.searchImage,"Search for logs");
+		closeContent = new GUIContent("",images.closeImage,"Hide logs");
+		userContent = new GUIContent("",images.userImage,"User");
 
-		buildFromContent = new GUIContent("",getImage("buildFrom",size.x,size.y),"Build From");
-		systemInfoContent = new GUIContent("",getImage("ComputerIcon",size.x,size.y),"System Info");
-		graphicsInfoContent = new GUIContent("",getImage("graphicCard",size.x,size.y),"Graphics Info");
-		backContent = new GUIContent("",getImage("back",size.x,size.y),"Back");
+		buildFromContent = new GUIContent("",images.buildFromImage,"Build From");
+		systemInfoContent = new GUIContent("",images.systemInfoImage,"System Info");
+		graphicsInfoContent = new GUIContent("",images.graphicsInfoImage,"Graphics Info");
+		backContent = new GUIContent("",images.backImage,"Back");
 
-		cameraContent = new GUIContent("",getImage("camera",size.x,size.y),"Select Photo");
+		cameraContent = new GUIContent("",images.cameraImage,"Select Photo");
 
 
-		logIcon 	= getImage("log_icon" ,size.x,size.y);
-		warningIcon = getImage("warning_icon" ,size.x,size.y);
-		errorIcon 	= getImage("error_icon" ,size.x,size.y);
 
-		//snapshotContent = new GUIContent("",getImage("camera" ,size.x,size.y),"show or hide logs");
-		logContent 	= new GUIContent("",logIcon,"show or hide logs");
-		warningContent = new GUIContent("",warningIcon,"show or hide warnings");
-		errorContent = new GUIContent("",errorIcon,"show or hide errors");
+		//snapshotContent = new GUIContent("",images.cameraImage,"show or hide logs");
+		logContent 	= new GUIContent("",images.logImage,"show or hide logs");
+		warningContent = new GUIContent("",images.warningImage,"show or hide warnings");
+		errorContent = new GUIContent("",images.errorImage,"show or hide errors");
 
+
+		currentView = (ReportView)PlayerPrefs.GetInt( "Reporter_currentView" , 1);
+		show 		= (PlayerPrefs.GetInt( "Reporter_show" )==1)?true:false;
+		collapse 	= (PlayerPrefs.GetInt( "Reporter_collapse" )==1)?true:false;
+		clearOnNewSceneLoaded = (PlayerPrefs.GetInt( "Reporter_clearOnNewSceneLoaded" )==1)?true:false;
+		showTime 	= (PlayerPrefs.GetInt( "Reporter_showTime" )==1)?true:false;
+		showScene 	= (PlayerPrefs.GetInt( "Reporter_showScene" )==1)?true:false;
+	    showScene = false;
+		showMemory 	= (PlayerPrefs.GetInt( "Reporter_showMemory" )==1)?true:false;
+		showFps 	= (PlayerPrefs.GetInt( "Reporter_showFps" )==1)?true:false;
+		showGraph 	= (PlayerPrefs.GetInt( "Reporter_showGraph" )==1)?true:false;
+		showLog 	= (PlayerPrefs.GetInt( "Reporter_showLog" ,1) ==1)?true:false;
+		showWarning = (PlayerPrefs.GetInt( "Reporter_showWarning" ,1) ==1)?true:false;
+		showError 	= (PlayerPrefs.GetInt( "Reporter_showError" ,1) ==1)?true:false;
+		filterText  = PlayerPrefs.GetString("Reporter_filterText");
+		size.x = size.y = PlayerPrefs.GetFloat( "Reporter_size" , 32 );
+
+
+		showClearOnNewSceneLoadedButton 		= (PlayerPrefs.GetInt( "Reporter_showClearOnNewSceneLoadedButton" ,1)==1)?true:false;
+		showTimeButton 		= (PlayerPrefs.GetInt( "Reporter_showTimeButton",1 )==1)?true:false;
+		showSceneButton 	= (PlayerPrefs.GetInt( "Reporter_showSceneButton",1 )==1)?true:false;
+		showMemButton 		= (PlayerPrefs.GetInt( "Reporter_showMemButton",1 )==1)?true:false;
+		showFpsButton 		= (PlayerPrefs.GetInt( "Reporter_showFpsButton",1 )==1)?true:false;
+		showSearchText 		= (PlayerPrefs.GetInt( "Reporter_showSearchText",1 )==1)?true:false;
+
+
+		initializeStyle();
+
+		Initialized = true ;
+
+		if( show ){
+			doShow();
+		}
+
+		deviceModel = SystemInfo.deviceModel.ToString() ;
+		deviceType  = SystemInfo.deviceType.ToString() ;
+		deviceName  = SystemInfo.deviceName.ToString() ;
+		graphicsMemorySize = SystemInfo.graphicsMemorySize.ToString() ;
+		#if !USE_OLD_UNITY
+		maxTextureSize = SystemInfo.maxTextureSize.ToString() ;
+		#endif
+		systemMemorySize = SystemInfo.systemMemorySize.ToString() ; 
+
+	}
+
+	void initializeStyle()
+	{
+		int paddingX = (int)(size.x*0.2f) ;
+		int paddingY = (int)(size.y*0.2f) ;
 		nonStyle = new GUIStyle();
 		nonStyle.clipping = TextClipping.Clip;
 		nonStyle.border = new RectOffset(0,0,0,0);
 		nonStyle.normal.background = null ;
 		nonStyle.fontSize = (int)(size.y /2 );
 		nonStyle.alignment = TextAnchor.MiddleCenter ;
-
+		
 		lowerLeftFontStyle = new GUIStyle();
 		lowerLeftFontStyle.clipping = TextClipping.Clip;
 		lowerLeftFontStyle.border = new RectOffset(0,0,0,0);
@@ -312,36 +416,36 @@ public class Reporter : MonoBehaviour {
 		lowerLeftFontStyle.fontSize = (int)(size.y /2 );
 		lowerLeftFontStyle.fontStyle = FontStyle.Bold ;
 		lowerLeftFontStyle.alignment = TextAnchor.LowerLeft ;
-
-
+		
+		
 		barStyle = new GUIStyle();
 		barStyle.border = new RectOffset(1,1,1,1);
-		barStyle.normal.background = getImage("bar" , size.x , size.y) ;
-		barStyle.active.background = getImage("button_active" , size.x , size.y ) ;
+		barStyle.normal.background = images.barImage ;
+		barStyle.active.background = images.button_activeImage ;
 		barStyle.alignment = TextAnchor.MiddleCenter ;
 		barStyle.margin = new RectOffset(1,1,1,1);
-
+		
 		//barStyle.padding = new RectOffset(paddingX,paddingX,paddingY,paddingY); 
 		//barStyle.wordWrap = true ;
 		barStyle.clipping = TextClipping.Clip;
 		barStyle.fontSize = (int)(size.y /2 );
-
-
+		
+		
 		buttonActiveStyle = new GUIStyle();
 		buttonActiveStyle.border = new RectOffset(1,1,1,1);
-		buttonActiveStyle.normal.background = getImage("button_active" ,32,32);
+		buttonActiveStyle.normal.background = images.button_activeImage;
 		buttonActiveStyle.alignment = TextAnchor.MiddleCenter ;
 		buttonActiveStyle.margin = new RectOffset(1,1,1,1);
 		//buttonActiveStyle.padding = new RectOffset(4,4,4,4);
 		buttonActiveStyle.fontSize = (int)(size.y /2 );
-
+		
 		backStyle = new GUIStyle();
-		backStyle.normal.background = getImage("even_log" ,16,16);
+		backStyle.normal.background = images.even_logImage;
 		backStyle.clipping = TextClipping.Clip ;
 		backStyle.fontSize = (int)(size.y /2 );
 		
 		evenLogStyle = new GUIStyle();
-		evenLogStyle.normal.background = getImage("even_log" ,16,16);
+		evenLogStyle.normal.background = images.even_logImage;
 		evenLogStyle.fixedHeight = size.y ;
 		evenLogStyle.clipping = TextClipping.Clip ;
 		evenLogStyle.alignment = TextAnchor.UpperLeft ;
@@ -350,7 +454,7 @@ public class Reporter : MonoBehaviour {
 		//evenLogStyle.wordWrap = true;
 		
 		oddLogStyle = new GUIStyle();
-		oddLogStyle.normal.background = getImage("odd_log" ,16,16);
+		oddLogStyle.normal.background = images.odd_logImage;
 		oddLogStyle.fixedHeight = size.y ;
 		oddLogStyle.clipping = TextClipping.Clip ;
 		oddLogStyle.alignment = TextAnchor.UpperLeft ;
@@ -369,16 +473,16 @@ public class Reporter : MonoBehaviour {
 		logButtonStyle.padding = new RectOffset(paddingX,paddingX,paddingY,paddingY); 
 		
 		selectedLogStyle = new GUIStyle();
-		selectedLogStyle.normal.background = getImage("selected" ,16,16);
+		selectedLogStyle.normal.background = images.selectedImage;
 		selectedLogStyle.fixedHeight = size.y ;
 		selectedLogStyle.clipping = TextClipping.Clip ;
 		selectedLogStyle.alignment = TextAnchor.UpperLeft ;
 		selectedLogStyle.normal.textColor = Color.white ;
 		//selectedLogStyle.wordWrap = true;
 		selectedLogStyle.fontSize = (int)(size.y /2 );
-
+		
 		selectedLogFontStyle = new GUIStyle();
-		selectedLogFontStyle.normal.background = getImage("selected" ,16,16);
+		selectedLogFontStyle.normal.background = images.selectedImage;
 		selectedLogFontStyle.fixedHeight = size.y ;
 		selectedLogFontStyle.clipping = TextClipping.Clip ;
 		selectedLogFontStyle.alignment = TextAnchor.UpperLeft ;
@@ -386,29 +490,45 @@ public class Reporter : MonoBehaviour {
 		//selectedLogStyle.wordWrap = true;
 		selectedLogFontStyle.fontSize = (int)(size.y /2 );
 		selectedLogFontStyle.padding = new RectOffset(paddingX,paddingX,paddingY,paddingY); 
-
+		
 		stackLabelStyle = new GUIStyle();
 		stackLabelStyle.wordWrap = true ;
 		stackLabelStyle.fontSize = (int)(size.y /2 );
 		stackLabelStyle.padding = new RectOffset(paddingX,paddingX,paddingY,paddingY); 
-
-		scrollerStyle = new GUIStyle(); 
-		scrollerStyle.normal.background =  getImage("bar" ,size.x,size.y);
 		
-		GUISkin skin = Resources.Load("reporterScrollerSkin",typeof(GUISkin)) as GUISkin ;
+		scrollerStyle = new GUIStyle(); 
+		scrollerStyle.normal.background =  images.barImage;
+		
+		searchStyle = new GUIStyle();
+		searchStyle.clipping = TextClipping.Clip ;
+		searchStyle.alignment = TextAnchor.LowerCenter ;
+		searchStyle.fontSize = (int)(size.y /2 );
+		searchStyle.wordWrap = true;
 
+
+		sliderBackStyle = new GUIStyle();
+		sliderBackStyle.normal.background =  images.barImage;
+		sliderBackStyle.fixedHeight = size.y;
+		sliderBackStyle.border = new RectOffset(1,1,1,1);
+
+		sliderThumbStyle = new GUIStyle();
+		sliderThumbStyle.normal.background = images.selectedImage;
+		sliderThumbStyle.fixedWidth = size.x ;
+
+		GUISkin skin = images.reporterScrollerSkin ;
+		
 		toolbarScrollerSkin = (GUISkin)GameObject.Instantiate( skin );
 		toolbarScrollerSkin.verticalScrollbar.fixedWidth = 0f ;
 		toolbarScrollerSkin.horizontalScrollbar.fixedHeight = 0f ;
 		toolbarScrollerSkin.verticalScrollbarThumb.fixedWidth = 0f;
 		toolbarScrollerSkin.horizontalScrollbarThumb.fixedHeight = 0f;
-
+		
 		logScrollerSkin = (GUISkin)GameObject.Instantiate( skin );
 		logScrollerSkin.verticalScrollbar.fixedWidth = size.x * 2f ;
 		logScrollerSkin.horizontalScrollbar.fixedHeight = 0f ;
 		logScrollerSkin.verticalScrollbarThumb.fixedWidth = size.x * 2f;
 		logScrollerSkin.horizontalScrollbarThumb.fixedHeight = 0f;
-
+		
 		graphScrollerSkin = (GUISkin)GameObject.Instantiate( skin );
 		graphScrollerSkin.verticalScrollbar.fixedWidth = 0f ;
 		graphScrollerSkin.horizontalScrollbar.fixedHeight = size.x * 2f ;
@@ -416,41 +536,8 @@ public class Reporter : MonoBehaviour {
 		graphScrollerSkin.horizontalScrollbarThumb.fixedHeight = size.x * 2f;
 		//inGameLogsScrollerSkin.verticalScrollbarThumb.fixedWidth = size.x * 2;
 		//inGameLogsScrollerSkin.verticalScrollbar.fixedWidth = size.x * 2;
-
-		currentView = (ReportView)PlayerPrefs.GetInt( "Reporter_currentView" , 1);
-		show 		= (PlayerPrefs.GetInt( "Reporter_show" )==1)?true:false;
-		collapse 	= (PlayerPrefs.GetInt( "Reporter_collapse" )==1)?true:false;
-		clearOnNewSceneLoaded = (PlayerPrefs.GetInt( "Reporter_clearOnNewSceneLoaded" )==1)?true:false;
-		showTime 	= (PlayerPrefs.GetInt( "Reporter_showTime" )==1)?true:false;
-		showScene 	= (PlayerPrefs.GetInt( "Reporter_showScene" )==1)?true:false;
-		showMemory 	= (PlayerPrefs.GetInt( "Reporter_showMemory" )==1)?true:false;
-		showFps 	= (PlayerPrefs.GetInt( "Reporter_showFps" )==1)?true:false;
-		showGraph 	= (PlayerPrefs.GetInt( "Reporter_showGraph" )==1)?true:false;
-		showLog 	= (PlayerPrefs.GetInt( "Reporter_showLog" ,1) ==1)?true:false;
-		showWarning = (PlayerPrefs.GetInt( "Reporter_showWarning" ,1) ==1)?true:false;
-		showError 	= (PlayerPrefs.GetInt( "Reporter_showError" ,1) ==1)?true:false;
-
-		Initialized = true ;
-
-		if( show ){
-			doShow();
-		}
-
-		deviceModel = SystemInfo.deviceModel.ToString() ;
-		deviceType  = SystemInfo.deviceType.ToString() ;
-		deviceName  = SystemInfo.deviceName.ToString() ;
-		graphicsMemorySize = SystemInfo.graphicsMemorySize.ToString() ;
-		maxTextureSize = SystemInfo.maxTextureSize.ToString() ;
-		systemMemorySize = SystemInfo.systemMemorySize.ToString() ; 
-
 	}
-	//some library or plugin in unity3d take the capture of the log
-	//logViewer take the capture every second , but may be you loose the log for 1 second
-	//you can use this method to force the log to be yours again
-	public void CatureLog()
-	{
-		Application.RegisterLogCallback (new Application.LogCallback (CaptureLog));
-	}
+
 	void Start () {
 		logDate = System.DateTime.Now.ToString() ;
 		StartCoroutine("readInfo");
@@ -464,7 +551,8 @@ public class Reporter : MonoBehaviour {
 		collapsedLogs.Clear();
 		currentLog.Clear();
 		logsDic.Clear();
-		selectedIndex = -1;
+		//selectedIndex = -1;
+		selectedLog = null;
 		numOfLogs = 0;
 		numOfLogsWarning = 0;
 		numOfLogsError = 0;
@@ -493,7 +581,7 @@ public class Reporter : MonoBehaviour {
 	Vector2 scrollPosition2;
 	Vector2 toolbarScrollPosition;
 
-	int 	selectedIndex = -1;
+	//int 	selectedIndex = -1;
 	Log     selectedLog ;
 
 	float 	toolbarOldDrag =0;
@@ -502,21 +590,13 @@ public class Reporter : MonoBehaviour {
 	float 	oldDrag3 ;
 	int 	startIndex;
 	
-	//try to make texture GUI type 
-	Texture2D getImage(string path , float width , float height )
-	{
-		Texture2D texture =  ( Texture2D  )Resources.Load( path , typeof(Texture2D  ));
-		return texture ;
-		/*Texture2D guiTexture = new Texture2D( (int)width, (int)height, TextureFormat.ATC_RGBA8, false);
-		byte[] data = texture.EncodeToPNG();
-		guiTexture.LoadImage( data );
-		return guiTexture;*/
-	}
-	
-	
 	//calculate what is the currentLog : collapsed or not , hide or view warnings ......
 	void calculateCurrentLog()
 	{
+		bool filter = !string.IsNullOrEmpty( filterText );
+		string _filterText = "";
+		if( filter )
+			_filterText = filterText.ToLower();
 		currentLog.Clear();
 		if( collapse )
 		{
@@ -534,8 +614,15 @@ public class Reporter : MonoBehaviour {
 				if( log.logType == _LogType.Exception && !showError )
 					continue;
 
-				
-				currentLog.Add( log );
+				if( filter )
+				{
+					if( log.condition.ToLower().Contains(_filterText))
+						currentLog.Add( log );
+				}
+				else 
+				{
+					currentLog.Add( log );
+				}
 			}
 		}
 		else 
@@ -554,7 +641,31 @@ public class Reporter : MonoBehaviour {
 				if( log.logType == _LogType.Exception && !showError )
 					continue;
 
-				currentLog.Add( log );
+				if( filter )
+				{
+					if( log.condition.ToLower().Contains(_filterText))
+						currentLog.Add( log );
+				}
+				else 
+				{
+					currentLog.Add( log );
+				}
+			}
+		}
+
+		if( selectedLog != null )
+		{
+			int newSelectedIndex = currentLog.IndexOf( selectedLog );
+			if( newSelectedIndex == -1 )
+			{
+				Log collapsedSelected = logsDic[selectedLog.condition][selectedLog.stacktrace];
+				newSelectedIndex = currentLog.IndexOf( collapsedSelected );
+				if( newSelectedIndex != -1)
+					scrollPosition.y = newSelectedIndex * size.y ;
+			}
+			else 
+			{
+				scrollPosition.y = newSelectedIndex * size.y ;
 			}
 		}
 	}
@@ -618,8 +729,10 @@ public class Reporter : MonoBehaviour {
 		GUILayout.Label( SystemInfo.graphicsDeviceName , nonStyle , GUILayout.Height(size.y));
 		GUILayout.Space( size.x);
 		GUILayout.Label( graphicsMemorySize , nonStyle , GUILayout.Height(size.y));
+		#if !USE_OLD_UNITY
 		GUILayout.Space( size.x);
 		GUILayout.Label( maxTextureSize , nonStyle , GUILayout.Height(size.y));
+		#endif
 		GUILayout.FlexibleSpace();
 		GUILayout.EndHorizontal();
 
@@ -647,8 +760,8 @@ public class Reporter : MonoBehaviour {
 		GUILayout.Space( size.x);
 		GUILayout.Label( "Mem Usage Of Logs " + logsMemUsage.ToString("0.000")  + " mb", nonStyle , GUILayout.Height(size.y));
 		GUILayout.Space( size.x);
-		GUILayout.Label( "Mem Usage Of Graph " + graphMemUsage.ToString("0.000")  + " mb", nonStyle , GUILayout.Height(size.y));
-		GUILayout.Space( size.x);
+		//GUILayout.Label( "Mem Usage Of Graph " + graphMemUsage.ToString("0.000")  + " mb", nonStyle , GUILayout.Height(size.y));
+		//GUILayout.Space( size.x);
 		GUILayout.Label( "GC Memory " + gcTotalMemory.ToString("0.000") + " mb",nonStyle , GUILayout.Height(size.y));
 		GUILayout.FlexibleSpace();
 		GUILayout.EndHorizontal();
@@ -704,6 +817,14 @@ public class Reporter : MonoBehaviour {
 		GUILayout.FlexibleSpace();
 		GUILayout.EndHorizontal();
 
+		GUILayout.BeginHorizontal();
+		GUILayout.Space( size.x);
+		GUILayout.Box( showSceneContent ,nonStyle ,  GUILayout.Width(size.x) , GUILayout.Height(size.y));
+		GUILayout.Space( size.x);
+		GUILayout.Label( "Unity Version = " +Application.unityVersion , nonStyle , GUILayout.Height(size.y));
+		GUILayout.FlexibleSpace();
+		GUILayout.EndHorizontal();
+
 		/*GUILayout.BeginHorizontal();
 		GUILayout.Space( size.x);
 		GUILayout.Box( graphContent ,nonStyle ,  GUILayout.Width(size.x) , GUILayout.Height(size.y));
@@ -712,7 +833,23 @@ public class Reporter : MonoBehaviour {
 		GUILayout.FlexibleSpace();
 		GUILayout.EndHorizontal();*/
 
+		drawInfo_enableDisableToolBarButtons();
+
 		GUILayout.FlexibleSpace();
+
+		GUILayout.BeginHorizontal();
+		GUILayout.Space( size.x);
+		GUILayout.Label( "Size = "  + size.x.ToString("0.0") , nonStyle , GUILayout.Height(size.y));
+		GUILayout.Space( size.x);
+		float _size = GUILayout.HorizontalSlider( size.x , 16 , 64 ,sliderBackStyle,sliderThumbStyle, GUILayout.Width( Screen.width * 0.5f) ) ;
+		if( size.x != _size )
+		{
+			size.x = size.y = _size;
+			initializeStyle();
+		}
+		GUILayout.FlexibleSpace();
+		GUILayout.EndHorizontal();
+
 		GUILayout.BeginHorizontal();
 		GUILayout.Space( size.x);
 		if( GUILayout.Button( backContent ,barStyle ,  GUILayout.Width(size.x*2) , GUILayout.Height(size.y*2)))
@@ -722,11 +859,73 @@ public class Reporter : MonoBehaviour {
 		GUILayout.FlexibleSpace();
 		GUILayout.EndHorizontal();
 
+
+
 		GUILayout.EndScrollView();
 
 		GUILayout.EndArea();
 	}
 
+
+	void drawInfo_enableDisableToolBarButtons()
+	{
+		GUILayout.BeginHorizontal();
+		GUILayout.Space( size.x);
+		GUILayout.Label( "Hide or Show tool bar buttons" , nonStyle , GUILayout.Height(size.y));
+		GUILayout.Space( size.x);
+		GUILayout.FlexibleSpace();
+		GUILayout.EndHorizontal();
+
+		GUILayout.BeginHorizontal();
+		GUILayout.Space( size.x);
+
+		if( GUILayout.Button( clearOnNewSceneContent , (showClearOnNewSceneLoadedButton)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) , GUILayout.Height(size.y*2)))
+		{
+			showClearOnNewSceneLoadedButton = !showClearOnNewSceneLoadedButton;
+		}
+		
+		if( GUILayout.Button( showTimeContent , (showTimeButton)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		{
+			showTimeButton = !showTimeButton ;
+		}
+		tempRect = GUILayoutUtility.GetLastRect();
+		GUI.Label( tempRect , Time.realtimeSinceStartup.ToString("0.0") , lowerLeftFontStyle );
+		if( GUILayout.Button( showSceneContent , (showSceneButton)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		{
+			showSceneButton = !showSceneButton ;
+		}
+		tempRect = GUILayoutUtility.GetLastRect();
+		GUI.Label( tempRect , currentScene , lowerLeftFontStyle );
+		if( GUILayout.Button( showMemoryContent , (showMemButton)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		{
+			showMemButton = !showMemButton ;
+		}
+		tempRect = GUILayoutUtility.GetLastRect();
+		GUI.Label( tempRect , gcTotalMemory.ToString("0.0") , lowerLeftFontStyle );
+		
+		if( GUILayout.Button( showFpsContent , (showFpsButton)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		{
+			showFpsButton = !showFpsButton ;
+		}
+		tempRect = GUILayoutUtility.GetLastRect();
+		GUI.Label( tempRect , fpsText , lowerLeftFontStyle );
+		/*if( GUILayout.Button( graphContent , (showGraph)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		{
+			showGraph = !showGraph ;
+		}
+		tempRect = GUILayoutUtility.GetLastRect();
+		GUI.Label( tempRect , samples.Count.ToString() , lowerLeftFontStyle );*/
+		if( GUILayout.Button( searchContent , (showSearchText)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		{
+			showSearchText = !showSearchText ;
+		}
+		tempRect = GUILayoutUtility.GetLastRect();
+		GUI.TextField( tempRect, filterText ,searchStyle);
+
+		
+		GUILayout.FlexibleSpace();
+		GUILayout.EndHorizontal();
+	}
 	void DrawReport()
 	{
 		screenRect.x = 0f ;
@@ -793,46 +992,69 @@ public class Reporter : MonoBehaviour {
 			collapse = !collapse ;
 			calculateCurrentLog();
 		}
-		if( GUILayout.Button( clearOnNewSceneContent , (clearOnNewSceneLoaded)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) , GUILayout.Height(size.y*2)))
+		if( showClearOnNewSceneLoadedButton && GUILayout.Button( clearOnNewSceneContent , (clearOnNewSceneLoaded)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) , GUILayout.Height(size.y*2)))
 		{
 			clearOnNewSceneLoaded = !clearOnNewSceneLoaded ;
 		}
 		
-		if( GUILayout.Button( showTimeContent , (showTime)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		if( showTimeButton && GUILayout.Button( showTimeContent , (showTime)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
 		{
 			showTime = !showTime ;
 		}
-		tempRect = GUILayoutUtility.GetLastRect();
-		GUI.Label( tempRect , Time.realtimeSinceStartup.ToString("0.0") , lowerLeftFontStyle );
-		if( GUILayout.Button( showSceneContent , (showScene)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		if( showSceneButton )
 		{
-			showScene = !showScene ;
+			tempRect = GUILayoutUtility.GetLastRect();
+			GUI.Label( tempRect , Time.realtimeSinceStartup.ToString("0.0") , lowerLeftFontStyle );
+			if( GUILayout.Button( showSceneContent , (showScene)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+			{
+				showScene = !showScene ;
+			}
+			tempRect = GUILayoutUtility.GetLastRect();
+			GUI.Label( tempRect , currentScene , lowerLeftFontStyle );
 		}
-		tempRect = GUILayoutUtility.GetLastRect();
-		GUI.Label( tempRect , currentScene , lowerLeftFontStyle );
-		if( GUILayout.Button( showMemoryContent , (showMemory)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		if( showMemButton )
 		{
-			showMemory = !showMemory ;
+			if( GUILayout.Button( showMemoryContent , (showMemory)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+			{
+				showMemory = !showMemory ;
+			}
+			tempRect = GUILayoutUtility.GetLastRect();
+			GUI.Label( tempRect , gcTotalMemory.ToString("0.0") , lowerLeftFontStyle );
 		}
-		tempRect = GUILayoutUtility.GetLastRect();
-		GUI.Label( tempRect , gcTotalMemory.ToString("0.0") , lowerLeftFontStyle );
-		
-		if( GUILayout.Button( showFpsContent , (showFps)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+		if( showFpsButton )
 		{
-			showFps = !showFps ;
+			if( GUILayout.Button( showFpsContent , (showFps)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
+			{
+				showFps = !showFps ;
+			}
+			tempRect = GUILayoutUtility.GetLastRect();
+			GUI.Label( tempRect , fpsText , lowerLeftFontStyle );
 		}
-		tempRect = GUILayoutUtility.GetLastRect();
-		GUI.Label( tempRect , fpsText , lowerLeftFontStyle );
 		/*if( GUILayout.Button( graphContent , (showGraph)?buttonActiveStyle:barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
 		{
 			showGraph = !showGraph ;
 		}
 		tempRect = GUILayoutUtility.GetLastRect();
 		GUI.Label( tempRect , samples.Count.ToString() , lowerLeftFontStyle );*/
+
+		if( showSearchText )
+		{
+			GUILayout.Box( searchContent,barStyle, GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)); 
+			tempRect = GUILayoutUtility.GetLastRect();
+			string newFilterText = GUI.TextField( tempRect, filterText ,searchStyle);
+			if( newFilterText != filterText )
+			{
+				filterText = newFilterText;
+				calculateCurrentLog();
+			}
+		}
+
 		if( GUILayout.Button( infoContent , barStyle , GUILayout.Width(size.x*2) ,GUILayout.Height(size.y*2)))
 		{
 			currentView = ReportView.Info ;
 		}
+
+
 		
 		GUILayout.FlexibleSpace();
 		
@@ -938,7 +1160,7 @@ public class Reporter : MonoBehaviour {
 		
 		
 		int totalVisibleCount = (int)(Screen.height * 0.75f / size.y) ;
-		int totalCount = getTotalCount() ;
+		int totalCount = currentLog.Count ;
 		/*if( totalCount < 100 )
 			inGameLogsScrollerSkin.verticalScrollbarThumb.fixedHeight = 0;
 		else 
@@ -947,7 +1169,7 @@ public class Reporter : MonoBehaviour {
 		totalVisibleCount = Mathf.Min( totalVisibleCount , totalCount - startIndex );
 		int index = 0 ;
 		int beforeHeight = (int)(startIndex*size.y) ;
-		selectedIndex = Mathf.Clamp( selectedIndex , -1 , totalCount -1);
+		//selectedIndex = Mathf.Clamp( selectedIndex , -1 , totalCount -1);
 		if( beforeHeight > 0 )
 		{
 			//fill invisible gap befor scroller to make proper scroller pos
@@ -964,7 +1186,7 @@ public class Reporter : MonoBehaviour {
 			
 			if( i >= currentLog.Count )
 				break;
-			Log log = currentLog[i];
+			Log log = currentLog[i]; 
 			
 			if( log.logType == _LogType.Log && !showLog )
 				continue;
@@ -992,8 +1214,8 @@ public class Reporter : MonoBehaviour {
 			//content.text = log.condition ;
 
 			GUIStyle currentLogStyle = ((startIndex +index)%2 == 0 )? evenLogStyle : oddLogStyle ;
-			if( selectedIndex == (startIndex + index) ){
-				selectedLog = log ;
+			if( log == selectedLog ){
+				//selectedLog = log ;
 				currentLogStyle = selectedLogStyle ;
 			}
 			else {
@@ -1037,15 +1259,15 @@ public class Reporter : MonoBehaviour {
 				memoryLabelRect.width = w - size.x ;
 			}
 			sceneRect = memoryRect ;
-			if( showScene ){
-				tempContent.text = scenes[ sample.loadedScene];
-				w = currentLogStyle.CalcSize( tempContent ).x + size.x;
-				sceneRect.x -= w ;
-				sceneRect.width = size.x ;
-				sceneLabelRect = sceneRect ;
-				sceneLabelRect.x+= size.x ;
-				sceneLabelRect.width = w - size.x ;
-			}
+			//if( showScene ){
+			//	tempContent.text = scenes[ sample.loadedScene];
+			//	w = currentLogStyle.CalcSize( tempContent ).x + size.x;
+			//	sceneRect.x -= w ;
+			//	sceneRect.width = size.x ;
+			//	sceneLabelRect = sceneRect ;
+			//	sceneLabelRect.x+= size.x ;
+			//	sceneLabelRect.width = w - size.x ;
+			//}
 			timeRect = sceneRect ;
 			if( showTime ){
 				tempContent.text = sample.time.ToString("0.000");
@@ -1060,7 +1282,7 @@ public class Reporter : MonoBehaviour {
 
 
 			GUILayout.BeginHorizontal(  currentLogStyle  );
-			if( selectedIndex == (startIndex + index) ){
+			if( log == selectedLog ){
 				GUILayout.Box(content ,nonStyle, GUILayout.Width(size.x) ,GUILayout.Height(size.y));
 				GUILayout.Label( log.condition ,selectedLogFontStyle   );
 				//GUILayout.FlexibleSpace();
@@ -1070,7 +1292,7 @@ public class Reporter : MonoBehaviour {
 				}
 				if( showScene ){
 					GUI.Box( sceneRect,showSceneContent ,currentLogStyle);
-					GUI.Label( sceneLabelRect ,scenes[ sample.loadedScene] ,currentLogStyle   );
+					//GUI.Label( sceneLabelRect ,scenes[ sample.loadedScene] ,currentLogStyle   );
 				}
 				if( showMemory ){
 					GUI.Box(memoryRect, showMemoryContent ,currentLogStyle );
@@ -1085,9 +1307,15 @@ public class Reporter : MonoBehaviour {
 			}
 			else {
 				if(GUILayout.Button(content ,nonStyle, GUILayout.Width(size.x),GUILayout.Height(size.y) ))
-					selectedIndex = startIndex + index ;
+				{
+					//selectedIndex = startIndex + index ;
+					selectedLog = log;
+				}
 				if( GUILayout.Button( log.condition ,logButtonStyle ) )
-					selectedIndex = startIndex + index ;
+				{
+					//selectedIndex = startIndex + index ;
+					selectedLog = log;
+				}
 				//GUILayout.FlexibleSpace();
 				if( showTime ){
 					GUI.Box(timeRect, showTimeContent ,currentLogStyle) ;
@@ -1095,7 +1323,7 @@ public class Reporter : MonoBehaviour {
 				}
 				if( showScene ){
 					GUI.Box(sceneRect, showSceneContent ,currentLogStyle) ;
-					GUI.Label( sceneLabelRect, scenes[ sample.loadedScene] ,currentLogStyle  ) ;
+					//GUI.Label( sceneLabelRect, scenes[ sample.loadedScene] ,currentLogStyle  ) ;
 				}
 				if( showMemory ){
 					GUI.Box( memoryRect, showMemoryContent ,currentLogStyle) ;
@@ -1262,7 +1490,7 @@ public class Reporter : MonoBehaviour {
 	}
 	void drawStack(){
 
-		if( selectedIndex != -1 && selectedLog != null)
+		if( selectedLog != null)
 		{
 			Vector2 drag = getDrag(); 
 			if( drag.y != 0 && stackRect.Contains( new Vector2(downPos.x , Screen.height- downPos.y) ) )
@@ -1299,11 +1527,11 @@ public class Reporter : MonoBehaviour {
 			GUILayout.BeginHorizontal( ); 
 			
 			GUILayout.Box( showTimeContent,nonStyle, GUILayout.Width(size.x) ,GUILayout.Height(size.y));
-			GUILayout.Label( selectedSample.time.ToString("0.0"),nonStyle );
+			GUILayout.Label( selectedSample.time.ToString("0.000"),nonStyle );
 			GUILayout.Space( size.x );
 			
 			GUILayout.Box( showSceneContent,nonStyle, GUILayout.Width(size.x) ,GUILayout.Height(size.y));
-			GUILayout.Label( scenes[ selectedSample.loadedScene],nonStyle );
+			//GUILayout.Label( scenes[ selectedSample.loadedScene],nonStyle );
 			GUILayout.Space( size.x );
 			
 			GUILayout.Box( showMemoryContent,nonStyle, GUILayout.Width(size.x) ,GUILayout.Height(size.y));
@@ -1502,24 +1730,6 @@ public class Reporter : MonoBehaviour {
 		return false ;
 	}
 
-	int getTotalCount()
-	{
-		int count = 0 ;
-		if( collapse )
-		{
-			if( showLog ) 		count += numOfCollapsedLogs ;
-			if( showWarning ) 	count += numOfCollapsedLogsWarning ;
-			if( showError ) 	count += numOfCollapsedLogsError ;
-		}
-		else 
-		{
-			if( showLog ) 		count += numOfLogs ;
-			if( showWarning ) 	count += numOfLogsWarning ;
-			if( showError ) 	count += numOfLogsError ;
-		}
-		return count ;
-	}
-	
 	//calculate  pos of first click on screen
 	Vector2 startPos ;
 
@@ -1581,7 +1791,7 @@ public class Reporter : MonoBehaviour {
 	void calculateStartIndex()
 	{
 		startIndex = (int)(scrollPosition.y /size.y)  ;
-		startIndex = Mathf.Clamp( startIndex , 0 , getTotalCount() );
+		startIndex = Mathf.Clamp( startIndex , 0 , currentLog.Count );
 	}
 
 	float lastUpdate = 0;
@@ -1605,8 +1815,8 @@ public class Reporter : MonoBehaviour {
 		fpsText = fps.ToString("0.000");
 		gcTotalMemory = (((float)System.GC.GetTotalMemory(false))/1024/1024) ;
 		//addSample();
-		if( string.IsNullOrEmpty( scenes[ Application.loadedLevel ] ))
-			scenes[ Application.loadedLevel ] = Application.loadedLevelName ;
+		//if( string.IsNullOrEmpty( scenes[ Application.loadedLevel ] ))
+		//	scenes[ Application.loadedLevel ] = Application.loadedLevelName ;
 
 		float elapsed = Time.realtimeSinceStartup - lastUpdate ;
 		fps = 1f / elapsed ;
@@ -1618,17 +1828,38 @@ public class Reporter : MonoBehaviour {
 		}
 
 
+		if( threadedLogs.Count > 0 )
+		{
+			lock( threadedLogs )
+			{
+				for( int i = 0 ; i < threadedLogs.Count ; i++ )
+				{
+					Log l = threadedLogs[i];
+					AddLog( l.condition, l.stacktrace, (LogType)l.logType );
+				}
+				threadedLogs.Clear();
+			}
+		}
+
 		float elapsed2 = Time.realtimeSinceStartup - lastUpdate2 ;
 		if( elapsed2 > 1)
 		{
 			lastUpdate2 = Time.realtimeSinceStartup ;
 			//be sure no body else take control of log 
+#if USE_OLD_UNITY
 			Application.RegisterLogCallback (new Application.LogCallback (CaptureLog));
+			Application.RegisterLogCallbackThreaded (new Application.LogCallback (CaptureLogThread));
+#endif
 		}
 	}
 
 
 	void CaptureLog (string condition, string stacktrace, LogType type)
+	{
+		AddLog(condition, stacktrace, type );
+	}
+
+	void AddLog( string condition, string stacktrace, LogType type )
 	{
 		float memUsage = 0f ;
 		string _condition = "";
@@ -1656,34 +1887,34 @@ public class Reporter : MonoBehaviour {
 			memUsage += System.IntPtr.Size ;
 		}
 		bool newLogAdded = false ;
-
+		
 		addSample();
-		Log log = new Log(){ logType = (_LogType)type , condition = _condition  , stacktrace = _stacktrace , sampleId = samples.Count -1  };;
+		Log log = new Log(){ logType = (_LogType)type , condition = _condition  , stacktrace = _stacktrace , sampleId = samples.Count -1  };
 		memUsage += log.GetMemoryUsage() ;
 		//memUsage += samples.Count * 13 ;
-
+		
 		logsMemUsage += memUsage/1024/1024;
-
+		
 		if( TotalMemUsage > maxSize )
 		{
 			clear();
 			Debug.Log( "Memory Usage Reach" + maxSize +" mb So It is Cleared");
 			return;
 		}
-
+		
 		bool isNew = false ;
 		//string key = _condition;// + "_!_" + _stacktrace ;
-		if( logsDic.ContainsKey( _condition ) && logsDic[_condition ].stacktrace == stacktrace )
+		if( logsDic.ContainsKey( _condition ,stacktrace) )
 		{
 			isNew = false ;
-			logsDic[ _condition ].count ++;
+			logsDic[ _condition ][stacktrace].count ++;
 		}
 		else 
 		{
 			isNew = true ;
 			collapsedLogs.Add( log );
-			logsDic.Add( _condition , log );
-
+			logsDic[_condition][stacktrace] = log ;
+			
 			if( type == LogType.Log )
 				numOfCollapsedLogs++;
 			else if( type == LogType.Warning )
@@ -1691,15 +1922,15 @@ public class Reporter : MonoBehaviour {
 			else 
 				numOfCollapsedLogsError++;
 		}
-
+		
 		if( type == LogType.Log )
 			numOfLogs++;
 		else if( type == LogType.Warning )
 			numOfLogsWarning++;
 		else 
 			numOfLogsError++;
-
-
+		
+		
 		logs.Add( log );
 		if( !collapse || isNew )
 		{
@@ -1714,18 +1945,21 @@ public class Reporter : MonoBehaviour {
 				skip = true;
 			if( log.logType == _LogType.Exception && !showError )
 				skip = true;
-
+			
 			if( !skip)
 			{
-				currentLog.Add( log );
-				newLogAdded=true;
+				if( string.IsNullOrEmpty(filterText ) || log.condition.ToLower().Contains( filterText.ToLower() ))
+				{
+					currentLog.Add( log );
+					newLogAdded=true;
+				}
 			}
 		}
 		
 		if( newLogAdded )
 		{
 			calculateStartIndex();
-			int totalCount = getTotalCount();
+			int totalCount = currentLog.Count;
 			int totalVisibleCount = (int)(Screen.height * 0.75f / size.y) ;
 			if( startIndex >= ( totalCount - totalVisibleCount ))
 				scrollPosition.y += size.y ;
@@ -1738,6 +1972,16 @@ public class Reporter : MonoBehaviour {
 		catch( System.Exception e )
 		{
 			Debug.LogException( e );
+		}
+	}
+
+	List<Log> threadedLogs = new List<Log>();
+	void CaptureLogThread (string condition, string stacktrace, LogType type)
+	{
+		Log log = new Log(){ condition = condition , stacktrace = stacktrace , logType = (_LogType)type };
+		lock( threadedLogs )
+		{
+			threadedLogs.Add( log );
 		}
 	}
 	
@@ -1766,7 +2010,16 @@ public class Reporter : MonoBehaviour {
 		PlayerPrefs.SetInt( "Reporter_showLog" ,(showLog==true)?1:0) ;
 		PlayerPrefs.SetInt( "Reporter_showWarning" ,(showWarning==true)?1:0) ;
 		PlayerPrefs.SetInt( "Reporter_showError" ,(showError==true)?1:0) ;
-		
+		PlayerPrefs.SetString( "Reporter_filterText" , filterText );
+		PlayerPrefs.SetFloat( "Reporter_size" , size.x );
+
+		PlayerPrefs.SetInt( "Reporter_showClearOnNewSceneLoadedButton" ,(showClearOnNewSceneLoadedButton==true)?1:0);
+		PlayerPrefs.SetInt( "Reporter_showTimeButton" ,(showTimeButton==true)?1:0);
+		PlayerPrefs.SetInt( "Reporter_showSceneButton" ,(showSceneButton==true)?1:0);
+		PlayerPrefs.SetInt( "Reporter_showMemButton" ,(showMemButton==true)?1:0);
+		PlayerPrefs.SetInt( "Reporter_showFpsButton" ,(showFpsButton==true)?1:0);
+		PlayerPrefs.SetInt( "Reporter_showSearchText" ,(showSearchText==true)?1:0);
+
 		PlayerPrefs.Save();
 	}
 	

@@ -4,43 +4,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class AsyncTickTask : AbstractTickTask
+namespace Framework.Tick
 {
-    protected override bool FirstRunExecute()
+    public class AsyncTickTask : AbstractTickTask
     {
-        return false;
-    }
-
-    protected override int GetTickTime()
-    {
-        return TickTaskConstant.TICK_ASYNC;
-    }
-
-    protected override void Beat()
-    {
-        IInternalMessage message = SystemMessageQueue.Instance.Poll();
-        if (message != null)
+        protected override bool FirstRunExecute()
         {
-            switch (message.GetMessageId())
-            {
-                case AsyncTaskMessage.ASYNC_MESSAGE_ID:
-                    {
-                        AsyncTaskMessage asyncTaskMessage = message as AsyncTaskMessage;
-                        AsyncState state = asyncTaskMessage.State;
-                        IAsyncTask asyncTask = asyncTaskMessage.AsyncTask;
-                        if (state == AsyncState.DoAsync)
-                        {
-                            throw new ApplicationException(string.Format("asyncTask:{0} [DoAsyncTask] infinite loop.", asyncTask.GetType().FullName));
-                        }
-                        AsyncManager.Instance.ExecuteAsyncTask(state, asyncTask);
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
+            return false;
+        }
+
+        protected override int GetTickTime()
+        {
+            return TickTaskConstant.TICK_ASYNC;
+        }
+
+        protected override void Beat()
+        {
+            AsyncManager.Update();
         }
     }
+
 }
 

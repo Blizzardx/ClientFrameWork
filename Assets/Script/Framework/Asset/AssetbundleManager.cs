@@ -1,4 +1,5 @@
 ﻿using System;
+using Common.Tool;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;

@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using System.IO;
-using Assets.Scripts.Core.Utils;
+using Common.Tool;
 using Communication;
 using Thrift.Protocol;
-using Thrift.Transport;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -160,7 +158,7 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         }
         else
         {
-            Debuger.LogError("error ");
+            Debug.LogError("error ");
         }
         return false;
     }
@@ -463,7 +461,7 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         }
         int length = name.LastIndexOf('.') - startIndex;
         string res= name.Substring(startIndex, length);
-        Debuger.Log(res);
+        Debug.Log(res);
         return res;
     }
     private void Awake()

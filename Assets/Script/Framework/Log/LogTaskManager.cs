@@ -1,17 +1,20 @@
 ﻿using System;
+using Common.Component;
+using Common.Tool;
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using Assets.Scripts.Core.Utils;
+using System.IO;
 using Framework.Async;
 
-namespace LogManger
+namespace Framework.Log
 {
     public enum TaskType
     {
         ReadFile,
         WriteFile,
         DelFile,
+        RenameFile,
+        UploadFile,
     }
 
     public class FileOperationElem
@@ -68,6 +71,12 @@ namespace LogManger
                 case TaskType.DelFile:
                     OnExec_DelFile();
                     break;
+                case TaskType.RenameFile:
+                    OnExec_RenameFile();
+                    break;
+                case TaskType.UploadFile:
+                    OnExec_UploadFile();
+                    break;
             }
             return AsyncState.AfterAsync;
         }
@@ -84,6 +93,12 @@ namespace LogManger
                     break;
                 case TaskType.DelFile:
                     OnEnd_DelFile();
+                    break;
+                case TaskType.RenameFile:
+                    OnEnd_RenameFile();
+                    break;
+                case TaskType.UploadFile:
+                    OnEnd_UploadFile();
                     break;
             }
             return AsyncState.Done;
@@ -133,6 +148,55 @@ namespace LogManger
                 m_CurrentTask.m_ParamCallback(m_CurrentTask.m_Param);
             }
         }
+        //rename file
+        private void OnExec_RenameFile()
+        {
+            try
+            {
+                object[] paramlist = m_CurrentTask.m_Param as object[];
+                string sourceFileName = paramlist[0] as string;
+                string DestinationFileName = paramlist[1] as string;
+                FileInfo fileInfo = new FileInfo(sourceFileName);
+                fileInfo.MoveTo(DestinationFileName);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+        private void OnEnd_RenameFile()
+        {
+            if (m_CurrentTask.m_ParamCallback != null)
+            {
+                m_CurrentTask.m_ParamCallback(m_CurrentTask.m_Param);
+            }
+        }
+        // upload file
+        private void OnExec_UploadFile()
+        {
+            try
+            {
+                object[] paramlist = m_CurrentTask.m_Param as object[];
+                string url = paramlist[0] as string;
+                string filePath = paramlist[1] as string;
+                string fileName = paramlist[2] as string;
+
+                byte[] data = FileUtils.ReadByteFile(filePath);
+                // upload file
+                //HttpManager.Instance.UploadFile(url, fileName, data, null);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+        private void OnEnd_UploadFile()
+        {
+            if (m_CurrentTask.m_ParamCallback != null)
+            {
+                m_CurrentTask.m_ParamCallback(m_CurrentTask.m_Param);
+            }
+        }
         #endregion
     }
 
@@ -165,18 +229,19 @@ namespace LogManger
         public void StartTask(LogTaskItem item)
         {
             CheckInit();
-            m_TaskQueue.Offer(item);
+            m_TaskQueue.Enqueue(item);
         }
         public void QuickFinishedAllTask()
         {
-            if (m_Handler.IsRunning())
-            {
-                // save to another file and merger at next start time 
-                return;
-            }
+            //if (m_Handler.IsRunning())
+            //{
+            //    // save to another file and merger at next start time 
+            //    //return;
+            //}
+            m_Handler = new LogAsyncTaskHandler();
             while (true)
             {
-                var elem = m_TaskQueue.Poll();
+                var elem = m_TaskQueue.Dequeue();
                 if (null == elem)
                 {
                     break;
@@ -193,7 +258,7 @@ namespace LogManger
             {
                 return;
             }
-            var elem = m_TaskQueue.Poll();
+            var elem = m_TaskQueue.Dequeue();
             if (null == elem)
             {
                 return;

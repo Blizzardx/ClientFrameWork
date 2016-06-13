@@ -1,24 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
-public class TemplateQueue<T> where T : class, new()
+namespace Common.Component
 {
-    private int maxSize = int.MaxValue;
-    private Queue<T> m_Queue;
-    private bool m_bIsLock;
 
-    public void Initialize(bool isLock = true)
+    public class TemplateQueue<T> where T : class
     {
-        m_bIsLock = isLock;
-        m_Queue = new Queue<T>(1024);
-    }
-    public bool Offer(T message)
-    {
-        if (m_bIsLock)
+        private int maxSize = int.MaxValue;
+        private Queue<T> m_Queue;
+        private bool m_bIsLock;
+
+        public void Initialize(bool isLock = true)
         {
-            lock (m_Queue)
+            m_bIsLock = isLock;
+            m_Queue = new Queue<T>(1024);
+        }
+
+        public bool Enqueue(T message)
+        {
+            if (m_bIsLock)
+            {
+                lock (m_Queue)
+                {
+                    if (m_Queue.Count >= maxSize)
+                    {
+                        return false;
+                    }
+                    m_Queue.Enqueue(message);
+                    return true;
+                }
+            }
+            else
             {
                 if (m_Queue.Count >= maxSize)
                 {
@@ -28,22 +39,21 @@ public class TemplateQueue<T> where T : class, new()
                 return true;
             }
         }
-        else
-        {
-            if (m_Queue.Count >= maxSize)
-            {
-                return false;
-            }
-            m_Queue.Enqueue(message);
-            return true;
-        }
-    }
 
-    public T Poll()
-    {
-        if (m_bIsLock)
+        public T Dequeue()
         {
-            lock (m_Queue)
+            if (m_bIsLock)
+            {
+                lock (m_Queue)
+                {
+                    if (m_Queue.Count == 0)
+                    {
+                        return null;
+                    }
+                    return m_Queue.Dequeue();
+                }
+            }
+            else
             {
                 if (m_Queue.Count == 0)
                 {
@@ -52,13 +62,7 @@ public class TemplateQueue<T> where T : class, new()
                 return m_Queue.Dequeue();
             }
         }
-        else
-        {
-            if (m_Queue.Count == 0)
-            {
-                return null;
-            }
-            return m_Queue.Dequeue();
-        }
     }
+
+
 }
