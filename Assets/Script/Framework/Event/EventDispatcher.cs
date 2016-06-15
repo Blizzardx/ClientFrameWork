@@ -14,12 +14,13 @@ namespace Framework.Event
     public class EventDispatcher:Singleton<EventDispatcher>
     {
         private RegisterDictionaryTemplate<EventElement>    m_MsgCallList;
-        private Queue<EventElement>                         m_EventQueue;
+        private TemplateQueue<EventElement>                 m_EventQueue;
          
         public EventDispatcher()
         {
             m_MsgCallList = new RegisterDictionaryTemplate<EventElement>();
-            m_EventQueue = new Queue<EventElement>();
+            m_EventQueue = new TemplateQueue<EventElement>();
+            m_EventQueue.Initialize();
         }
         public void Broadcast(int id, object param)
         {
