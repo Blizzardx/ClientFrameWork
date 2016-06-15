@@ -1,15 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class HandlerCommon : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+public class HandlerCommon : HandlerBase
+{
+    public override void OnCreate()
+    {
+        Debug.Log("Init HandlerCommon");
+    }
 }

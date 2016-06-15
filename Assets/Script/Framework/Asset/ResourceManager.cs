@@ -36,13 +36,18 @@ public class LoadResourceElement
     public ResourceRequest  request;
     public bool             isFinishedDownload;
 }
-public class ResourceManager : SingletonTemplateMon<ResourceManager>
+public class ResourceManager : MonoSingleton<ResourceManager>
 {
     private Dictionary<string, UnityEngine.Object>                      m_AssetStore;
     private Dictionary<string, List<Action<UnityEngine.Object>>>        m_AssetLoadCallBackStore;
     private List<string>                                                m_LoadingStore;
     
     #region public interface
+
+    public ResourceManager()
+    {
+        Initialize();
+    }
     public void Initialize()
     {
         m_AssetStore                = new Dictionary<string, UnityEngine.Object>();
@@ -463,15 +468,6 @@ public class ResourceManager : SingletonTemplateMon<ResourceManager>
         string res= name.Substring(startIndex, length);
         Debug.Log(res);
         return res;
-    }
-    private void Awake()
-    {
-        if (_instance != null)
-        {
-            Destroy(this);
-            return;
-        }
-        _instance = this;
     }
     #endregion
 }

@@ -13,14 +13,11 @@ namespace Framework.Event
 {
     public class EventDispatcher:Singleton<EventDispatcher>
     {
-        private RegisterDictionaryTemplate<EventElement>    m_MsgCallList;
-        private TemplateQueue<EventElement>                 m_EventQueue;
-         
+        private EventDispatchTool m_Handler;
+
         public EventDispatcher()
         {
-            m_MsgCallList = new RegisterDictionaryTemplate<EventElement>();
-            m_EventQueue = new TemplateQueue<EventElement>();
-            m_EventQueue.Initialize();
+            m_Handler = new EventDispatchTool();
         }
         public void Broadcast(int id, object param)
         {
@@ -28,22 +25,7 @@ namespace Framework.Event
         }
         public void Broadcast(EventElement eventBody)
         {
-            m_MsgCallList.BeginUpdate();
-            int errorId = 0;
-            try
-            {
-                if (null != eventBody)
-                {
-                    errorId = eventBody.eventId;
-                    m_MsgCallList.Update(eventBody.eventId, eventBody);
-                }
-            }
-            catch (Exception e)
-            {
-                //log error
-                Debug.LogError("Wrong msg callback" + errorId + "error log: " + e.Message);
-            }
-            m_MsgCallList.EndUpdate();
+            m_Handler.Broadcast(eventBody);
         }
         public void BroadcastAsync(int id, object param)
         {
@@ -51,48 +33,23 @@ namespace Framework.Event
         }
         public void BroadcastAsync(EventElement eventBody)
         {
-            if (!m_MsgCallList.IsContainsKey(eventBody.eventId))
-            {
-                return;
-            }
-            m_EventQueue.Enqueue(eventBody);
+            m_Handler.BroadcastAsync(eventBody);
         }
-        public void RegistEvent(int msgId, Action<EventElement> eventCallback)
+        public void RegistEvent(int id, Action<EventElement> eventCallback)
         {
-            m_MsgCallList.RegistEvent(msgId, eventCallback);
+            m_Handler.RegistEvent(id, eventCallback);
         }
-        public void UnregistEvent(int msgId, Action<EventElement> eventCallback)
+        public void UnregistEvent(int id, Action<EventElement> eventCallback)
         {
-            m_MsgCallList.UnregistEvent(msgId, eventCallback);
+            m_Handler.UnregistEvent(id, eventCallback);
         }
-        public void UnregistEventAll(int msgId)
+        public void UnregistEventAll(int id)
         {
-            m_MsgCallList.UnregistAllEvent(msgId);
+            m_Handler.UnregistEventAll(id);
         }
         public void Update()
         {
-            m_MsgCallList.BeginUpdate();
-            int errorId = 0;
-            try
-            {
-                //process msglist message
-                for (int i = 0; i < 16; ++i)
-                {
-                    var elem = m_EventQueue.Dequeue();
-                    if (null == elem)
-                    {
-                        break;
-                    }
-                    errorId = elem.eventId;
-                    m_MsgCallList.Update(elem.eventId, elem);
-                }
-            }
-            catch (Exception e)
-            {
-                //log error
-                Debug.LogError("Wrong msg callback" + errorId + "error log: " + e.Message);
-            }
-            m_MsgCallList.EndUpdate();
+            m_Handler.Update();
         }
     }
 }

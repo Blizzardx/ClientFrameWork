@@ -1,15 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ModelPlayer : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+public class ModelPlayer : ModelBase
+{
+    public override void OnCreate()
+    {
+        Debug.Log("init player model");
+    }
 }

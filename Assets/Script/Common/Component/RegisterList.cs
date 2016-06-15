@@ -358,6 +358,10 @@ namespace Common.Component
                 m_UnRegisterList.Clear();
             }
         }
+        public int GetCallbackListCount()
+        {
+            return m_CallbackStore.Count;
+        }
     }
 
 }
