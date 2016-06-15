@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using Framework.Async;
+using Framework.Network;
 
 namespace Framework.Log
 {
@@ -183,7 +184,7 @@ namespace Framework.Log
 
                 byte[] data = FileUtils.ReadByteFile(filePath);
                 // upload file
-                //HttpManager.Instance.UploadFile(url, fileName, data, null);
+                HttpManager.Instance.UploadFile(url, fileName, data, null);
             }
             catch (Exception e)
             {

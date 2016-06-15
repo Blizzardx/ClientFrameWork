@@ -103,7 +103,7 @@ namespace Framework.Log
         {
             m_TaskManager.Tick();
         }
-        public void UploadLog()
+        public void UploadLog(string url)
         {
             List<string> fileList = new List<string>();
             int count = m_LogCasheList.Count;
@@ -118,19 +118,20 @@ namespace Framework.Log
             fileList.Add(m_strCurrentLogSavePath);
 
             // send to task list to upload
-            string url = "";
+            //string url = "http://localhost:8080/config/upload.do";
             for (int i = 0; i < fileList.Count; ++i)
             {
                 string realName = fileList[i];
                 if (!realName.StartsWith(m_strLogSnapshotHeader))
                 {
-                    realName = GenLogFileName("CurrentLog");
+                    realName = GenLogFileName(false);
                 }
                 else
                 {
                     string preFix = m_strLogCashePath + "/";
                     realName = realName.Substring(realName.LastIndexOfAny(preFix.ToCharArray()));
                 }
+                realName = realName.Replace(".txt", ".bytes");
                 m_TaskManager.StartTask(TaskType.UploadFile, new object[] { url, fileList[i] , realName }, null);
             }
         }
@@ -201,10 +202,12 @@ namespace Framework.Log
         {
             return FileUtils.GetFileLength(m_strCurrentLogSavePath) > m_MaxLogFileSize;
         }
-        private string GenLogFileName(string prefix = "")
+        private string GenLogFileName(bool withTime = true)
         {
             string deviceId = SystemInfo.deviceUniqueIdentifier;
-            string res = m_strLogSnapshotHeader + "_" + TimeControl.Instance.GetCurrentTime() + deviceId + prefix + ".txt";
+            string deviceName = SystemInfo.deviceName;
+            string time = withTime ? TimeControl.Instance.GetCurrentTime() : "";
+            string res = m_strLogSnapshotHeader + "_" + time + deviceName + "_" + deviceId + ".txt";
             res = res.Replace(' ', '_');
             res = res.Replace(':', '_');
             return res;
