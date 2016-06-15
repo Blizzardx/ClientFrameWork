@@ -27,6 +27,7 @@ namespace Framework.Task.Handler
         public override void OnExec()
         {
             byte[] data = ThriftSerialize.Serialize(m_Param.tbase);
+            FileUtils.DeleteFile(m_Param.filePath);
             FileUtils.WriteByteFile(m_Param.filePath, data);
         }
         public override void OnEnd()

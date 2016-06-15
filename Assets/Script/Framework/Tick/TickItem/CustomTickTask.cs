@@ -6,17 +6,17 @@ using Common.Component;
 namespace Framework.Tick
 {
 
-    public class DownloadTickTask : AbstractTickTask
+    public class CustomTickTask : AbstractTickTask
     {
         private RegisterList m_RegisterList;
 
-        public DownloadTickTask()
+        public CustomTickTask()
         {
             m_RegisterList = new RegisterList();
             m_Instance = this;
         }
-        private static DownloadTickTask m_Instance;
-        public static DownloadTickTask Instance
+        private static CustomTickTask m_Instance;
+        public static CustomTickTask Instance
         {
             get
             {

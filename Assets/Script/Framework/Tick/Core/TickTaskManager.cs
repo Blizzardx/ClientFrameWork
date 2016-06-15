@@ -19,15 +19,13 @@ namespace Framework.Tick
         {
             m_TickTaskStore = new List<AbstractTickTask>();
 
-            Debug.LogFormat("tick    {0}", this.GetHashCode());
-
             m_TickTaskStore.Add(new TimeTickTask());
             m_TickTaskStore.Add(new TaskHandlerTickTask());
             m_TickTaskStore.Add(new MessageTickTask());
+            m_TickTaskStore.Add(new EventTickTask());
             m_TickTaskStore.Add(new AsyncTickTask());
-            m_TickTaskStore.Add(new PingTickTask());
-            m_TickTaskStore.Add(new DownloadTickTask());
             m_TickTaskStore.Add(new NetworkTickTask());
+            m_TickTaskStore.Add(new CustomTickTask());
             m_TickTaskStore.Add(new LogTickTask());
         }
 

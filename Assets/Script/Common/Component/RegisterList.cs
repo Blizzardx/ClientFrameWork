@@ -211,7 +211,7 @@ namespace Common.Component
         public void EndUpdate()
         {
             m_bIsProcessingList = false;
-            DoUnregister();
+            DoClear();
         }
         public void RegistEvent(int msgId, Action<T> msgCallback)
         {
@@ -310,7 +310,7 @@ namespace Common.Component
         {
             return m_CallbackStore.ContainsKey(id);
         }
-        private void DoUnregister()
+        private void DoClear()
         {
             // handler add first
             if (m_RegisterList.Count != 0)
