@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 public class UIBase
 {
-    protected GameObject m_ObjRoot;
+    protected GameObject m_ObjectRoot;
     private bool m_bIsLoading;
     private object m_OpenParam;
     private string m_strResurceName;
@@ -30,19 +30,23 @@ public class UIBase
         }
         else
         {
-            m_ObjRoot.SetActive(true);
+            m_ObjectRoot.SetActive(true);
             OnOpen(param);
         }
     }
     public void DoClose()
     {
         OnClose();
-        GameObject.Destroy(m_ObjRoot);
+        GameObject.Destroy(m_ObjectRoot);
     }
     public void DoHide()
     {
         OnHide();
-        m_ObjRoot.SetActive(true);
+        m_ObjectRoot.SetActive(true);
+    }
+    public bool IsOpen()
+    {
+        return m_ObjectRoot.activeSelf;
     }
     #endregion
 
@@ -51,7 +55,7 @@ public class UIBase
     private void BeginLoadResource()
     {
         m_bIsLoading = true;
-        if (null != m_ObjRoot)
+        if (null != m_ObjectRoot)
         {
             OnLoadDone();
         }
@@ -60,7 +64,7 @@ public class UIBase
             // begin load ui window resource from bundle or build in resource
             ResourceManager.Instance.LoadBuildInAssetsAsync(m_strResurceName,AssetType.UI,  (obj) =>
             {
-                m_ObjRoot = GameObject.Instantiate(obj) as GameObject;
+                m_ObjectRoot = GameObject.Instantiate(obj) as GameObject;
             });
         }
     }
@@ -70,7 +74,7 @@ public class UIBase
     }
     protected void SetResource(GameObject root)
     {
-        m_ObjRoot = root;
+        m_ObjectRoot = root;
     }
     protected void Hide()
     {

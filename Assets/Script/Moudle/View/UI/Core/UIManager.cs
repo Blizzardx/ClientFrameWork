@@ -21,6 +21,11 @@ public class UIManager : Singleton<UIManager>
             ui = Activator.CreateInstance(t) as UIBase;
             ui.DoCreate();
         }
+        if (ui.IsOpen())
+        {
+            // do nothing
+            return;
+        }
         ui.DoOpen(param);
     }
     public void OpenWindow<T>(object param) where T : UIBase
