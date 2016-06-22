@@ -41,6 +41,7 @@ namespace Framework.Message
             }
             catch (Exception e)
             {
+                Debug.LogException(e);
                 //log error
                 Debug.LogError("Wrong msg callback" + errorId + "error log: " + e.Message);
             }
