@@ -38,7 +38,7 @@ public class SceneBase
     #region system function
     protected void SetSceneName(string scene)
     {
-
+        m_strSceneName = scene;
     }
     protected void AddPreloadResource(string res)
     {

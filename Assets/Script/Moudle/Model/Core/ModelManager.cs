@@ -16,7 +16,6 @@ public class ModelManager :Singleton<ModelManager>
         {
             var elem = list[i];
             ModelBase modelInstance = Activator.CreateInstance(elem) as ModelBase;
-            modelInstance.OnCreate();
             m_ModelStore.Add(elem, modelInstance);
         }
     }
