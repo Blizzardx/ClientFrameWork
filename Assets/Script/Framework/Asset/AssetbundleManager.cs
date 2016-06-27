@@ -20,8 +20,8 @@ public class AssetbundleManager : MonoSingleton<AssetbundleManager>
     private Dictionary<string, Action<Object>>      m_AssetCallBackMap;
     private AssetBundle                             m_AssetbundeIndex;
     private AssetBundleManifest                     m_Manifest;
-    private readonly string                         m_strDataPath           = Application.dataPath + "/BuildAb/";
-    private readonly string                         m_strManifestDataPath   = Application.dataPath + "/BuildAb/BuildAb";
+    private readonly string                         m_strDataPath           = Application.streamingAssetsPath + "/resource/";
+    private readonly string                         m_strManifestDataPath   = Application.streamingAssetsPath + "/resource/Windows";
     //private LRU_K<string>                           m_LruMgr;
     //private Queue<string>                           m_RemovingBundleList;
 
@@ -199,6 +199,7 @@ public class AssetbundleManager : MonoSingleton<AssetbundleManager>
         }
         else
         {
+            loader.assetBundle.name = name;
             if (m_LoadedBundleMap.ContainsKey(name))
             {
                 m_LoadedBundleMap[name] = loader.assetBundle;

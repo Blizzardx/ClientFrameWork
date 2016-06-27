@@ -41,8 +41,8 @@ namespace Framework.Asset
         private Dictionary<string, AssetInfo>               m_LoadingAssetMap;
         private Dictionary<string, Object>                  m_LoadedAssetMap; 
         private AssetBundleManifest                         m_Manifest;
-        private readonly string                             m_strDataPath           = Application.dataPath + "/BuildAb/";
-        private readonly string                             m_strManifestDataPath   = Application.dataPath + "/BuildAb/BuildAb";
+        private readonly string                             m_strDataPath           = Application.streamingAssetsPath + "/resource/";
+        private readonly string                             m_strManifestDataPath   = Application.streamingAssetsPath + "/resource/Windows";
         private List<LoadAssetParam>                        m_LoadAssetList;
         private List<LoadBundleParam>                       m_LoadBundleList;
         private bool                                        m_bIsLoadingManifest;
@@ -65,6 +65,7 @@ namespace Framework.Asset
             {
                 return;
             }
+            Debug.Log("begin load asset " + bundleName + " : " + assetName);
 
             string fullName = bundleName + assetName;
             Object res = null;
@@ -103,6 +104,7 @@ namespace Framework.Asset
             {
                 return;
             }
+            Debug.Log("begin load bundle " + bundleName);
             AssetbundleInfo bundleInfo = null;
             if (m_LoadingAssetbundleMap.TryGetValue(bundleName,out bundleInfo))
             {
@@ -154,11 +156,18 @@ namespace Framework.Asset
         {
             
         }
+        public Object GetAsset(string bundleName, string assetName)
+        {
+            Object obj = null;
+            m_LoadedAssetMap.TryGetValue(bundleName + assetName, out obj);
+            return obj;
+        }
         #endregion
 
         #region system function
         private void OnAssetbundleLoaded(string bundlename,AssetBundle bundle)
         {
+            Debug.Log("On loaded bundle " + bundlename);
             List<AssetInfo> list = new List<AssetInfo>();
 
             foreach (var elem in m_LoadingAssetMap)
@@ -170,6 +179,15 @@ namespace Framework.Asset
             }
             foreach (var asset in list)
             {
+                if (string.IsNullOrEmpty(asset.assetName))
+                {
+                    m_LoadingAssetMap.Remove(asset.bundleName + asset.assetName);
+                    for (int i = 0; i < asset.callBack.Count; ++i)
+                    {
+                        asset.callBack[i](null);
+                    }
+                    continue;
+                }
                 if (asset.isAsync)
                 {
                     StartCoroutine(LoadAssetFromBundle_Async(bundle, asset));
@@ -193,7 +211,7 @@ namespace Framework.Asset
             elem.callBack = callBack;
             elem.isAsync = isAsync;
             m_LoadAssetList.Add(elem);
-            return false;
+            return true;
         }
         private bool CheckBusyLoadBundle(string bundleName, Action<string, AssetBundle> callBack)
         {
@@ -206,7 +224,7 @@ namespace Framework.Asset
             elem.bundleName = bundleName;
             elem.callBack = callBack;
             m_LoadBundleList.Add(elem);
-            return false;
+            return true;
         }
         private void OnManifestLoaded()
         {
@@ -244,15 +262,19 @@ namespace Framework.Asset
         }
         private IEnumerator LoadbundlesFromFile(string bundle)
         {
-            string url = "file://" + m_strDataPath + name;
+            string url = "file:///" + m_strDataPath + bundle;
+            Debug.Log(url);
             WWW loader = new WWW(url);
             yield return loader;
             if (loader.assetBundle == null)
             {
-                Debug.LogError("can't load bundle from file " + name);
+                Debug.LogError("can't load bundle from file " + bundle);
                 loader.Dispose();
                 yield break;
             }
+
+            loader.assetBundle.name = bundle;
+            Debug.Log("loaded " + bundle);
 
             // remove from loading list
             m_LoadingAllAssetbundleMap.Remove(bundle);
@@ -279,7 +301,7 @@ namespace Framework.Asset
                 m_LoadingAssetbundleMap.Remove(readyBundle.mainBundleName);
                 foreach (var callback in readyBundle.callBack)
                 {
-                    callback(readyBundle.mainBundleName,loader.assetBundle);
+                    callback(readyBundle.mainBundleName,m_LoadedBundleMap[readyBundle.mainBundleName]);
                 }
             }
         }
@@ -292,11 +314,13 @@ namespace Framework.Asset
             if (null == request.asset)
             {
                 Debug.LogError("Error on load asset " + info.assetName + " in bundle " + info.bundleName);
-                yield break;
+                //yield break;
             }
-
-            // add to cashe
-            AddToLoadedAssetMap(info.bundleName, info.assetName, request.asset);
+            else
+            {
+                // add to cashe
+                AddToLoadedAssetMap(info.bundleName, info.assetName, request.asset);
+            }
 
             for (int i = 0; i < info.callBack.Count; ++i)
             {
@@ -307,10 +331,18 @@ namespace Framework.Asset
         {
             var obj = bundle.LoadAsset(info.assetName);
 
-            // add to cashe
-            AddToLoadedAssetMap(info.bundleName, info.assetName, obj);
-
             m_LoadingAssetMap.Remove(info.bundleName + info.assetName);
+
+            if (null == obj)
+            {
+                Debug.LogError("Error on load asset " + info.assetName + " in bundle " + info.bundleName);
+            }
+            else
+            {
+                // add to cashe
+                AddToLoadedAssetMap(info.bundleName, info.assetName, obj);
+            }
+
             foreach (var callback in info.callBack)
             {
                 callback(obj);
@@ -318,7 +350,8 @@ namespace Framework.Asset
         }
         private IEnumerator LoadManifest()
         {
-            string manifestPath = "file://" + m_strManifestDataPath;
+            string manifestPath = "file:///" + m_strManifestDataPath;
+            Debug.Log(manifestPath);
             WWW manifestLoader = new WWW(manifestPath);
             yield return manifestLoader;
 
