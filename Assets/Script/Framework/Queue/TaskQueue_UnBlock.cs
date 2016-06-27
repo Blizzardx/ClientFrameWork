@@ -23,5 +23,10 @@ namespace Framework.Queue
         {
             return m_Queue.Dequeue();
         }
+
+        public int GetCount()
+        {
+            return m_Queue.GetCount();
+        }
     }
 }

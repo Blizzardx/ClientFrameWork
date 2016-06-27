@@ -10,13 +10,15 @@ namespace Framework.Task
         private object  m_TaskCustomParam;
         private Exception m_ErrorInfo;
         private Action<int, object, object, Exception> m_OnCompletedCallBack;
+        private int m_iGroupId;
 
-        public TaskElement(int taskType, Action<int, object, object, Exception> callBack,object param, object customParam = null)
+        public TaskElement(int taskType, Action<int, object, object, Exception> callBack,object param, object customParam = null,int groupId = 0)
         {
             m_iTaskType = taskType;
             m_OnCompletedCallBack = callBack;
             m_TaskParam = param;
             m_TaskCustomParam = customParam;
+            m_iGroupId = groupId;
         }
         public int GetTaskType()
         {
@@ -33,6 +35,10 @@ namespace Framework.Task
         public Action<int, object, object, Exception> GetCompletedCallBack()
         {
             return m_OnCompletedCallBack;
+        }
+        public int GetGroupId()
+        {
+            return m_iGroupId;
         }
     }
 }

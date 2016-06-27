@@ -212,6 +212,7 @@ namespace Framework.Network.GamePack
             }
             catch (Exception e)
             {
+                m_RecievedMsg = null;
                 Debug.LogError("error on decode message " + m_iMessageId);
                 Debug.LogException(e);
             }

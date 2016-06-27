@@ -41,11 +41,13 @@ namespace Framework.Asset
         private Dictionary<string, AssetInfo>               m_LoadingAssetMap;
         private Dictionary<string, Object>                  m_LoadedAssetMap; 
         private AssetBundleManifest                         m_Manifest;
-        private readonly string                             m_strDataPath           = Application.streamingAssetsPath + "/resource/";
-        private readonly string                             m_strManifestDataPath   = Application.streamingAssetsPath + "/resource/Windows";
+        private readonly string                             m_strDataPath           = Application.persistentDataPath + "/Download/resource/";
+        private readonly string                             m_strManifestDataPath   = Application.persistentDataPath + "/Download/resource/Windows";
         private List<LoadAssetParam>                        m_LoadAssetList;
         private List<LoadBundleParam>                       m_LoadBundleList;
         private bool                                        m_bIsLoadingManifest;
+        private bool                                        m_bIsLoadingAsset;
+        private bool m_bIsMarkToClear;
 
         #region public interface
         public AssetbundleManager()
@@ -58,6 +60,8 @@ namespace Framework.Asset
             m_LoadBundleList = new List<LoadBundleParam>();
             m_LoadedAssetMap = new Dictionary<string, Object>();
             m_bIsLoadingManifest = false;
+            m_bIsLoadingAsset = false;
+            m_bIsMarkToClear = false;
         }
         public void LoadAsset(string bundleName, string assetName, Action<Object> callBack,bool isAsyc)
         {
@@ -154,7 +158,15 @@ namespace Framework.Asset
         }
         public void Clear()
         {
-            
+            if (!m_bIsLoadingAsset)
+            {
+                DoClear();
+            }
+            else
+            {
+                //
+                m_bIsMarkToClear = true;
+            }
         }
         public Object GetAsset(string bundleName, string assetName)
         {
@@ -262,6 +274,9 @@ namespace Framework.Asset
         }
         private IEnumerator LoadbundlesFromFile(string bundle)
         {
+            // mark loading status
+            SetLoadingStatus(true);
+
             string url = "file:///" + m_strDataPath + bundle;
             Debug.Log(url);
             WWW loader = new WWW(url);
@@ -270,6 +285,8 @@ namespace Framework.Asset
             {
                 Debug.LogError("can't load bundle from file " + bundle);
                 loader.Dispose();
+                // remark loading status
+                SetLoadingStatus(false);
                 yield break;
             }
 
@@ -304,9 +321,15 @@ namespace Framework.Asset
                     callback(readyBundle.mainBundleName,m_LoadedBundleMap[readyBundle.mainBundleName]);
                 }
             }
+
+            // remark loading status
+            SetLoadingStatus(false);
         }
         private IEnumerator LoadAssetFromBundle_Async(AssetBundle bundle, AssetInfo info)
         {
+            // mark loading status
+            SetLoadingStatus(true);
+
             var request = bundle.LoadAssetAsync(info.assetName);
             yield return request;
             m_LoadingAssetMap.Remove(info.bundleName + info.assetName);
@@ -326,6 +349,9 @@ namespace Framework.Asset
             {
                 info.callBack[i](request.asset);
             }
+            
+            // remark loading status
+            SetLoadingStatus(false);
         }
         private void LoadAssetFromBundle_Sync(AssetBundle bundle, AssetInfo info)
         {
@@ -350,10 +376,16 @@ namespace Framework.Asset
         }
         private IEnumerator LoadManifest()
         {
+            // mark loading status
+            SetLoadingStatus(true);
+
             string manifestPath = "file:///" + m_strManifestDataPath;
             Debug.Log(manifestPath);
             WWW manifestLoader = new WWW(manifestPath);
             yield return manifestLoader;
+
+            // remark loading status
+            SetLoadingStatus(false);
 
             if (manifestLoader.assetBundle == null)
             {
@@ -370,6 +402,30 @@ namespace Framework.Asset
             }
 
             OnManifestLoaded();
+        }
+        private void SetLoadingStatus(bool status)
+        {
+            m_bIsLoadingAsset = status;
+
+            if (!m_bIsLoadingAsset && m_bIsMarkToClear)
+            {
+                m_bIsMarkToClear = false;
+                DoClear();
+            }
+        }
+        private void DoClear()
+        {
+            foreach (var elem in m_LoadedBundleMap)
+            {
+                elem.Value.Unload(true);
+            }
+            m_LoadedBundleMap.Clear();
+            m_LoadingAllAssetbundleMap.Clear();
+            m_LoadingAssetbundleMap.Clear();
+            m_LoadingAssetMap.Clear();
+            m_LoadedAssetMap.Clear();
+            m_bIsLoadingAsset = false;
+            m_bIsMarkToClear = false;
         }
         #endregion
     }

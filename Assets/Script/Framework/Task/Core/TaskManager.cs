@@ -7,13 +7,21 @@ using UnityEngine;
 
 namespace Framework.Task
 {
+    public enum QueueType
+    {
+        AllQueue,
+        BlockQueue,
+        UnblockQueue,
+    }
+
     public class TaskManager : Singleton<TaskManager>
     {
         private Dictionary<int, Type>               m_HandlerMap;
         private TaskHandlerBase                     m_TaskHandlerInBlockQueue;
         private LinkedList<TaskHandlerBase>         m_TaskHandlerInUnblockQueue;
         private int m_ProcesserMaxCount = 4;
-        
+
+        #region public interface
         public TaskManager()
         {
             m_HandlerMap            = new Dictionary<int, Type>();
@@ -71,6 +79,65 @@ namespace Framework.Task
                     break;
                 }
                 QuickExecTask(task);
+            }
+        }
+        public void CancleTaskByGroupId(int groupId, QueueType type = QueueType.AllQueue)
+        {
+            if (type == QueueType.AllQueue || type == QueueType.BlockQueue)
+            {
+                CancleTaskInBlockTaskQueueByGroupId(groupId);
+            }
+            if (type == QueueType.AllQueue || type == QueueType.UnblockQueue)
+            {
+                CancleTaskInUnblockTaskQueueByGroupId(groupId);
+            }
+        }
+        #endregion
+
+        #region system function
+        private void CancleTaskInBlockTaskQueueByGroupId(int groupId)
+        {
+            if (m_TaskHandlerInBlockQueue != null && m_TaskHandlerInBlockQueue.GetTaskGroupId() == groupId)
+            {
+                m_TaskHandlerInBlockQueue.Cancle();
+                // clear handler 
+                m_TaskHandlerInBlockQueue = null;
+            }
+            int size = TaskQueue_Block.Instance.GetCount();
+            for (int i = 0; i < size; ++i)
+            {
+                var elem = TaskQueue_Block.Instance.Dequeue();
+                if (elem.GetGroupId() != groupId)
+                {
+                    TaskQueue_Block.Instance.Enqueue(elem);
+                }
+            }
+        }
+        private void CancleTaskInUnblockTaskQueueByGroupId(int groupId)
+        {
+            List<TaskHandlerBase> removingList = new List<TaskHandlerBase>();
+            foreach (var handler in m_TaskHandlerInUnblockQueue)
+            {
+                if (handler != null && handler.GetTaskGroupId() == groupId)
+                {
+                    handler.Cancle();
+                    removingList.Add(handler);
+                }
+            }
+            foreach (var handler in removingList)
+            {
+                // clear from handler list
+                m_TaskHandlerInUnblockQueue.Remove(handler);
+            }
+
+            int size = TaskQueue_UnBlock.Instance.GetCount();
+            for (int i = 0; i < size; ++i)
+            {
+                var elem = TaskQueue_UnBlock.Instance.Dequeue();
+                if (elem.GetGroupId() != groupId)
+                {
+                    TaskQueue_UnBlock.Instance.Enqueue(elem);
+                }
             }
         }
         private void ExecBlockTask(ITask element)
@@ -163,6 +230,6 @@ namespace Framework.Task
             Debug.LogError("can't decode taskhandler by class name " + name);
             return id;
         }
-
+        #endregion
     }
 }

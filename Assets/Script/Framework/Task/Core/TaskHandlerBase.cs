@@ -19,13 +19,17 @@ namespace Framework.Task
             m_Callback = finishedCallback;
             AsyncManager.Instance.ExecuteAsyncTask(this);
         }
-        public void QuickExecTask(ITask task, Action<TaskHandlerBase> finishedCallback)
+        public virtual void QuickExecTask(ITask task, Action<TaskHandlerBase> finishedCallback)
         {
-            m_Task = task;
-            m_Callback = finishedCallback;
-            BeforeAsyncTask();
-            DoAsyncTask();
-            AfterAsyncTask();
+            OnQuickExec(task, finishedCallback);
+        }
+        public void Cancle()
+        {
+            OnCancle();
+        }
+        public int GetTaskGroupId()
+        {
+            return m_Task.GetGroupId();
         }
         public AsyncState BeforeAsyncTask()
         {
@@ -78,5 +82,17 @@ namespace Framework.Task
         public abstract void OnPrepare();
         public abstract void OnExec();
         public abstract void OnEnd();
+        protected virtual void OnCancle()
+        {
+            
+        }
+        protected virtual void OnQuickExec(ITask task, Action<TaskHandlerBase> finishedCallback)
+        {
+            m_Task = task;
+            m_Callback = finishedCallback;
+            BeforeAsyncTask();
+            DoAsyncTask();
+            AfterAsyncTask();
+        }
     }
 }

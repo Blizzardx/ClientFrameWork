@@ -62,6 +62,11 @@ namespace Common.Component
                 return m_Queue.Dequeue();
             }
         }
+
+        public int GetCount()
+        {
+            return m_Queue.Count;
+        }
     }
 
 

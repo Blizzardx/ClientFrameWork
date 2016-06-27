@@ -172,7 +172,11 @@ namespace Framework.Network
                     {
                         MessageQueue.Instance.Enqueue(msg);
                     }
-                } while (msg != null);
+                    else
+                    {
+                        break;
+                    }
+                } while (true);
 
                 if (CheckSocketStatus())
                 {

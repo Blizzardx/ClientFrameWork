@@ -9,5 +9,6 @@ namespace Framework.Common
         object GetResult();
         // id - param - result - error exception
         Action<int, object, object, Exception> GetCompletedCallBack();
+        int GetGroupId();
     }
 }
