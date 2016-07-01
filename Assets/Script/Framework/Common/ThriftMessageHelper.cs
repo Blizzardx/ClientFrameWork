@@ -15,7 +15,6 @@ namespace Framework.Common
             static ThriftMessageHelper()
             {
 
-
                 foreach (KeyValuePair<int, System.Type> kv in REQ_ID_MSG)
                 {
                     REQ_MSG_ID.Add(kv.Value, kv.Key);
