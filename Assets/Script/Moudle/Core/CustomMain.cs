@@ -30,7 +30,7 @@ public class CustomMain : TriggerOnAppInit
         ModelManager.Instance.CheckInit();
 
         // change to scene main
-       SceneManager.Instance.LoadScene<SceneMenu>();
+       //SceneManager.Instance.LoadScene<SceneMenu>();
     }
     private void OnAppQuit()
     {
