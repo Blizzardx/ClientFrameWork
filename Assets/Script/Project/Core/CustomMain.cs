@@ -1,5 +1,6 @@
 ﻿using Framework.Common;
 using Framework.Event;
+using Framework.Log;
 using Framework.Network;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ public class CustomMain : SystemEventTrigger
     {
         HandlerManager.Instance.CheckInit();
         ModelManager.Instance.CheckInit();
-
+        LogManager.Instance.OnApplicationInitializeSucceed();
         // change to scene main
        //SceneManager.Instance.LoadScene<SceneMenu>();
     }
