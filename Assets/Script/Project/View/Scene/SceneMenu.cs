@@ -4,10 +4,13 @@ using Framework.Event;
 
 public class SceneMenu : SceneBase
 {
+    public override string GetSceneName()
+    {
+        return ("SceneMenu");
+    }
     protected override void OnCreate()
     {
         base.OnCreate();
-        SetSceneName("SceneMenu");
         AddLoadResource("BuildIn/UI/Prefab/MainMenu/Window_Welcom", PerloadAssetType.BuildInAsset);
 
         UIManager.Instance.OpenWindow<UILoading>(UIManager.WindowLayer.Tip);
