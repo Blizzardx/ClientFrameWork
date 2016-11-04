@@ -63,6 +63,7 @@ public class HandlerManager : Singleton<HandlerManager>
             var instance = m_HanderList[i];
             if (instance != null)
             {
+                Debug.Log("On Create Handler " + instance.GetType().Name);
                 instance.Create();
             }
         }
@@ -90,7 +91,9 @@ public class HandlerManager : Singleton<HandlerManager>
     {
         for (int i = 0; i < m_HanderList.Length; ++i)
         {
-            m_HanderList[i].Destroy();
+            var instance = m_HanderList[i];
+            Debug.Log("On Destroy Handler " + instance.GetType().Name);
+            instance.Destroy();
         }
         m_HanderList = null;
     }
