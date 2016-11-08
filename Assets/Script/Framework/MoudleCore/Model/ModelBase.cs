@@ -1,13 +1,10 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
-using System.Runtime.InteropServices;
 using Framework.Event;
 using Framework.Tick;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
 
-public abstract class ModelBase
+public class ModelBase
 {
     protected EventDispatchTool             m_EventHandler;
     private bool                            m_bIsAutoNoticDataModify;
@@ -81,7 +78,10 @@ public abstract class ModelBase
     {
         OnDestroy();
     }
-    public abstract int GetIndex();
+    public virtual int GetIndex()
+    {
+        return 0;
+    }
     #endregion
 
     #region internal function
