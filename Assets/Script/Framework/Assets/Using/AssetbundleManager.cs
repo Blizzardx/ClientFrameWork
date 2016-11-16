@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Script.Framework.Assets.NewAssetTest
+namespace Framework.Asset
 {
     internal class AssetbundleManager:MonoBehaviour
     {
@@ -118,7 +118,7 @@ namespace Assets.Script.Framework.Assets.NewAssetTest
             m_LoadedBundleMap.TryGetValue(assetbundleName, out res);
             return res;
         }
-        public void ChangeAssetbundleRefrenceCount(string bundleName,bool isAdd)
+        public void ChangeAssetbundleRefrenceCount(string bundleName,bool isAdd,int value = 1)
         {
             // check is bundle is loaded
             AssetbundleInfo info = null;
@@ -127,7 +127,7 @@ namespace Assets.Script.Framework.Assets.NewAssetTest
             {
                 return;
             }
-            int deltaValue = isAdd ? 1 : -1;
+            int deltaValue = isAdd ? value : -value;
 
             // change refreance count
             info.SetRefrenceCount(info.GetRefrenceCount()+ deltaValue);
@@ -266,6 +266,9 @@ namespace Assets.Script.Framework.Assets.NewAssetTest
 
             // add to loaded list
             m_LoadedBundleMap.Add(bundleInfo.GetName(), bundleInfo);
+
+            // update refrence count - add refrence count
+            ChangeAssetbundleRefrenceCount(bundleInfo.GetName(), true);
 
             // check is in callback list
             List<Action<AssetbundleInfo>> callbackList = null;
