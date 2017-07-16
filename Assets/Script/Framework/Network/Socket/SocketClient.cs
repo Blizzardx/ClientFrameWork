@@ -44,8 +44,8 @@ namespace Framework.Network
             m_Socket.Blocking = true;
             m_Socket.ReceiveBufferSize = DEFAULT_RECEIVE_SIZE;
             m_Socket.SendBufferSize = DEFAULT_SEND_SIZE;
-            m_Socket.ReceiveTimeout = 30000;
-            m_Socket.SendTimeout = 30000;
+            //m_Socket.ReceiveTimeout = 30000;
+            //m_Socket.SendTimeout = 30000;
             
             IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
             m_Status = SocketStatus.Connecting;

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
-using System.Runtime.InteropServices;
 
 namespace Common.Component
 {
@@ -9,7 +8,7 @@ namespace Common.Component
     {
         private LinkedList<Action> m_UpdateList;
         private LinkedList<Action> m_UpdatingList;
-        
+
         public RegisterList()
         {
             m_UpdateList = new LinkedList<Action>();
@@ -417,7 +416,7 @@ namespace Common.Component
             LinkedList<Action<T>> list = null;
             if (!m_CallbackStore.TryGetValue(id, out list) || list.Count == 0)
             {
-                //empty msg list                    
+                //empty msg list   
                 Debug.LogWarning("empty list  " + id.ToString());
                 return;
             }
@@ -493,31 +492,33 @@ namespace Common.Component
             }
             if (m_iCurrentUpdatingListId == msgId && null != m_UpdatingList)
             {
-                int count = m_UpdatingList.Count;
-                for (int i = 0; i < count; ++i)
-                {
-                    var elem = m_UpdatingList.First;
-                    m_UpdatingList.RemoveFirst();
+                //int count = m_UpdatingList.Count;
+                //for (int i = 0; i < count; ++i)
+                //{
+                //    var elem = m_UpdatingList.First;
+                //    m_UpdatingList.RemoveFirst();
 
-                    if (elem.Value == msgCallback)
-                    {
-                        break;
-                    }
-                    m_UpdatingList.AddLast(elem.Value);
-                }
+                //    if (elem.Value == msgCallback)
+                //    {
+                //        break;
+                //    }
+                //    m_UpdatingList.AddLast(elem.Value);
+                //}
+                m_UpdatingList.Remove(msgCallback);
             }
-            int listcount = list.Count;
-            for (int i = 0; i < listcount; ++i)
-            {
-                var elem = list.First;
-                list.RemoveFirst();
+            list.Remove(msgCallback);
+            //int listcount = list.Count;
+            //for (int i = 0; i < listcount; ++i)
+            //{
+            //    var elem = list.First;
+            //    list.RemoveFirst();
 
-                if (elem.Value == msgCallback)
-                {
-                    break;
-                }
-                list.AddLast(elem.Value);
-            }
+            //    if (elem.Value == msgCallback)
+            //    {
+            //        break;
+            //    }
+            //    list.AddLast(elem.Value);
+            //}
             if (list.Count == 0)
             {
                 m_CallbackStore.Remove(msgId);
